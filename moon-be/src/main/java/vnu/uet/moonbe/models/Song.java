@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class Song {
 
     /*
+        This is metadata on the song, we don't store on the server database, it's in the metadata of the file.
         var title string
         var artist string
         var album string
@@ -24,8 +25,14 @@ public class Song {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String fileName;
 
-    @ManyToOne
-    private Playlist playlist;
+//    title is the name of the file on local side.
+    private String title;
+//    Hashed is the hash of the file, in this system we consider same hash = same file.
+    private String hashed;
+//    The song file has to be on somewhere on server, this is the path.
+    private String filePath;
+
+//    A semi-colon separate list of playlist: Default;Favourite;....
+    private String playlists;
 }
