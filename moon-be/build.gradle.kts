@@ -25,6 +25,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.hibernate.orm:hibernate-core:6.3.1.Final")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("commons-io:commons-io:2.14.0")
     compileOnly("org.projectlombok:lombok")
     runtimeOnly("com.h2database:h2")
     runtimeOnly("com.mysql:mysql-connector-j")
