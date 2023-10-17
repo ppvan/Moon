@@ -1,11 +1,9 @@
 package vnu.uet.moonbe.services;
 
-import ch.qos.logback.core.rolling.helper.FileFilterUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 import vnu.uet.moonbe.exceptions.StorageException;
 import vnu.uet.moonbe.exceptions.StorageFileNotFoundException;
@@ -19,7 +17,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 @Service
 public class StorageService {
