@@ -9,7 +9,28 @@ có chức năng upload và sync nhạc lên server
 - View khi phát nhạc
 - tua, next các kiểu
 
-## Phía backend
+### Giao diện tab
+- Gồm các tab: bài hát, album, nghệ sĩ danh sách phát
+
+Bài hát: Liệt kê các bài hát
+
+Album: Liệt kệ các album, khi click vào album đó sẽ hiện ra một danh sách bài hát (thuộc album đó).
+Nghệ sĩ: Như album
+Danh sách phát: Như album.
+
+> Quan trọng là code được 1 danh sách các bài hát, như này:
+> ![Alt text](asset/image.png)
+
+### Giao diện player
+- Các icon lấy ở đâu?
+![Alt text](asset/player.png)
+
+### Chơi nhạc
+- Chơi nhạc trên android kiểu gì?
+- Làm sao để load được file nhạc?
+- Làm sao để có thể next, load, tạm dừng?
+
+### Phía backend
 
 Gồm hai thực thể chính là 
 - User
