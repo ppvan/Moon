@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import me.ppvan.moon.ui.player.Player
+import me.ppvan.moon.ui.player.BottomPlayer
 import me.ppvan.moon.ui.theme.MoonTheme
 
 
@@ -44,7 +44,7 @@ fun MoonApp(mainViewModel: MainViewModel = hiltViewModel()) {
 
     Column (verticalArrangement = Arrangement.Center, modifier = Modifier.padding(20.dp)) {
         Greeting(mainViewModel.message)
-        Player()
+        BottomPlayer()
     }
 }
 
