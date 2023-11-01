@@ -1,33 +1,51 @@
 package me.ppvan.moon.ui.player
 
 import android.content.Context
-import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import me.ppvan.moon.R
+import kotlinx.coroutines.flow.asStateFlow
 import me.ppvan.moon.data.model.Track
+import me.ppvan.moon.data.repository.TrackRepository
+import me.ppvan.moon.utils.collectPlayerState
 import javax.inject.Inject
 
 @HiltViewModel
-class PlayerViewModel @Inject constructor(context: Context, val player: MoonPlayer): ViewModel() {
+class PlayerViewModel @Inject constructor(context: Context, val player: MoonPlayer, private val repository: TrackRepository): ViewModel() {
+
+    private val _currentTrack = MutableStateFlow(Track.DEFAULT)
 
     val currentPlaybackState = player.playbackState
-    val currentPlayerState = player.playerState
-    val currentPlayingTrack = MutableStateFlow(Track.DEFAULT)
+    val currentPlayingTrack = _currentTrack.asStateFlow()
 
     init {
-        val uri1 = Uri.parse("android.resource://" + context.packageName + "/" + R.raw.demo)
-        val mediaItem1 = MediaItem.fromUri(uri1)
-        val uri2 = Uri.parse("android.resource://" + context.packageName + "/" + R.raw.sample)
-        val mediaItem2 = MediaItem.fromUri(uri2)
+        val tracks = repository.findAll()
+        if (tracks.isNotEmpty()) {
+            player.setUpTrack(1, true)
+            _currentTrack.tryEmit(tracks.get(1))
+        }
 
+        player.initPlayer(
+            tracks.map {
+                MediaItem.fromUri(it.contentUri)
+            }.toMutableList()
+        )
 
-        player.initPlayer(mutableListOf(mediaItem1, mediaItem2))
+        observePlayerState()
     }
 
     fun flipPlayingState() {
         player.playPause()
+    }
+
+    private fun updateState(state: PlayerState) {
+        val currentTrack = _currentTrack.value
+        _currentTrack.tryEmit(currentTrack.copy(state = state))
+    }
+
+    private fun observePlayerState() {
+        viewModelScope.collectPlayerState(player, ::updateState)
     }
 }

@@ -1,7 +1,6 @@
 package me.ppvan.moon.ui.player
 
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -23,7 +22,7 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
     /**
     * A state flow that emits the current playback state of the player.
     */
-    private val _playerState = MutableStateFlow(PlayerStates.STATE_IDLE)
+    private val _playerState = MutableStateFlow(PlayerState.STATE_IDLE)
     val playerState = _playerState.asStateFlow()
 
     private var _playbackState = MutableStateFlow(PlaybackState.DEFAULT)
@@ -33,15 +32,39 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
         player.addListener(this)
         player.setMediaItems(trackList)
         player.prepare()
-//        updatePlaybackJob()
+        updatePlaybackJob()
     }
 
+    /**
+     * Sets up the player to start playback of the track at the specified index.
+     *
+     * @param index The index of the track in the playlist.
+     * @param isTrackPlay If true, playback will start immediately.
+     */
+    fun setUpTrack(index: Int, isTrackPlay: Boolean) {
+        if (player.playbackState == Player.STATE_IDLE) player.prepare()
+        player.seekTo(index, 0)
+        if (isTrackPlay) player.playWhenReady = true
+    }
+
+    /**
+     * Seeks to the specified position in the current track.
+     *
+     * @param position The position to seek to, in milliseconds.
+     */
+    fun seekToPosition(position: Long) {
+        player.seekTo(position)
+    }
+
+    /**
+     * A coroutine to update playback state for every second.
+     */
     private fun updatePlaybackJob() {
         scope.launch {
             do {
                 _playbackState.tryEmit(PlaybackState(player.currentPosition, player.duration))
                 delay(1000)
-            } while (_playerState.value == PlayerStates.STATE_PLAYING && isActive)
+            } while (_playerState.value == PlayerState.STATE_PLAYING && isActive)
         }
     }
 
@@ -64,7 +87,7 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
      */
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
-        _playerState.tryEmit(PlayerStates.STATE_ERROR)
+        _playerState.tryEmit(PlayerState.STATE_ERROR)
     }
 
     /**
@@ -75,9 +98,9 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
     override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
         if (player.playbackState == Player.STATE_READY) {
             if (playWhenReady) {
-                _playerState.tryEmit(PlayerStates.STATE_PLAYING)
+                _playerState.tryEmit(PlayerState.STATE_PLAYING)
             } else {
-                _playerState.tryEmit(PlayerStates.STATE_PAUSE)
+                _playerState.tryEmit(PlayerState.STATE_PAUSE)
             }
         }
     }
@@ -90,8 +113,8 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
         super.onMediaItemTransition(mediaItem, reason)
         if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
-            _playerState.tryEmit(PlayerStates.STATE_NEXT_TRACK)
-            _playerState.tryEmit(PlayerStates.STATE_PLAYING)
+            _playerState.tryEmit(PlayerState.STATE_NEXT_TRACK)
+            _playerState.tryEmit(PlayerState.STATE_PLAYING)
         }
     }
 
@@ -99,37 +122,31 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
     override fun onPlaybackStateChanged(playbackState: Int) {
         when (playbackState) {
             Player.STATE_IDLE -> {
-                _playerState.tryEmit(PlayerStates.STATE_IDLE)
+                _playerState.tryEmit(PlayerState.STATE_IDLE)
             }
 
             Player.STATE_BUFFERING -> {
-                _playerState.tryEmit(PlayerStates.STATE_BUFFERING)
+                _playerState.tryEmit(PlayerState.STATE_BUFFERING)
             }
 
             Player.STATE_READY -> {
-                _playerState.tryEmit(PlayerStates.STATE_READY)
+                _playerState.tryEmit(PlayerState.STATE_READY)
                 if (player.playWhenReady) {
-                    _playerState.tryEmit(PlayerStates.STATE_PLAYING)
+                    _playerState.tryEmit(PlayerState.STATE_PLAYING)
                 } else {
-                    _playerState.tryEmit(PlayerStates.STATE_PAUSE)
+                    _playerState.tryEmit(PlayerState.STATE_PAUSE)
                 }
             }
 
             Player.STATE_ENDED -> {
-                _playerState.tryEmit(PlayerStates.STATE_END)
+                _playerState.tryEmit(PlayerState.STATE_END)
             }
         }
     }
 
-    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-
-
-
-    }
-
 }
 
-enum class PlayerStates {
+enum class PlayerState {
     /**
      * State when the player is idle, not ready to play.
      */

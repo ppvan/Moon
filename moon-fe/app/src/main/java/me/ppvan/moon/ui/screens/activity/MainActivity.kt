@@ -3,7 +3,6 @@ package me.ppvan.moon.ui.screens.activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -59,15 +58,15 @@ fun HomeScreen() {
 @Composable
 fun PlayerScreen(viewModel: PlayerViewModel) {
     val playbackState by viewModel.currentPlaybackState.collectAsState()
-    val playerState by viewModel.currentPlayerState.collectAsState()
+    val currentTrack by viewModel.currentPlayingTrack.collectAsState()
 
     Column () {
         Spacer(modifier = Modifier.weight(1f))
         Text(text = playbackState.toString())
-        Text(text = playerState.toString(), color = Color.Green)
+        Text(text = currentTrack.toString(), color = Color.Green)
         BottomPlayer(
-            playerState = playerState,
             playbackState = playbackState,
+            selectedTrack = currentTrack,
             onPausePlayClick = {viewModel.flipPlayingState()}
         )
     }

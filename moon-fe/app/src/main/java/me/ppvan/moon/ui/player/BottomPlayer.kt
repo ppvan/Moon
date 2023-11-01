@@ -1,7 +1,9 @@
 package me.ppvan.moon.ui.player
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.MarqueeAnimationMode
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,24 +30,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import me.ppvan.moon.R
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.theme.MoonTheme
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BottomPlayer(
-    playerState: PlayerStates,
     playbackState: PlaybackState,
     modifier: Modifier = Modifier,
     selectedTrack: Track = Track.DEFAULT,
     onPausePlayClick: () -> Unit = {},
     onClick: () -> Unit = {}
 ) {
-    val isPlaying = playerState == PlayerStates.STATE_PLAYING
+    val isPlaying = selectedTrack.state == PlayerState.STATE_PLAYING
     val progress = playbackState.progress
 
     Column (
@@ -77,12 +82,25 @@ fun BottomPlayer(
                         .size(50.dp, 50.dp)
                         .clip(shape = RoundedCornerShape(8.dp))
                         .background(Color.Red)) {
-                    Image(painter = painterResource(id = R.drawable.bocchi), contentDescription = "Song thumbnail")
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(selectedTrack.thumbnailUri)
+                            .error(R.drawable.thumbnail)
+                            .crossfade(true)
+                            .build(),
+                        placeholder = painterResource(R.drawable.thumbnail),
+                        contentDescription = "Dmoe"
+                    )
                 }
 
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
-                    Text(text = selectedTrack.title)
+                    Text(text = selectedTrack.title, modifier = Modifier.basicMarquee(
+                        animationMode = MarqueeAnimationMode.Immediately,
+                        delayMillis = 1000,
+                        iterations = Int.MAX_VALUE
+
+                    ))
                     Text(text = selectedTrack.artist, style = typography.bodySmall)
                 }
             }
@@ -102,6 +120,6 @@ fun BottomPlayer(
 @Composable
 fun GreetingPreview() {
     MoonTheme {
-        BottomPlayer(PlayerStates.STATE_PLAYING, PlaybackState(0L, 0L))
+        BottomPlayer(PlaybackState(0L, 0L))
     }
 }
