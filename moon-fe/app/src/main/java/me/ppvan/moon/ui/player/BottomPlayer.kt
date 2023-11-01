@@ -2,6 +2,7 @@ package me.ppvan.moon.ui.player
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,8 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,18 +31,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import me.ppvan.moon.R
+import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.theme.MoonTheme
 
 
 @Composable
-fun BottomPlayer(modifier: Modifier = Modifier, viewmodel: PlayerViewModel = hiltViewModel()) {
-
-    val isPlaying by viewmodel.isPlaying.collectAsState(false)
-    val progress by viewmodel.progress.collectAsState(
-        initial = 0f
-    )
+fun BottomPlayer(
+    playerState: PlayerStates,
+    playbackState: PlaybackState,
+    modifier: Modifier = Modifier,
+    selectedTrack: Track = Track.DEFAULT,
+    onPausePlayClick: () -> Unit = {},
+    onClick: () -> Unit = {}
+) {
+    val isPlaying = playerState == PlayerStates.STATE_PLAYING
+    val progress = playbackState.progress
 
     Column (
     ) {
@@ -57,12 +60,18 @@ fun BottomPlayer(modifier: Modifier = Modifier, viewmodel: PlayerViewModel = hil
         )
         Row(
             modifier = modifier
+                .clickable { onClick() }
                 .background(MaterialTheme.colorScheme.primaryContainer)
                 .fillMaxWidth()
-                .padding(6.dp),
+                .padding(6.dp, 4.dp, 6.dp, 6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Row (
+                modifier = modifier
+                    .weight(1f),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 Box (
                     modifier
                         .size(50.dp, 50.dp)
@@ -70,28 +79,19 @@ fun BottomPlayer(modifier: Modifier = Modifier, viewmodel: PlayerViewModel = hil
                         .background(Color.Red)) {
                     Image(painter = painterResource(id = R.drawable.bocchi), contentDescription = "Song thumbnail")
                 }
+
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(text = selectedTrack.title)
+                    Text(text = selectedTrack.artist, style = typography.bodySmall)
+                }
             }
 
-            Spacer(modifier = Modifier.width(12.dp))
-
-            Row (
-                modifier = modifier
-                    .weight(1f),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column {
-                    Text(text = "By My Side")
-                    Text(text = "Alan Walker", style = typography.bodySmall)
-                }
-
-
-                IconButton(onClick = { viewmodel.flipPlayingState() }) {
-                    if (isPlaying) {
-                        Icon(imageVector = Icons.Outlined.Pause, contentDescription = "Play button")
-                    } else {
-                        Icon(imageVector = Icons.Filled.PlayArrow, contentDescription = "Pause button")
-                    }
+            IconButton(modifier = Modifier.padding(4.dp), onClick = { onPausePlayClick() }) {
+                if (isPlaying) {
+                    Icon(imageVector = Icons.Outlined.Pause, contentDescription = "Play button")
+                } else {
+                    Icon(imageVector = Icons.Filled.PlayArrow, contentDescription = "Pause button")
                 }
             }
         }
@@ -102,6 +102,6 @@ fun BottomPlayer(modifier: Modifier = Modifier, viewmodel: PlayerViewModel = hil
 @Composable
 fun GreetingPreview() {
     MoonTheme {
-        BottomPlayer()
+        BottomPlayer(PlayerStates.STATE_PLAYING, PlaybackState(0L, 0L))
     }
 }

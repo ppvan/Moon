@@ -1,6 +1,7 @@
 package me.ppvan.moon.ui.player
 
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -9,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,37 +19,44 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
 
 
     private val scope = CoroutineScope(Dispatchers.Main + Job())
+
     /**
     * A state flow that emits the current playback state of the player.
     */
-    val playerState = MutableStateFlow(PlayerStates.STATE_IDLE)
-    val currentPosition = MutableStateFlow(0L)
-    val currentSongDuration = MutableStateFlow(0L)
+    private val _playerState = MutableStateFlow(PlayerStates.STATE_IDLE)
+    val playerState = _playerState.asStateFlow()
+
+    private var _playbackState = MutableStateFlow(PlaybackState.DEFAULT)
+    val playbackState = _playbackState.asStateFlow()
 
     fun initPlayer(trackList: MutableList<MediaItem>) {
         player.addListener(this)
         player.setMediaItems(trackList)
         player.prepare()
-        updatePlaybackJob()
+//        updatePlaybackJob()
     }
 
     private fun updatePlaybackJob() {
         scope.launch {
             do {
-                currentPosition.emit(player.currentPosition)
-                currentSongDuration.emit(player.duration)
+                _playbackState.tryEmit(PlaybackState(player.currentPosition, player.duration))
                 delay(1000)
-            } while (playerState.value == PlayerStates.STATE_PLAYING && isActive)
+            } while (_playerState.value == PlayerStates.STATE_PLAYING && isActive)
         }
     }
 
     fun playPause() {
         if (player.playbackState == Player.STATE_IDLE) player.prepare()
-        player.playWhenReady = !player.playWhenReady
-
-        if (player.playbackState == Player.STATE_READY) updatePlaybackJob()
+        if (player.isPlaying) {
+            player.playWhenReady = false
+        } else {
+            if (player.playbackState == Player.STATE_READY) updatePlaybackJob()
+            player.playWhenReady = true
+        }
     }
 
+
+    // Here is the override functions.
 
     /**
      * Called when a player error occurs. This implementation emits the
@@ -55,7 +64,7 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
      */
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
-        playerState.tryEmit(PlayerStates.STATE_ERROR)
+        _playerState.tryEmit(PlayerStates.STATE_ERROR)
     }
 
     /**
@@ -66,9 +75,9 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
     override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
         if (player.playbackState == Player.STATE_READY) {
             if (playWhenReady) {
-                playerState.tryEmit(PlayerStates.STATE_PLAYING)
+                _playerState.tryEmit(PlayerStates.STATE_PLAYING)
             } else {
-                playerState.tryEmit(PlayerStates.STATE_PAUSE)
+                _playerState.tryEmit(PlayerStates.STATE_PAUSE)
             }
         }
     }
@@ -81,8 +90,8 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
         super.onMediaItemTransition(mediaItem, reason)
         if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
-            playerState.tryEmit(PlayerStates.STATE_NEXT_TRACK)
-            playerState.tryEmit(PlayerStates.STATE_PLAYING)
+            _playerState.tryEmit(PlayerStates.STATE_NEXT_TRACK)
+            _playerState.tryEmit(PlayerStates.STATE_PLAYING)
         }
     }
 
@@ -90,26 +99,32 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
     override fun onPlaybackStateChanged(playbackState: Int) {
         when (playbackState) {
             Player.STATE_IDLE -> {
-                playerState.tryEmit(PlayerStates.STATE_IDLE)
+                _playerState.tryEmit(PlayerStates.STATE_IDLE)
             }
 
             Player.STATE_BUFFERING -> {
-                playerState.tryEmit(PlayerStates.STATE_BUFFERING)
+                _playerState.tryEmit(PlayerStates.STATE_BUFFERING)
             }
 
             Player.STATE_READY -> {
-                playerState.tryEmit(PlayerStates.STATE_READY)
+                _playerState.tryEmit(PlayerStates.STATE_READY)
                 if (player.playWhenReady) {
-                    playerState.tryEmit(PlayerStates.STATE_PLAYING)
+                    _playerState.tryEmit(PlayerStates.STATE_PLAYING)
                 } else {
-                    playerState.tryEmit(PlayerStates.STATE_PAUSE)
+                    _playerState.tryEmit(PlayerStates.STATE_PAUSE)
                 }
             }
 
             Player.STATE_ENDED -> {
-                playerState.tryEmit(PlayerStates.STATE_END)
+                _playerState.tryEmit(PlayerStates.STATE_END)
             }
         }
+    }
+
+    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+
+
+
     }
 
 }
@@ -154,4 +169,20 @@ enum class PlayerStates {
      * State when the player has moved to the next track.
      */
     STATE_NEXT_TRACK
+}
+
+
+data class PlaybackState(
+    val currentPosition: Long,
+    val currentTrackDuration: Long,
+) {
+    val progress: Float
+        get() = if (currentTrackDuration != 0L)
+            currentPosition.toFloat() / currentTrackDuration
+        else 0.0f
+
+    companion object {
+        val DEFAULT = PlaybackState(0L, 0L)
+    }
+
 }
