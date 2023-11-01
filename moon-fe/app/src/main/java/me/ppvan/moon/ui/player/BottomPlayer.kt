@@ -1,7 +1,5 @@
 package me.ppvan.moon.ui.player
 
-import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,33 +23,32 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.media3.common.MediaItem
 import me.ppvan.moon.R
-import me.ppvan.moon.di.AppModule
 import me.ppvan.moon.ui.theme.MoonTheme
 
 
 @Composable
-fun BottomPlayer(viewmodel: PlayerViewModel = hiltViewModel(), modifier: Modifier = Modifier) {
+fun BottomPlayer(modifier: Modifier = Modifier, viewmodel: PlayerViewModel = hiltViewModel()) {
 
     val isPlaying by viewmodel.isPlaying.collectAsState(false)
+    val progress by viewmodel.progress.collectAsState(
+        initial = 0f
+    )
 
     Column (
     ) {
         LinearProgressIndicator(
-            progress = 0.5f,
+            progress = progress,
             color = MaterialTheme.colorScheme.primary,
             trackColor = MaterialTheme.colorScheme.primaryContainer,
             modifier = Modifier
@@ -89,7 +86,7 @@ fun BottomPlayer(viewmodel: PlayerViewModel = hiltViewModel(), modifier: Modifie
                 }
 
 
-                IconButton(onClick = { viewmodel.flipPlayingState(); }) {
+                IconButton(onClick = { viewmodel.flipPlayingState() }) {
                     if (isPlaying) {
                         Icon(imageVector = Icons.Outlined.Pause, contentDescription = "Play button")
                     } else {

@@ -1,46 +1,51 @@
 package me.ppvan.moon.ui.player
 
-import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Listener {
 
+
+    private val scope = CoroutineScope(Dispatchers.Main + Job())
     /**
     * A state flow that emits the current playback state of the player.
     */
     val playerState = MutableStateFlow(PlayerStates.STATE_IDLE)
-
-    /**
-     * The current playback position in milliseconds. If the player's position
-     * is negative, this returns 0.
-     */
-    val currentPlaybackPosition: Long
-        get() = if (player.currentPosition > 0) player.currentPosition else 0L
-
-    /**
-     * The duration of the current track in milliseconds. If the track's duration
-     * is negative, this returns 0.
-     */
-    val currentTrackDuration: Long
-        get() = if (player.duration > 0) player.duration else 0L
+    val currentPosition = MutableStateFlow(0L)
+    val currentSongDuration = MutableStateFlow(0L)
 
     fun initPlayer(trackList: MutableList<MediaItem>) {
         player.addListener(this)
         player.setMediaItems(trackList)
         player.prepare()
+        updatePlaybackJob()
+    }
+
+    private fun updatePlaybackJob() {
+        scope.launch {
+            do {
+                currentPosition.emit(player.currentPosition)
+                currentSongDuration.emit(player.duration)
+                delay(1000)
+            } while (playerState.value == PlayerStates.STATE_PLAYING && isActive)
+        }
     }
 
     fun playPause() {
         if (player.playbackState == Player.STATE_IDLE) player.prepare()
         player.playWhenReady = !player.playWhenReady
 
-
-        Log.i("INFO", player.currentPosition.toString() + "/" + player.duration.toString())
+        if (player.playbackState == Player.STATE_READY) updatePlaybackJob()
     }
 
 
