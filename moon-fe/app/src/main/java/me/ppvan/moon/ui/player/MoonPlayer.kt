@@ -28,9 +28,12 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
     private var _playbackState = MutableStateFlow(PlaybackState.DEFAULT)
     val playbackState = _playbackState.asStateFlow()
 
+    private var playbackJob: Job? = null
+
     fun initPlayer(trackList: MutableList<MediaItem>) {
         player.addListener(this)
         player.setMediaItems(trackList)
+
         player.prepare()
         updatePlaybackJob()
     }
@@ -59,8 +62,10 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
     /**
      * A coroutine to update playback state for every second.
      */
-    private fun updatePlaybackJob() {
-        scope.launch {
+    private fun updatePlaybackJob () {
+        playbackJob?.cancel()
+
+        playbackJob = scope.launch {
             do {
                 _playbackState.tryEmit(PlaybackState(player.currentPosition, player.duration))
                 delay(1000)

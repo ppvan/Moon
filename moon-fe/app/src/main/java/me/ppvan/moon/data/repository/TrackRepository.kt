@@ -2,7 +2,6 @@ package me.ppvan.moon.data.repository
 
 import android.content.ContentUris
 import android.content.Context
-import android.net.Uri
 import android.provider.MediaStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import me.ppvan.moon.data.model.Track
@@ -17,7 +16,7 @@ class TrackRepository @Inject constructor(@ApplicationContext val context: Conte
     }
 
     fun findAll(): List<Track> {
-        return _all
+        return fetchTrackList()
     }
 
     /**
