@@ -21,6 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import me.ppvan.moon.services.PermissionsManager
 import me.ppvan.moon.ui.player.BottomPlayer
 import me.ppvan.moon.ui.player.PlayerViewModel
+import me.ppvan.moon.ui.screens.nowplaying.NowPlayingScreen
 import me.ppvan.moon.ui.theme.MoonTheme
 import javax.inject.Inject
 
@@ -57,7 +58,7 @@ fun MoonApp(
     playerViewModel: PlayerViewModel = hiltViewModel(),
 ) {
 
-    PlayerScreen(playerViewModel)
+    NowPlayingScreen(viewModel = playerViewModel)
 }
 
 @Composable

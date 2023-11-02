@@ -22,7 +22,6 @@ import androidx.compose.material.icons.outlined.Pause
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,8 +56,6 @@ fun BottomPlayer(
     ) {
         LinearProgressIndicator(
             progress = progress,
-            color = MaterialTheme.colorScheme.primary,
-            trackColor = MaterialTheme.colorScheme.primaryContainer,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(2.dp)
@@ -66,7 +63,6 @@ fun BottomPlayer(
         Row(
             modifier = modifier
                 .clickable { onClick() }
-                .background(MaterialTheme.colorScheme.primaryContainer)
                 .fillMaxWidth()
                 .padding(6.dp, 4.dp, 6.dp, 6.dp),
             verticalAlignment = Alignment.CenterVertically
