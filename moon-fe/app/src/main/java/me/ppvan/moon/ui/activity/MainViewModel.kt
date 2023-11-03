@@ -1,4 +1,4 @@
-package me.ppvan.moon.ui.screens.activity
+package me.ppvan.moon.ui.activity
 
 import androidx.lifecycle.ViewModel
 import javax.inject.Inject

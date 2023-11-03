@@ -58,6 +58,8 @@ class PlayerViewModel @Inject constructor(
             }.toMutableList()
         )
 
+        return
+
         if (tracks.isNotEmpty()) {
             player.setUpTrack(1, true)
             _currentTrack.tryEmit(tracks[1])

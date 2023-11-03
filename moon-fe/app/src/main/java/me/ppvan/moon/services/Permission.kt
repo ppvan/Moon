@@ -5,7 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
-import me.ppvan.moon.ui.screens.activity.MainActivity
+import me.ppvan.moon.ui.activity.MainActivity
 import me.ppvan.moon.utils.Eventer
 import javax.inject.Inject
 import javax.inject.Singleton

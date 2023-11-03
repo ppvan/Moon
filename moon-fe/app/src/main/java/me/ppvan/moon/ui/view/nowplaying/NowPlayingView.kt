@@ -1,4 +1,4 @@
-package me.ppvan.moon.ui.screens.nowplaying
+package me.ppvan.moon.ui.view.nowplaying
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -53,23 +53,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import me.ppvan.moon.R
-import me.ppvan.moon.ui.player.PlayerViewModel
+import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.utils.DurationFormatter
 
 
 @Composable
-fun NowPlayingScreen(
-    modifier: Modifier = Modifier,
-    viewModel: PlayerViewModel? = null,
-    onBackPressed: () -> Unit = {}
+fun NowPlayingView(
+    context: ViewContext
 ) {
 
 //    val selectedTrack by viewModel?.currentPlayingTrack.collectAsState()
 
 
     Column(
-        modifier.fillMaxSize(),
+        Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
 
         ) {
@@ -282,7 +280,7 @@ fun GreetingPreview() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            NowPlayingScreen()
+//            NowPlayingView()
         }
     }
 }
