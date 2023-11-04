@@ -53,6 +53,17 @@ Phía server cần có CRUD các thực thể này
 - Quản lý bài hát (Chỉ sync thôi, muốn nghe thì phải sync từ mobile trước)
 
 
+### req
+- Đăng ký
+- Đăng nhập
+- Đăng xuất
+- Bảo vệ api
+
+Spring security
+session based
+JWT -> stateless.
+
+
 
 ## Hành vi
 
