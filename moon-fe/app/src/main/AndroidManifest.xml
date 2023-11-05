@@ -21,7 +21,7 @@
         android:theme="@style/Theme.Moon"
         tools:targetApi="33">
         <activity
-            android:name=".ui.screens.activity.MainActivity"
+            android:name=".ui.activity.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Moon">
             <intent-filter>

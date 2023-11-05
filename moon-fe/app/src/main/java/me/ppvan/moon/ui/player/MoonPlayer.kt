@@ -1,5 +1,6 @@
 package me.ppvan.moon.ui.player
 
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -12,62 +13,98 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import me.ppvan.moon.data.model.Track
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Listener {
 
 
     private val scope = CoroutineScope(Dispatchers.Main + Job())
 
     /**
-    * A state flow that emits the current playback state of the player.
-    */
+     * A state flow that emits the current playback state of the player.
+     */
     private val _playerState = MutableStateFlow(PlayerState.STATE_IDLE)
     val playerState = _playerState.asStateFlow()
 
+    /**
+     * Current player position and duration.
+     */
     private var _playbackState = MutableStateFlow(PlaybackState.DEFAULT)
     val playbackState = _playbackState.asStateFlow()
 
+    private var currentIndex = 0
+    private var _tracks = emptyList<Track>()
+
+
+    /**
+     * A thread to update playbackState async.
+     */
     private var playbackJob: Job? = null
 
-    fun initPlayer(trackList: MutableList<MediaItem>) {
+    init {
         player.addListener(this)
-        player.setMediaItems(trackList)
-
         player.prepare()
-        updatePlaybackJob()
+
+        scope.launch {
+            playerState.collect {
+                updateState(it)
+                setupPlaybackJob()
+            }
+        }
     }
 
-    /**
-     * Sets up the player to start playback of the track at the specified index.
-     *
-     * @param index The index of the track in the playlist.
-     * @param isTrackPlay If true, playback will start immediately.
-     */
-    fun setUpTrack(index: Int, isTrackPlay: Boolean) {
+    fun load(tracks: List<Track>) {
+        _tracks = tracks.toList()
         if (player.playbackState == Player.STATE_IDLE) player.prepare()
-        player.seekTo(index, 0)
-        if (isTrackPlay) player.playWhenReady = true
+        player.setMediaItems(tracks.map { MediaItem.fromUri(it.contentUri) })
     }
 
-    /**
-     * Seeks to the specified position in the current track.
-     *
-     * @param position The position to seek to, in milliseconds.
-     */
-    fun seekToPosition(position: Long) {
-        player.seekTo(position)
+    fun preparePlay(track: Track, playWhenReady: Boolean = true) {
+        if (player.playbackState == Player.STATE_IDLE) player.prepare()
+
+        val index = _tracks.indexOf(track).let {
+            if (it == -1) 0
+            else it
+        }
+        currentIndex = index
+        player.seekTo(index, 0)
+
+        player.playWhenReady = playWhenReady
+
+        val oldPlayBack = playbackState.value
+        _playbackState.tryEmit(oldPlayBack.copy(position = 0, duration = 0, track = _tracks[index]))
+    }
+
+    fun next() {
+        if (currentIndex >= _tracks.size - 1 || currentIndex < 0) {
+            Log.i("INFO", "Invalid index $currentIndex")
+            return
+        }
+//        emit signal to higher layer
+        currentIndex += 1
+        val oldPlayBack = playbackState.value
+        _playbackState.tryEmit(oldPlayBack.copy(track = _tracks[currentIndex]))
+        player.seekToNextMediaItem()
     }
 
     /**
      * A coroutine to update playback state for every second.
      */
-    private fun updatePlaybackJob () {
+    private fun setupPlaybackJob() {
+
         playbackJob?.cancel()
 
         playbackJob = scope.launch {
             do {
-                _playbackState.tryEmit(PlaybackState(player.currentPosition, player.duration))
+                val updatedState = _playbackState.value.copy(
+                    position = player.currentPosition,
+                    duration = player.duration
+                )
+                _playbackState.emit(updatedState)
+
                 delay(1000)
             } while (_playerState.value == PlayerState.STATE_PLAYING && isActive)
         }
@@ -75,14 +112,15 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
 
     fun playPause() {
         if (player.playbackState == Player.STATE_IDLE) player.prepare()
-        if (player.isPlaying) {
-            player.playWhenReady = false
-        } else {
-            if (player.playbackState == Player.STATE_READY) updatePlaybackJob()
-            player.playWhenReady = true
-        }
+        player.playWhenReady = !player.isPlaying
     }
 
+    private suspend fun updateState(state: PlayerState) {
+        val updatedState = _playbackState.value.copy(state = state)
+        _playbackState.emit(updatedState)
+
+        Log.i("INFO", state.name)
+    }
 
     // Here is the override functions.
 
@@ -124,6 +162,9 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
     }
 
 
+    /**
+     * Just a layer to encapsulate our player from exoplayer types.
+     */
     override fun onPlaybackStateChanged(playbackState: Int) {
         when (playbackState) {
             Player.STATE_IDLE -> {
@@ -195,16 +236,23 @@ enum class PlayerState {
 
 
 data class PlaybackState(
-    val currentPosition: Long,
-    val currentTrackDuration: Long,
+    val track: Track,
+    val state: PlayerState,
+    val position: Long,
+    val duration: Long,
 ) {
     val progress: Float
-        get() = if (currentTrackDuration != 0L)
-            currentPosition.toFloat() / currentTrackDuration
+        get() = if (duration != 0L)
+            position.toFloat() / duration
         else 0.0f
 
     companion object {
-        val DEFAULT = PlaybackState(0L, 0L)
+        val DEFAULT = PlaybackState(
+            track = Track.DEFAULT,
+            position = 0,
+            duration = 0,
+            state = PlayerState.STATE_IDLE
+        )
     }
 
 }

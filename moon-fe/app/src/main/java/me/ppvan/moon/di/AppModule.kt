@@ -2,14 +2,12 @@ package me.ppvan.moon.di
 
 import android.app.Application
 import android.content.Context
-import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import me.ppvan.moon.ui.player.MoonPlayer
 import javax.inject.Singleton
 
 @Module
@@ -28,10 +26,10 @@ object AppModule {
         return application.applicationContext
     }
 
-    @Provides
-    @Singleton
-    fun provideMoonPlayer(player: ExoPlayer): MoonPlayer {
-        return MoonPlayer(player)
-    }
+//    @Provides
+//    @Singleton
+//    fun provideMoonPlayer(player: ExoPlayer): MoonPlayer {
+//        return MoonPlayer(player)
+//    }
 
 }
