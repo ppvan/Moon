@@ -1,8 +1,10 @@
 package me.ppvan.moon.ui.player
 
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import kotlinx.coroutines.CoroutineScope
@@ -70,7 +72,22 @@ class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.L
     fun load(tracks: List<Track>) {
         _tracks = tracks.toList()
         if (player.playbackState == Player.STATE_IDLE) player.prepare()
-        player.setMediaItems(tracks.map { MediaItem.fromUri(it.contentUri) })
+        player.setMediaItems(tracks.map {
+            MediaItem.fromUri(it.contentUri)
+
+            val metadata = MediaMetadata.Builder()
+                .setTitle(it.title)
+                .setAlbumTitle(it.album)
+                .setArtist(it.artist)
+                .setArtworkUri(Uri.parse(it.thumbnailUri))
+                .build()
+
+            MediaItem.Builder()
+                .setMediaId(it.contentUri)
+                .setMediaMetadata(metadata)
+                .setUri(it.contentUri)
+                .build()
+        })
     }
 
     fun preparePlay(track: Track, playWhenReady: Boolean = true) {

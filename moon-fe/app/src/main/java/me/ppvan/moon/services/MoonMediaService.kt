@@ -36,19 +36,15 @@ class MoonMediaService : MediaSessionService() {
         Log.w("INFO", "MoonMediaService started")
 
 
-        player = ExoPlayer.Builder(this)
-            .setWakeMode(C.WAKE_MODE_NETWORK)
-            .setHandleAudioBecomingNoisy(true)
-            .build()
+        player = ExoPlayer.Builder(this).setWakeMode(C.WAKE_MODE_NETWORK)
+            .setHandleAudioBecomingNoisy(true).build()
 
         mediaSession = provideMediaSession(
-            context = this,
-            player = player
+            context = this, player = player
         )
 
         val sessionToken = SessionToken(
-            applicationContext,
-            ComponentName(applicationContext, MoonMediaService::class.java)
+            applicationContext, ComponentName(applicationContext, MoonMediaService::class.java)
         )
         val controllerFuture =
             MediaController.Builder(applicationContext, sessionToken).buildAsync()
@@ -74,19 +70,16 @@ class MoonMediaService : MediaSessionService() {
 
     @UnstableApi
     fun provideMediaSession(
-        context: Context,
-        player: ExoPlayer
-    ): MediaSession =
-        MediaSession.Builder(context, player)
+        context: Context, player: ExoPlayer
+    ): MediaSession = MediaSession.Builder(context, player)
 //            .setCallback(callback)
-            .setSessionActivity(
-                PendingIntent.getActivity(
-                    context, 0, Intent(context, MainActivity::class.java),
-                    PendingIntent.FLAG_IMMUTABLE
-                )
+        .setSessionActivity(
+            PendingIntent.getActivity(
+                context, 0, Intent(context, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE
             )
+        )
 //            .setBitmapLoader(provideCoilBitmapLoader(context))
-            .build()
+        .build()
 
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession {
