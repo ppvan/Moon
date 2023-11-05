@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -18,7 +17,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Listener {
+class MoonPlayer @Inject constructor(private val player: Player) : Player.Listener {
 
 
     private val scope = CoroutineScope(Dispatchers.Main + Job())

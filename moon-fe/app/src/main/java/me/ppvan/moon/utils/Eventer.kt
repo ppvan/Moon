@@ -9,7 +9,6 @@ class Eventer<T> {
     private val subscribers = mutableListOf<EventSubscriber<T>>()
 
     fun subscribe(subscriber: EventSubscriber<T>): EventUnsubscribeFn {
-        Log.i("INFO", "SUb")
         subscribers.add(subscriber)
         return { unsubscribe(subscriber) }
     }
