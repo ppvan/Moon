@@ -16,7 +16,7 @@ import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.MoreExecutors
 import dagger.hilt.android.AndroidEntryPoint
 import me.ppvan.moon.ui.activity.MainActivity
-import me.ppvan.moon.ui.player.MoonPlayer
+import me.ppvan.moon.ui.viewmodel.MoonPlayer
 import javax.inject.Inject
 
 

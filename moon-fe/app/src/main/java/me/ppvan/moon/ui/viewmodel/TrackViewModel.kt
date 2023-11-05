@@ -1,8 +1,7 @@
-package me.ppvan.moon.ui.player
+package me.ppvan.moon.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.data.repository.TrackRepository
 import me.ppvan.moon.services.PermissionEvents
@@ -16,7 +15,7 @@ class TrackViewModel @Inject constructor(
     permissionsManager: PermissionsManager,
 ) : ViewModel() {
 
-    val currentTrack = MutableStateFlow(Track.DEFAULT)
+//    val currentTrack = MutableStateFlow(Track.DEFAULT)
     val allTracks: List<Track>
         get() = repository.findAll()
 

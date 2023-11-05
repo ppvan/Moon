@@ -1,4 +1,4 @@
-package me.ppvan.moon.ui.player
+package me.ppvan.moon.ui.viewmodel
 
 import android.net.Uri
 import android.util.Log
