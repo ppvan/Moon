@@ -39,14 +39,21 @@ class PermissionsManager @Inject constructor() {
             }
         }.launch(state.denied.toTypedArray())
     }
-
     private fun getRequiredPermissions(): List<String> {
-        val required = mutableListOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        val required = mutableListOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.FOREGROUND_SERVICE,
+        )
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             required.add(Manifest.permission.READ_MEDIA_AUDIO)
             required.add(Manifest.permission.ACCESS_MEDIA_LOCATION)
-//            required.add(Manifest.permission.POST_NOTIFICATIONS)
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            required.add(Manifest.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK)
+        }
+
         return required
     }
 
