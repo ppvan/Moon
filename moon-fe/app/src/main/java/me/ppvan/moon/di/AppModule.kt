@@ -2,6 +2,7 @@ package me.ppvan.moon.di
 
 import android.app.Application
 import android.content.Context
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import dagger.Module
 import dagger.Provides
@@ -16,20 +17,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideExoPlayer(@ApplicationContext context: Context): ExoPlayer {
-        return ExoPlayer.Builder(context).build()
-    }
-
-    @Provides
-    @Singleton
     fun provideContext(application: Application): Context {
         return application.applicationContext
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideMoonPlayer(player: ExoPlayer): MoonPlayer {
-//        return MoonPlayer(player)
-//    }
-
+    @Provides
+    @Singleton
+    fun providePlayer(@ApplicationContext context: Context): Player {
+        return ExoPlayer.Builder(context).build()
+    }
 }

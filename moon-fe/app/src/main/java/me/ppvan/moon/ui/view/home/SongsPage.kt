@@ -33,8 +33,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import me.ppvan.moon.R
 import me.ppvan.moon.data.model.Track
-import me.ppvan.moon.ui.player.MoonPlayer
-import me.ppvan.moon.ui.player.TrackViewModel
+import me.ppvan.moon.ui.viewmodel.MoonPlayer
+import me.ppvan.moon.ui.viewmodel.TrackViewModel
 
 
 @Composable

@@ -1,10 +1,12 @@
-package me.ppvan.moon.ui.player
+package me.ppvan.moon.ui.viewmodel
 
+import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.ViewModel
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.exoplayer.ExoPlayer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -18,7 +20,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Listener {
+class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listener {
 
 
     private val scope = CoroutineScope(Dispatchers.Main + Job())
@@ -56,10 +58,36 @@ class MoonPlayer @Inject constructor(private val player: ExoPlayer) : Player.Lis
         }
     }
 
+    /**
+     * Set a custom player.
+     * This method exists to set a MediaController to connect with MoonMediaService
+     */
+    fun setCustomPlayer(player: Player) {
+        this.player = player
+
+        player.addListener(this)
+        player.prepare()
+    }
+
     fun load(tracks: List<Track>) {
         _tracks = tracks.toList()
         if (player.playbackState == Player.STATE_IDLE) player.prepare()
-        player.setMediaItems(tracks.map { MediaItem.fromUri(it.contentUri) })
+        player.setMediaItems(tracks.map {
+            MediaItem.fromUri(it.contentUri)
+
+            val metadata = MediaMetadata.Builder()
+                .setTitle(it.title)
+                .setAlbumTitle(it.album)
+                .setArtist(it.artist)
+                .setArtworkUri(Uri.parse(it.thumbnailUri))
+                .build()
+
+            MediaItem.Builder()
+                .setMediaId(it.contentUri)
+                .setMediaMetadata(metadata)
+                .setUri(it.contentUri)
+                .build()
+        })
     }
 
     fun preparePlay(track: Track, playWhenReady: Boolean = true) {

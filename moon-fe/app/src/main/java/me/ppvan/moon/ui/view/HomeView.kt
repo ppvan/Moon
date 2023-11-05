@@ -33,12 +33,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.CenterTopAppBar
-import me.ppvan.moon.ui.player.TrackViewModel
 import me.ppvan.moon.ui.view.home.AlbumsPage
 import me.ppvan.moon.ui.view.home.ArtistsPage
 import me.ppvan.moon.ui.view.home.BottomPlayer
 import me.ppvan.moon.ui.view.home.PlaylistPage
 import me.ppvan.moon.ui.view.home.SongsPage
+import me.ppvan.moon.ui.viewmodel.TrackViewModel
 import me.ppvan.moon.utils.ScaleTransition
 import me.ppvan.moon.utils.SlideTransition
 
@@ -49,7 +49,7 @@ fun HomeView(context: ViewContext, trackViewModel: TrackViewModel = hiltViewMode
 
     val player = trackViewModel.player
 
-    var visibile by remember { mutableStateOf(false) }
+//    var visibile by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf(MoonPages.Song) }
     val playbackState by player.playbackState.collectAsState()
 

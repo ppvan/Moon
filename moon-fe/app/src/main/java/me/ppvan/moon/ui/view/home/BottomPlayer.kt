@@ -38,9 +38,9 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import me.ppvan.moon.R
 import me.ppvan.moon.data.model.Track
-import me.ppvan.moon.ui.player.PlaybackState
-import me.ppvan.moon.ui.player.PlayerState
 import me.ppvan.moon.ui.theme.MoonTheme
+import me.ppvan.moon.ui.viewmodel.PlaybackState
+import me.ppvan.moon.ui.viewmodel.PlayerState
 
 
 @OptIn(ExperimentalFoundationApi::class)
