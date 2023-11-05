@@ -16,7 +16,12 @@ class TrackRepository @Inject constructor(@ApplicationContext val context: Conte
     }
 
     fun findAll(): List<Track> {
-        return fetchTrackList()
+        return _all
+    }
+
+
+    fun invalidateCache() {
+        _all = fetchTrackList()
     }
 
     /**
