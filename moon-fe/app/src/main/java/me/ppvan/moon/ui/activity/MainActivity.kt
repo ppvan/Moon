@@ -1,23 +1,23 @@
 package me.ppvan.moon.ui.activity
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import me.ppvan.moon.services.MoonMediaService
 import me.ppvan.moon.services.PermissionsManager
+import me.ppvan.moon.ui.player.MoonPlayer
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.AlbumView
 import me.ppvan.moon.ui.view.ArtistView
@@ -36,14 +36,15 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var permissionsManager: PermissionsManager
 
-//    @Inject
-//    lateinit var trackViewModel: TrackViewModel
+    @Inject
+    lateinit var moonPlayer: MoonPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("PlayerViewModel", System.identityHashCode(permissionsManager).toString())
+
         permissionsManager.handle(this)
 
+        startPlayerService()
         setContent {
             MoonTheme {
                 // A surface container using the 'background' color from the theme
@@ -56,9 +57,14 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+    private fun startPlayerService() {
+        val serviceIntent = Intent(this, MoonMediaService::class.java)
+        startService(serviceIntent)
+    }
 }
 
-data class ViewContext (
+data class ViewContext(
     val navigator: NavHostController,
     val activity: Activity
 )
@@ -67,7 +73,6 @@ data class ViewContext (
 fun MoonApp(activity: Activity, navController: NavHostController = rememberNavController()) {
 
     val context = ViewContext(navigator = navController, activity = activity)
-    val backStackEntry by navController.currentBackStackEntryAsState()
 
     NavHost(navController = navController, startDestination = Routes.Home.name) {
         composable(

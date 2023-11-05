@@ -1,6 +1,7 @@
 package me.ppvan.moon.ui.player
 
 import android.util.Log
+import androidx.lifecycle.ViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -17,7 +18,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MoonPlayer @Inject constructor(private val player: Player) : Player.Listener {
+class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listener {
 
 
     private val scope = CoroutineScope(Dispatchers.Main + Job())
@@ -53,6 +54,17 @@ class MoonPlayer @Inject constructor(private val player: Player) : Player.Listen
                 setupPlaybackJob()
             }
         }
+    }
+
+    /**
+     * Set a custom player.
+     * This method exists to set a MediaController to connect with MoonMediaService
+     */
+    fun setCustomPlayer(player: Player) {
+        this.player = player
+
+        player.addListener(this)
+        player.prepare()
     }
 
     fun load(tracks: List<Track>) {
