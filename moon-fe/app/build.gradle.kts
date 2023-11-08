@@ -22,6 +22,9 @@ android {
         }
     }
 
+    // youtube-dl fix: see https://github.com/yausername/youtubedl-android/issues/135
+    packaging { jniLibs { useLegacyPackaging = true } }
+
 
     buildTypes {
         release {
@@ -60,12 +63,26 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:$media3Version")
     implementation("androidx.media3:media3-session:$media3Version")
 
+    // YT android
+    implementation("com.github.yausername.youtubedl-android:library:-SNAPSHOT")
+    implementation("com.github.yausername.youtubedl-android:ffmpeg:-SNAPSHOT")
 
+    // Networking
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // Json
+    implementation("com.beust:klaxon:5.5")
+
+    // Web Image loader
     implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // DI
     implementation("com.google.dagger:hilt-android:2.44")
     implementation("androidx.navigation:navigation-compose:2.7.5")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0-rc01")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
+
+    // added by default
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.0")
