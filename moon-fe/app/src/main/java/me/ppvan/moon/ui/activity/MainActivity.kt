@@ -17,8 +17,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -32,6 +30,7 @@ import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.AlbumView
 import me.ppvan.moon.ui.view.ArtistView
 import me.ppvan.moon.ui.view.HomeView
+import me.ppvan.moon.ui.view.SearchView
 import me.ppvan.moon.ui.view.SettingView
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
 import me.ppvan.moon.ui.viewmodel.YoutubeViewModel
@@ -63,12 +62,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val query by youtubeViewModel.query.collectAsState()
-                    val result by youtubeViewModel.recommendations.collectAsState()
 
-
-                    sample(query, result = result, onSearch = youtubeViewModel::onSearch)
-//                    MoonApp(activity = this)
+                    SearchView(youtubeViewModel)
                 }
 
             }
