@@ -43,6 +43,7 @@ class PermissionsManager @Inject constructor() {
         val required = mutableListOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.FOREGROUND_SERVICE,
+//            Manifest.permission.INTERNET
         )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
