@@ -30,7 +30,7 @@ const val RECOMMEND_API =
 const val SEARCH_API = "https://pipedapi.kavin.rocks/"
 
 @Singleton
-class YoutubeViewModel @Inject constructor() : ViewModel() {
+class YTViewModel @Inject constructor() : ViewModel() {
 
     private val okHttpClient = OkHttpClient()
 
@@ -61,9 +61,9 @@ class YoutubeViewModel @Inject constructor() : ViewModel() {
                 _recommendations.value
             )
 
-    private val _searchResult = MutableStateFlow(listOf<SearchItem>())
+    private val _searchResult = MutableStateFlow(listOf<ResultItem>())
     @OptIn(FlowPreview::class)
-    val searchResult: StateFlow<List<SearchItem>> = active
+    val searchResult: StateFlow<List<ResultItem>> = active
         .debounce(500L)
         .combine(searchQuery) { active, query ->
             active to query
@@ -106,7 +106,7 @@ class YoutubeViewModel @Inject constructor() : ViewModel() {
      * Search youtube videos (not logged in).
      * region is fixed to vietnam
      */
-    private suspend fun getMatchedSearchItem(query: String): List<SearchItem> {
+    private suspend fun getMatchedSearchItem(query: String): List<ResultItem> {
 
 //        return emptyList()
 
@@ -124,7 +124,7 @@ class YoutubeViewModel @Inject constructor() : ViewModel() {
         val items = (parser.parse(StringBuilder(content)) as JsonObject)
             .array<JsonObject>("items")!!
 
-        val result = mutableListOf<SearchItem>()
+        val result = mutableListOf<ResultItem>()
 
         for (item in items) {
             val id = getIdFromURL(item.string("url").orEmpty())
@@ -134,7 +134,7 @@ class YoutubeViewModel @Inject constructor() : ViewModel() {
             val thumb = "https://i.ytimg.com/vi/$id/hqdefault.jpg"
 
             result.add(
-                SearchItem(
+                ResultItem(
                     id = id,
                     title = title,
                     uploader = uploader,
@@ -183,13 +183,18 @@ class YoutubeViewModel @Inject constructor() : ViewModel() {
     }
 }
 
-data class SearchItem(
+data class ResultItem(
     val id: String,
     val title: String,
     val uploader: String,
     val duration: Long,
     val thumbnailUrl: String,
 
-    val message: String = "",
-    val isDownloading: Boolean = false
+    val state: ResultItemState = ResultItemState.NONE
 )
+
+enum class ResultItemState(var message: String) {
+    NONE("Not downloaded"),
+    DOWNLOADING ("Downloading")
+    ;
+}

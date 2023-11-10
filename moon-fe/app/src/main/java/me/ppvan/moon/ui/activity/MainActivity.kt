@@ -33,7 +33,7 @@ import me.ppvan.moon.ui.view.HomeView
 import me.ppvan.moon.ui.view.SearchView
 import me.ppvan.moon.ui.view.SettingView
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
-import me.ppvan.moon.ui.viewmodel.YoutubeViewModel
+import me.ppvan.moon.ui.viewmodel.YTViewModel
 import me.ppvan.moon.utils.FadeTransition
 import me.ppvan.moon.utils.ScaleTransition
 import me.ppvan.moon.utils.SlideTransition
@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
     lateinit var permissionsManager: PermissionsManager
 
     @Inject
-    lateinit var youtubeViewModel: YoutubeViewModel
+    lateinit var YTViewModel: YTViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    SearchView(youtubeViewModel)
+                    SearchView(YTViewModel)
 //                    MoonApp(activity = this)
                 }
 
