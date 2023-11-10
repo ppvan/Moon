@@ -1,40 +1,48 @@
 package me.ppvan.moon.ui.view
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.icons.outlined.SaveAlt
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -71,7 +79,7 @@ fun SearchView(viewModel: YoutubeViewModel) {
                 active = active,
                 onActiveChange = viewModel::onActiveChange,
                 placeholder = {
-                    Text(text = "Search")
+                    Text(text = "Search music on Youtube")
                 },
                 leadingIcon = {
                     Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search Icon")
@@ -102,34 +110,101 @@ fun SearchView(viewModel: YoutubeViewModel) {
                 }
             }
 
-            SearchResult(resultItems)
+            val item = SearchItem(
+                "BrEp0n4L1Fc", "Mareux - The Perfect Girl slowed", "B.A.S.L", 100L, "https://i.ytimg.com/vi/gSt9fwuLwAs/hq720.jpg" )
+//            SearchResult(List(3) {item})
+
+            Spacer(modifier = Modifier.height(16.dp))
+            SearchResult(searchItems = resultItems)
         }
+
     }
 }
 
 
 @Composable
 fun SearchResult(searchItems: List<SearchItem>) {
+
+//    Column (
+//        modifier = Modifier.padding(8.dp),
+//        verticalArrangement = Arrangement.spacedBy(8.dp)
+//
+//    ) {
+//        for(item in searchItems) {
+//            SearchResultListItem(item)
+//        }
+//    }
+
     LazyColumn() {
         items(searchItems) { item ->
+            SearchResultListItem(resultItem = item)
+        }
+    }
+}
+
+
+@Composable
+fun SearchResultListItem(
+    resultItem: SearchItem,
+    onCancelClick: (SearchItem) -> Unit  = {},
+    onDownloadClick: (SearchItem) -> Unit = {},
+    onClick: () -> Unit = {}
+) {
+    var expand by remember {
+        mutableStateOf(false)
+    }
+
+    Column(
+        modifier = Modifier.clickable {
+            onClick()
+        },
+        verticalArrangement = Arrangement.Top
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+                .background(color = MaterialTheme.colorScheme.surface),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Red)
+                Modifier
+                    .size(50.dp, 50.dp)
                     .clip(shape = RoundedCornerShape(8.dp))
-                    .padding(vertical = 4.dp)
             ) {
                 AsyncImage(
-                    modifier = Modifier.fillMaxSize(),
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(item.thumbnailUrl)
+                        .data(resultItem.thumbnailUrl)
                         .error(R.drawable.thumbnail)
                         .crossfade(true)
                         .build(),
-                    contentDescription = null,
+                    placeholder = painterResource(R.drawable.thumbnail),
+                    contentDescription = "Music thumbnail",
                     contentScale = ContentScale.Crop
                 )
             }
+
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
+//                verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                Text(text = resultItem.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(text = resultItem.uploader, style = MaterialTheme.typography.labelMedium)
+                Text(text = resultItem.message, style = MaterialTheme.typography.labelSmall)
+            }
+
+            if (resultItem.isDownloading) {
+                IconButton(onClick = { onCancelClick(resultItem) }) {
+                    Icon(imageVector = Icons.Outlined.Close, contentDescription = "Close")
+                }
+            } else {
+                IconButton(onClick = { onDownloadClick(resultItem) }) {
+                    Icon(imageVector = Icons.Outlined.SaveAlt, contentDescription = "SaveAlt")
+                }
+            }
+
         }
     }
 }
@@ -141,20 +216,7 @@ fun PreviewCardList() {
     val item = SearchItem(
         "BrEp0n4L1Fc", "Mareux - The Perfect Girl slowed", "B.A.S.L", 100L, "https://i.ytimg.com/vi/gSt9fwuLwAs/hq720.jpg" )
     MoonTheme {
-        Box(
-            modifier = Modifier
-                .size(400.dp, 300.dp)
-                .clip(RoundedCornerShape(percent = 10))
-                .background(Color.Red)
-                .padding(vertical = 4.dp)
-        ) {
-            Image(
-                modifier = Modifier.fillMaxSize(),
-                painter = painterResource(id = R.drawable.hq720),
-                contentDescription = null,
-                contentScale = ContentScale.Crop
-            )
-        }
+        SearchResult(listOf(item))
     }
     
 }

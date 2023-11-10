@@ -188,5 +188,8 @@ data class SearchItem(
     val title: String,
     val uploader: String,
     val duration: Long,
-    val thumbnailUrl: String
+    val thumbnailUrl: String,
+
+    val message: String = "",
+    val isDownloading: Boolean = false
 )

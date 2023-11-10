@@ -2,12 +2,11 @@ package me.ppvan.moon.ui.component
 
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import me.ppvan.moon.data.model.Album
-import me.ppvan.moon.data.model.Track
 
 @Composable
 fun AlbumGrid(
@@ -19,7 +18,7 @@ fun AlbumGrid(
         albumList.isEmpty() -> IconTextBody(
             icon = { modifier ->
                 Icon(
-                    Icons.Filled.List,
+                    Icons.AutoMirrored.Filled.List,
                     null,
                     modifier = modifier,
                 )
@@ -38,7 +37,7 @@ fun AlbumGrid(
 //                context.symphony.groove.album.get(albumId)?.let { album ->
 //                    AlbumTile(context, album)
 //                }
-                Album-> AlbumTile(Album)
+                album -> AlbumTile(album)
             }
         }
     }
