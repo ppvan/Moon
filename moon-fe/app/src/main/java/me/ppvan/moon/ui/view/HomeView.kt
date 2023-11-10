@@ -57,7 +57,7 @@ fun HomeView(context: ViewContext, trackViewModel: TrackViewModel = hiltViewMode
 
     Scaffold(
         topBar = {
-            Crossfade(targetState = selectedTab, label = "top bar-page") { page ->
+            Crossfade(targetState = selectedTab, label = "top-bar-page") { page ->
                 CenterTopAppBar(
                     title = page.label,
                     navigationIcon = {
