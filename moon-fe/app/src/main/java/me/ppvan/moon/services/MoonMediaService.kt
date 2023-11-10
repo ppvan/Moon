@@ -36,7 +36,8 @@ class MoonMediaService : MediaSessionService() {
         Log.w("INFO", "MoonMediaService started")
 
 
-        player = ExoPlayer.Builder(this).setWakeMode(C.WAKE_MODE_NETWORK)
+        player = ExoPlayer.Builder(this)
+            .setWakeMode(C.WAKE_MODE_NETWORK)
             .setHandleAudioBecomingNoisy(true).build()
 
         mediaSession = provideMediaSession(
@@ -50,7 +51,7 @@ class MoonMediaService : MediaSessionService() {
             MediaController.Builder(applicationContext, sessionToken).buildAsync()
         controllerFuture.addListener({
             moonPlayer.setCustomPlayer(controllerFuture.get())
-        }, MoreExecutors.directExecutor())
+        }, MoreExecutors.newDirectExecutorService())
     }
 
     override fun onDestroy() {

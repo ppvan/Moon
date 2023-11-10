@@ -1,22 +1,22 @@
 package me.ppvan.moon.ui.view
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.filled.Album
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.People
-import androidx.compose.material.icons.filled.QueueMusic
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -37,20 +37,27 @@ import me.ppvan.moon.ui.view.home.AlbumsPage
 import me.ppvan.moon.ui.view.home.ArtistsPage
 import me.ppvan.moon.ui.view.home.BottomPlayer
 import me.ppvan.moon.ui.view.home.PlaylistPage
+import me.ppvan.moon.ui.view.home.SearchPage
 import me.ppvan.moon.ui.view.home.SongsPage
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.ui.viewmodel.TrackViewModel
+import me.ppvan.moon.ui.viewmodel.YTViewModel
 import me.ppvan.moon.utils.ScaleTransition
 import me.ppvan.moon.utils.SlideTransition
 
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeView(context: ViewContext, trackViewModel: TrackViewModel = hiltViewModel(), albumViewModel: AlbumViewModel = hiltViewModel()) {
+fun HomeView(
+    context: ViewContext,
+    trackViewModel: TrackViewModel = hiltViewModel(),
+    albumViewModel: AlbumViewModel = hiltViewModel(),
+    ytViewModel: YTViewModel = hiltViewModel()
+
+) {
 
     val player = trackViewModel.player
-
-//    var visibile by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf(MoonPages.Song) }
     val playbackState by player.playbackState.collectAsState()
 
@@ -62,12 +69,7 @@ fun HomeView(context: ViewContext, trackViewModel: TrackViewModel = hiltViewMode
                 CenterTopAppBar(
                     title = page.label,
                     navigationIcon = {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Search,
-                                contentDescription = "Search"
-                            )
-                        }
+
                     },
                     menuItems = {
                         DropdownMenuItem(
@@ -127,8 +129,13 @@ fun HomeView(context: ViewContext, trackViewModel: TrackViewModel = hiltViewMode
             when (page) {
                 MoonPages.Song -> SongsPage(trackViewModel)
                 MoonPages.Album -> AlbumsPage(albumViewModel)
+                MoonPages.Search -> SearchPage(ytViewModel)
                 MoonPages.Artist -> ArtistsPage()
                 MoonPages.Playlist -> PlaylistPage()
+
+                else -> {
+                    Text(text = "Not implemented")
+                }
             }
         }
     }
@@ -137,8 +144,8 @@ fun HomeView(context: ViewContext, trackViewModel: TrackViewModel = hiltViewMode
 enum class MoonPages constructor(val label: String, val icon: ImageVector) {
     Song("Song", Icons.Filled.MusicNote),
     Album("Album", Icons.Filled.Album),
-//    Search("Search", Icons.Filled),
+    Search("Search", Icons.Filled.Search),
     Artist("Artist", Icons.Filled.People),
-    Playlist("Playlist", Icons.Filled.QueueMusic)
+    Playlist("Playlist", Icons.AutoMirrored.Filled.QueueMusic)
     ;
 }

@@ -11,12 +11,10 @@ class TrackRepository @Inject constructor(@ApplicationContext val context: Conte
 
     private var _all = emptyList<Track>()
 
-    init {
-        _all = fetchTrackList()
-    }
+
 
     fun findAll(): List<Track> {
-        return _all
+        return fetchTrackList()
     }
 
 

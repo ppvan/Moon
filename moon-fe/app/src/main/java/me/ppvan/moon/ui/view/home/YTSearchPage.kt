@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,13 +21,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.SaveAlt
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.DockedSearchBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -52,47 +51,39 @@ import me.ppvan.moon.ui.viewmodel.YTViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchView(viewModel: YTViewModel) {
+fun SearchPage(viewModel: YTViewModel) {
 
     val query by viewModel.searchQuery.collectAsState()
     val recommendations by viewModel.recommendations.collectAsState()
     val active by viewModel.active.collectAsState()
-    val isRecommendationsLoading by viewModel.isRecommending.collectAsState()
+//    val isRecommendationsLoading by viewModel.isRecommending.collectAsState()
     val resultItems by viewModel.searchResult.collectAsState()
 
-    Scaffold { _ ->
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            SearchBar(
-                modifier = Modifier.fillMaxWidth(),
-                query = query,
-                onQueryChange = viewModel::onQueryChange,
-                onSearch = viewModel::onSearch,
-                active = active,
-                onActiveChange = viewModel::onActiveChange,
-                placeholder = {
-                    Text(text = "Search music on Youtube")
-                },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search Icon")
-                },
-                trailingIcon = {
-                    IconButton(onClick = viewModel::onClose) {
-                        Icon(imageVector = Icons.Outlined.Close, contentDescription = "Close Icon")
-                    }
+    Column {
+        DockedSearchBar(
+            modifier = Modifier.fillMaxWidth(),
+            query = query,
+            onQueryChange = viewModel::onQueryChange,
+            onSearch = viewModel::onSearch,
+            active = active,
+            onActiveChange = viewModel::onActiveChange,
+            placeholder = {
+                Text(text = "Search music on Youtube")
+            },
+            leadingIcon = {
+                Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search Icon")
+            },
+            trailingIcon = {
+                IconButton(onClick = viewModel::onClose) {
+                    Icon(imageVector = Icons.Outlined.Close, contentDescription = "Close Icon")
                 }
-            ) {
-                RecommendationList(recommendations, viewModel::onSearch)
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            ResultList(resultItems = resultItems)
+        ) {
+            RecommendationList(recommendations, viewModel::onSearch)
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+        ResultList(resultItems = resultItems)
     }
 }
 
@@ -108,7 +99,7 @@ fun ResultList(resultItems: List<ResultItem>) {
 
 @Composable
 fun RecommendationList(recommendations: List<String>, onItemClick: (String) -> Unit) {
-    LazyColumn {
+    LazyColumn (modifier = Modifier.imePadding()) {
         items(recommendations) { item ->
             ListItem(
                 modifier = Modifier.clickable { onItemClick(item) },

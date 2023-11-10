@@ -22,14 +22,12 @@ import me.ppvan.moon.utils.await
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import javax.inject.Inject
-import javax.inject.Singleton
 
 
 const val RECOMMEND_API =
     "https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q="
 const val SEARCH_API = "https://pipedapi.kavin.rocks/"
 
-@Singleton
 class YTViewModel @Inject constructor() : ViewModel() {
 
     private val okHttpClient = OkHttpClient()
@@ -62,6 +60,7 @@ class YTViewModel @Inject constructor() : ViewModel() {
             )
 
     private val _searchResult = MutableStateFlow(listOf<ResultItem>())
+
     @OptIn(FlowPreview::class)
     val searchResult: StateFlow<List<ResultItem>> = active
         .debounce(500L)
@@ -111,12 +110,13 @@ class YTViewModel @Inject constructor() : ViewModel() {
 //        return emptyList()
 
         val url = SEARCH_API + "search?q=${query}&filter=videos&region=vi"
-
-
         val parser: Parser = Parser.default()
 
         val request = Request.Builder()
-            .header("User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0")
+            .header(
+                "User-Agent",
+                "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0"
+            )
             .url(url).build()
         val response = okHttpClient.newCall(request).await()
         val content = response.body!!.string()
@@ -177,8 +177,6 @@ class YTViewModel @Inject constructor() : ViewModel() {
         // If out of index or something, api changed and should be fix quickly
         val recommends: JsonArray<String> = array[1] as JsonArray<String>
 
-        Log.i("INFO", recommends.toString())
-
         return recommends.value.toList()
     }
 }
@@ -195,6 +193,6 @@ data class ResultItem(
 
 enum class ResultItemState(var message: String) {
     NONE("Not downloaded"),
-    DOWNLOADING ("Downloading")
+    DOWNLOADING("Downloading")
     ;
 }
