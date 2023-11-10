@@ -30,6 +30,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.hilt.navigation.compose.hiltViewModel
+import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.CenterTopAppBar
@@ -56,11 +57,10 @@ fun HomeView(
     ytViewModel: YTViewModel = hiltViewModel()
 
 ) {
-
-    val player = trackViewModel.player
     var selectedTab by remember { mutableStateOf(MoonPages.Song) }
+    val player = trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
-
+    val bottomPlayerVisible = playbackState.track != Track.DEFAULT
 
 
     Scaffold(
@@ -99,11 +99,25 @@ fun HomeView(
         },
         bottomBar = {
             Column {
-                BottomPlayer(
-                    playbackState = playbackState,
-                    onPausePlayClick = { player.playPause() },
-                    onNextClick = { player.next() }
-                )
+
+                AnimatedContent(
+                    targetState = bottomPlayerVisible,
+                    label = "player",
+                    transitionSpec = {
+                        SlideTransition.slideUp.enterTransition()
+                            .togetherWith(SlideTransition.slideDown.exitTransition())
+                    }
+                ) { visbile ->
+                    if (visbile) {
+                        BottomPlayer(
+                            playbackState = playbackState,
+                            onPausePlayClick = { player.playPause() },
+                            onNextClick = { player.next() }
+                        )
+                    }
+                }
+
+
                 NavigationBar {
                     for (tab in MoonPages.values()) {
                         NavigationBarItem(
