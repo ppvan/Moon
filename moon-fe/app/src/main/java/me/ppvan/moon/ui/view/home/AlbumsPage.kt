@@ -19,6 +19,6 @@ fun AlbumsPage(albumViewModel: AlbumViewModel) {
         modifier = Modifier
             .fillMaxSize(), color = MaterialTheme.colorScheme.surface
     ){
-        AlbumGrid()
+        AlbumGrid(allAlbums)
     }
 }
