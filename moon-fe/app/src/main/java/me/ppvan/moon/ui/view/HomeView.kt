@@ -38,6 +38,7 @@ import me.ppvan.moon.ui.view.home.ArtistsPage
 import me.ppvan.moon.ui.view.home.BottomPlayer
 import me.ppvan.moon.ui.view.home.PlaylistPage
 import me.ppvan.moon.ui.view.home.SongsPage
+import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.ui.viewmodel.TrackViewModel
 import me.ppvan.moon.utils.ScaleTransition
 import me.ppvan.moon.utils.SlideTransition
@@ -45,7 +46,7 @@ import me.ppvan.moon.utils.SlideTransition
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeView(context: ViewContext, trackViewModel: TrackViewModel = hiltViewModel()) {
+fun HomeView(context: ViewContext, trackViewModel: TrackViewModel = hiltViewModel(), albumViewModel: AlbumViewModel = hiltViewModel()) {
 
     val player = trackViewModel.player
 
@@ -125,7 +126,7 @@ fun HomeView(context: ViewContext, trackViewModel: TrackViewModel = hiltViewMode
         ) { page ->
             when (page) {
                 MoonPages.Song -> SongsPage(trackViewModel)
-                MoonPages.Album -> AlbumsPage()
+                MoonPages.Album -> AlbumsPage(albumViewModel)
                 MoonPages.Artist -> ArtistsPage()
                 MoonPages.Playlist -> PlaylistPage()
             }
