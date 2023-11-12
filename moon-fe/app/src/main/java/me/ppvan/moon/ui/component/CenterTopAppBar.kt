@@ -1,6 +1,7 @@
 package me.ppvan.moon.ui.component
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -23,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 @Composable
 fun CenterTopAppBar(
     title: String,
-    menuItems: @Composable () -> Unit,
+    menuItems: @Composable () -> Unit = {},
     navigationIcon: @Composable () -> Unit = {}
 ) {
 
@@ -59,5 +60,30 @@ fun CenterTopAppBar(
                 }
             }
         }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CenterTopAppBarAction(
+    title:String,
+    navigationIcon: @Composable () -> Unit,
+    actions: @Composable  RowScope.() -> Unit
+
+) {
+    CenterAlignedTopAppBar(
+        title = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+            )
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = Color.Transparent
+        ),
+
+        navigationIcon = navigationIcon,
+
+        actions = actions
     )
 }

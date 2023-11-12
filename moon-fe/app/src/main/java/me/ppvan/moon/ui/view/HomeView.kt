@@ -5,18 +5,23 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.filled.Album
+import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -29,11 +34,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.CenterTopAppBar
+import me.ppvan.moon.ui.component.CenterTopAppBarAction
 import me.ppvan.moon.ui.view.home.AlbumsPage
 import me.ppvan.moon.ui.view.home.ArtistsPage
 import me.ppvan.moon.ui.view.home.BottomPlayer
@@ -66,35 +75,69 @@ fun HomeView(
     Scaffold(
         topBar = {
             Crossfade(targetState = selectedTab, label = "top-bar-page") { page ->
-                CenterTopAppBar(
-                    title = page.label,
-                    navigationIcon = {
+                when (page) {
+                    MoonPages.Search -> {
+                        CenterTopAppBarAction(
+                            title = page.label,
+                            navigationIcon = {
 
-                    },
-                    menuItems = {
-                        DropdownMenuItem(
-                            text = { Text("ReScan") },
-                            onClick = { /* Handle edit! */ },
-                            leadingIcon = {
-                                Icon(
-                                    Icons.Outlined.Refresh,
-                                    contentDescription = "ReScan"
-                                )
+                            },
+                            actions = {
+                                BadgedBox(
+                                    badge = {
+                                        Badge(
+                                            modifier = Modifier.offset(y=10.dp, x= (-8).dp),
+                                        ){
+                                            val badgeNumber = "8"
+                                            Text(
+                                                badgeNumber,
+                                                modifier = Modifier.semantics {
+                                                    contentDescription = "$badgeNumber new notifications"
+                                                }
+                                            )
+                                        }
+                                    }
+                                ) {
+                                    IconButton(onClick = { context.navigator.navigate(route = Routes.Download.name) }) {
+                                        Icon(imageVector = Icons.Default.FileDownload, contentDescription = "FileDownload")
+                                    }
+                                }
                             }
                         )
+                    }
 
-                        DropdownMenuItem(
-                            text = { Text("Setting") },
-                            onClick = { context.navigator.navigate(route = Routes.Settings.name) },
-                            leadingIcon = {
-                                Icon(
-                                    Icons.Outlined.Settings,
-                                    contentDescription = "Settings"
+                    else -> {
+                        CenterTopAppBar(
+                            title = page.label,
+                            navigationIcon = {
+
+                            },
+                            menuItems = {
+                                DropdownMenuItem(
+                                    text = { Text("ReScan") },
+                                    onClick = { /* Handle edit! */ },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Outlined.Refresh,
+                                            contentDescription = "ReScan"
+                                        )
+                                    }
+                                )
+
+                                DropdownMenuItem(
+                                    text = { Text("Setting") },
+                                    onClick = { context.navigator.navigate(route = Routes.Settings.name) },
+                                    leadingIcon = {
+                                        Icon(
+                                            Icons.Outlined.Settings,
+                                            contentDescription = "Settings"
+                                        )
+                                    }
                                 )
                             }
                         )
                     }
-                )
+                }
             }
         },
         bottomBar = {
@@ -107,8 +150,8 @@ fun HomeView(
                         SlideTransition.slideUp.enterTransition()
                             .togetherWith(SlideTransition.slideDown.exitTransition())
                     }
-                ) { visbile ->
-                    if (visbile) {
+                ) { visible ->
+                    if (visible) {
                         BottomPlayer(
                             playbackState = playbackState,
                             onPausePlayClick = { player.playPause() },

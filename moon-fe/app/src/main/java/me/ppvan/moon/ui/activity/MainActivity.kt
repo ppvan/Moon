@@ -24,10 +24,12 @@ import me.ppvan.moon.services.PermissionsManager
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.AlbumView
 import me.ppvan.moon.ui.view.ArtistView
+import me.ppvan.moon.ui.view.DownloadView
 import me.ppvan.moon.ui.view.HomeView
 import me.ppvan.moon.ui.view.SettingView
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
 import me.ppvan.moon.ui.viewmodel.YTViewModel
+import me.ppvan.moon.utils.DownloadUtils
 import me.ppvan.moon.utils.FadeTransition
 import me.ppvan.moon.utils.ScaleTransition
 import me.ppvan.moon.utils.SlideTransition
@@ -69,6 +71,7 @@ class MainActivity : ComponentActivity() {
 
         startPlayerService()
         permissionsManager.handle(this)
+        DownloadUtils.init(applicationContext)
     }
 
     private fun startPlayerService() {
@@ -128,10 +131,18 @@ fun MoonApp(activity: Activity, navController: NavHostController = rememberNavCo
         ) {
             SettingView(context)
         }
+
+        composable(
+            Routes.Download.name,
+            enterTransition = { ScaleTransition.scaleDown.enterTransition() },
+            exitTransition = { ScaleTransition.scaleUp.exitTransition() },
+        ) {
+            DownloadView(context)
+        }
     }
 }
 
 
 enum class Routes() {
-    Home, NowPlaying, Album, Artist, Playlist, Settings
+    Home, NowPlaying, Album, Artist, Playlist, Settings, Download
 }
