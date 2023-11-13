@@ -26,6 +26,7 @@ import me.ppvan.moon.ui.view.ArtistView
 import me.ppvan.moon.ui.view.DownloadView
 import me.ppvan.moon.ui.view.HomeView
 import me.ppvan.moon.ui.view.SettingView
+import me.ppvan.moon.ui.view.nowplaying.NowPlayingQueue
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.ui.viewmodel.TrackViewModel
@@ -136,6 +137,17 @@ fun MoonApp(
         ) {
             NowPlayingView(context = context)
         }
+
+        composable(
+            Routes.NowPlayingQueue.name,
+            enterTransition = { SlideTransition.slideUp.enterTransition() },
+            exitTransition = { FadeTransition.exitTransition() },
+            popEnterTransition = { FadeTransition.enterTransition() },
+            popExitTransition = { SlideTransition.slideDown.exitTransition() },
+        ) {
+            NowPlayingQueue(context = context)
+        }
+
         composable(
             Routes.Artist.name,
             enterTransition = { SlideTransition.slideLeft.enterTransition() },
@@ -171,5 +183,5 @@ fun MoonApp(
 
 
 enum class Routes() {
-    Home, NowPlaying, Album, Artist, Playlist, Settings, Download
+    Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download
 }

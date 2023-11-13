@@ -61,6 +61,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import me.ppvan.moon.R
 import me.ppvan.moon.data.model.Track
+import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.viewmodel.PlaybackState
@@ -96,7 +97,7 @@ fun NowPlayingView(
             onNextClick = { player.next() },
             onFavouriteClick = {  },
             onShuffleClick = { player.shuffle() },
-            onPlayQueueClick = {  },
+            onPlayQueueClick = { context.navigator.navigate(Routes.NowPlayingQueue.name) },
             onPlayPauseClick = { player.playPause() },
             onPreviousClick = { player.previous() },
             onRepeatModeClick = { player.switchRepeatMode() }
@@ -184,7 +185,7 @@ fun NowPlayingBottomBar(
             horizontalArrangement = Arrangement.SpaceBetween
 
         ) {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { onPlayQueueClick() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.QueueMusic,
                     contentDescription = "Icons.Outlined.QueueMusic"
