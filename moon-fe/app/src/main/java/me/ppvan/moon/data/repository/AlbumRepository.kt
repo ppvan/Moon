@@ -4,7 +4,6 @@ import android.content.ContentUris
 import android.content.Context
 import android.provider.MediaStore
 import dagger.hilt.android.qualifiers.ApplicationContext
-
 import me.ppvan.moon.data.model.Album
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.ViewContext
@@ -13,12 +12,9 @@ import javax.inject.Inject
 class AlbumRepository @Inject constructor(@ApplicationContext val context: Context){
     private var _all = emptyList<Album>()
 
-    init {
-        _all = fetchAlbumList()
-    }
 
     fun findAll(): List<Album> {
-        return _all
+        return fetchAlbumList()
     }
 
     fun invalidateCache() {

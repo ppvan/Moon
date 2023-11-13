@@ -63,7 +63,7 @@ fun NowPlayingView(
     context: ViewContext
 ) {
 
-//    val selectedTrack by viewModel?.currentPlayingTrack.collectAsState()
+//    val playbackState by player.playbackState.collectAsState()
 
 
     Column(
@@ -192,7 +192,8 @@ fun NowPlayingBottomBar() {
 
             Box(
                 contentAlignment = Alignment.Center,
-                modifier = Modifier.size(64.dp)
+                modifier = Modifier
+                    .size(64.dp)
                     .clip(shape = CircleShape)
                     .background(MaterialTheme.colorScheme.primaryContainer)
                     .clickable { /*TODO*/ }

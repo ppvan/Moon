@@ -58,6 +58,8 @@ class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.L
         }
     }
 
+
+
     /**
      * Set a custom player.
      * This method exists to set a MediaController to connect with MoonMediaService
