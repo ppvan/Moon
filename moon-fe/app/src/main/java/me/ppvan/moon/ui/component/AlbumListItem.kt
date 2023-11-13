@@ -49,7 +49,7 @@ import me.ppvan.moon.ui.activity.ViewContext
 fun AlbumTile(album: Album , context: ViewContext, onClick: () -> Unit) {
     SquareGrooveTile(
         image = ImageRequest.Builder(LocalContext.current)
-            .data(data = album.id)
+            .data(data = album.thumbnailUri)
             .error(R.drawable.thumbnail)
             .crossfade(true)
             .build(),

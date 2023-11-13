@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.ppvan.moon.services.MoonMediaService
 import me.ppvan.moon.services.PermissionsManager
+import me.ppvan.moon.ui.Nav.graphs.AlbumGraph
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.ArtistView
 import me.ppvan.moon.ui.view.DownloadView
@@ -32,6 +33,7 @@ import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.ui.viewmodel.TrackViewModel
 import me.ppvan.moon.ui.viewmodel.YTViewModel
 import me.ppvan.moon.utils.DownloadUtils
+
 import me.ppvan.moon.utils.FadeTransition
 import me.ppvan.moon.utils.ScaleTransition
 import me.ppvan.moon.utils.SlideTransition
@@ -76,7 +78,6 @@ class MainActivity : ComponentActivity() {
                         albumViewModel = albumViewModel,
                     )
                     
-//                    Text(text = "Hello")
                 }
 
             }
@@ -122,6 +123,7 @@ fun MoonApp(
     )
 
     NavHost(navController = navController, startDestination = Routes.Home.name) {
+        AlbumGraph(context)
         composable(
             Routes.Home.name,
             enterTransition = { FadeTransition.enterTransition() }
@@ -185,3 +187,4 @@ fun MoonApp(
 enum class Routes() {
     Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download
 }
+

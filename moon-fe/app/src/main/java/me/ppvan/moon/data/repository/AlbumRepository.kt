@@ -44,14 +44,20 @@ class AlbumRepository @Inject constructor(@ApplicationContext val context: Conte
             val artistColumn = it.getColumnIndex(MediaStore.Audio.Albums.ARTIST)
             val numberOfSongsColumn = it.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS)
 
+
             it.moveToFirst()
             while (!it.isAfterLast) {
                 val albumId = it.getLong(albumIdColumn)
                 val albumName = it.getString(albumNameColumn)
                 val artist = it.getString(artistColumn)
                 val numberOfSongs = it.getInt(numberOfSongsColumn)
+                val albumArt = ContentUris.withAppendedId(
+                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                    albumId
+                )
 
-                val album = Album(albumId, albumName, artist, numberOfSongs)
+                val album = Album(albumId, albumName, artist, numberOfSongs, albumArt.toString())
+
                 albumList.add(album)
 
                 it.moveToNext()
