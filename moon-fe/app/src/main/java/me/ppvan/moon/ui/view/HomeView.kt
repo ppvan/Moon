@@ -155,7 +155,8 @@ fun HomeView(
                         BottomPlayer(
                             playbackState = playbackState,
                             onPausePlayClick = { player.playPause() },
-                            onNextClick = { player.next() }
+                            onNextClick = { player.next() },
+                            onClick = { context.navigator.navigate(Routes.NowPlaying.name) }
                         )
                     }
                 }

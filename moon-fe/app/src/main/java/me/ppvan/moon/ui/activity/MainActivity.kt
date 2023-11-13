@@ -107,7 +107,7 @@ fun MoonApp(activity: Activity, navController: NavHostController = rememberNavCo
             popEnterTransition = { FadeTransition.enterTransition() },
             popExitTransition = { SlideTransition.slideDown.exitTransition() },
         ) {
-            NowPlayingView(context = context)
+            NowPlayingView(context = context, )
         }
         composable(
             Routes.Artist.name,
