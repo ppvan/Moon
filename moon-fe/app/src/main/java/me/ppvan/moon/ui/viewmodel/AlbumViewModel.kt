@@ -22,6 +22,7 @@ class AlbumViewModel @Inject constructor(
     val player: MoonPlayer,
     permissionsManager: PermissionsManager,
 ) : ViewModel() {
+    private val _albums = MutableStateFlow(listOf<Album>())
 
     val allAlbums: List<Album>
         get() = repository.findAll()
