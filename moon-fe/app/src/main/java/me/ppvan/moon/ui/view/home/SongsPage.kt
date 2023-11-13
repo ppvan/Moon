@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -21,6 +23,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,7 +43,7 @@ import me.ppvan.moon.ui.viewmodel.TrackViewModel
 
 @Composable
 fun SongsPage(trackViewModel: TrackViewModel) {
-    val allTracks = trackViewModel.allTracks
+    val allTracks by trackViewModel.allTracks.collectAsState()
     val player: MoonPlayer = trackViewModel.player
 
     Surface(
@@ -60,10 +64,10 @@ fun SongList(
     onItemClick: (item: Track) -> Unit = {}
 
 ) {
-    Column(
+    LazyColumn(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        for (song in songs) {
+        items(songs) {song ->
             SongListItem(
                 Modifier.fillMaxWidth(),
                 track = song,

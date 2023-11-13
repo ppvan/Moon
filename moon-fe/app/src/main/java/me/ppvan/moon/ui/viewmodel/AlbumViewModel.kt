@@ -2,7 +2,13 @@ package me.ppvan.moon.ui.viewmodel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import me.ppvan.moon.data.model.Album
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.data.repository.AlbumRepository
@@ -24,6 +30,10 @@ class AlbumViewModel @Inject constructor(
         permissionsManager.onUpdate.subscribe {
             when (it) {
                 PermissionEvents.MEDIA_PERMISSION_GRANTED -> repository.invalidateCache()
+            }
+
+            viewModelScope.launch(Dispatchers.IO) {
+                _albums.update { repository.findAll() }
             }
         }
     }
