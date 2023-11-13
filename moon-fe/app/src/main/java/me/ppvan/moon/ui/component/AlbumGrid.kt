@@ -8,13 +8,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import me.ppvan.moon.data.model.Album
 import me.ppvan.moon.data.model.Track
+import me.ppvan.moon.ui.activity.ViewContext
 
 @Composable
 fun AlbumGrid(
+    context: ViewContext,
     albumList: List<Album> = List(10) { Album.DEFAULT },
 ){
-
-
     when {
         albumList.isEmpty() -> IconTextBody(
             icon = { modifier ->
@@ -38,7 +38,7 @@ fun AlbumGrid(
 //                context.symphony.groove.album.get(albumId)?.let { album ->
 //                    AlbumTile(context, album)
 //                }
-                Album-> AlbumTile(Album)
+                album-> AlbumTile(album, context) { context.navigator.navigate("album_page/${album.id}") }
             }
         }
     }
