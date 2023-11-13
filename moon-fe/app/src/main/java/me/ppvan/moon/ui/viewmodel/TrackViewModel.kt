@@ -30,7 +30,7 @@ class TrackViewModel @Inject constructor(
 //        observePlayerState()
 
         viewModelScope.launch(Dispatchers.IO) {
-            _tracks.update { repository.findAll().subList(0, 1) }
+            _tracks.update { repository.findAll() }
         }
 
         // Load new track if we has storage permission

@@ -13,6 +13,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import me.ppvan.moon.data.model.Track
@@ -29,7 +30,16 @@ class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.L
      * A state flow that emits the current playback state of the player.
      */
     private val _playerState = MutableStateFlow(PlayerState.STATE_IDLE)
-    val playerState = _playerState.asStateFlow()
+    private val playerState = _playerState.asStateFlow()
+
+
+    private val _repeatMode = MutableStateFlow(RepeatMode.OFF)
+    val repeatMode = _repeatMode.asStateFlow()
+
+    private val _shuffle = MutableStateFlow(false)
+    val shuffle = _shuffle.asStateFlow()
+
+
 
     /**
      * Current player position and duration.
@@ -118,6 +128,46 @@ class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.L
         val oldPlayBack = playbackState.value
         _playbackState.tryEmit(oldPlayBack.copy(track = _tracks[currentIndex]))
         player.seekToNextMediaItem()
+    }
+
+    fun previous() {
+        if (currentIndex <= 0) {
+            return
+        }
+
+        currentIndex -= 1
+        val oldPlayBack = playbackState.value
+        _playbackState.tryEmit(oldPlayBack.copy(track = _tracks[currentIndex]))
+        player.seekToPreviousMediaItem()
+    }
+
+    fun seek(position: Long) {
+        val playbackState = _playbackState.value
+        val updated = playbackState.copy(
+            position = position
+        )
+
+        _playbackState.update { updated }
+        player.seekTo(position)
+    }
+
+    fun switchRepeatMode() {
+        val oldPlayBack = _playbackState.value
+
+        val newMode = when (oldPlayBack.repeatMode) {
+            RepeatMode.OFF -> RepeatMode.ALL
+            RepeatMode.ONE -> RepeatMode.OFF
+            RepeatMode.ALL -> RepeatMode.ONE
+        }
+
+        _playbackState.update { oldPlayBack.copy(repeatMode = newMode) }
+    }
+
+    fun shuffle() {
+        val oldPlayBack = _playbackState.value
+        val newShuffle = !oldPlayBack.shuffleMode
+
+        _playbackState.update { oldPlayBack.copy(shuffleMode = newShuffle) }
     }
 
     /**
@@ -270,12 +320,13 @@ data class PlaybackState(
     val state: PlayerState,
     val position: Long,
     val duration: Long,
+    val shuffleMode: Boolean = false,
+    val repeatMode: RepeatMode = RepeatMode.OFF
 ) {
     val progress: Float
         get() = if (duration != 0L)
             position.toFloat() / duration
         else 0.0f
-
     companion object {
         val DEFAULT = PlaybackState(
             track = Track.DEFAULT,
@@ -284,5 +335,10 @@ data class PlaybackState(
             state = PlayerState.STATE_IDLE
         )
     }
+}
 
+enum class RepeatMode(val id: Int) {
+    OFF(0),
+    ONE(1),
+    ALL(2);
 }
