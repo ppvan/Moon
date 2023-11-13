@@ -1,8 +1,6 @@
 package me.ppvan.moon.ui.view
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.SharedPreferences
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.togetherWith
@@ -32,7 +30,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -40,14 +37,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.core.content.edit
-import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.CenterTopAppBar
 import me.ppvan.moon.ui.component.CenterTopAppBarAction
+import me.ppvan.moon.ui.view.home.AlbumsPage
 import me.ppvan.moon.ui.view.home.ArtistsPage
 import me.ppvan.moon.ui.view.home.BottomPlayer
 import me.ppvan.moon.ui.view.home.PlaylistPage
@@ -64,6 +59,7 @@ fun HomeView(
     context: ViewContext,
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(MoonPages.Song) }
+    val trackViewModel = context.trackViewModel
     val player = trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
     val bottomPlayerVisible = playbackState.track != Track.DEFAULT
@@ -183,8 +179,8 @@ fun HomeView(
         ) { page ->
             when (page) {
                 MoonPages.Song -> SongsPage(trackViewModel)
-                MoonPages.Album -> AlbumsPage(context, albumViewModel)
-                MoonPages.Search -> SearchPage(ytViewModel)
+                MoonPages.Album -> AlbumsPage(context)
+                MoonPages.Search -> SearchPage(context.ytViewModel)
                 MoonPages.Artist -> ArtistsPage()
                 MoonPages.Playlist -> PlaylistPage()
 

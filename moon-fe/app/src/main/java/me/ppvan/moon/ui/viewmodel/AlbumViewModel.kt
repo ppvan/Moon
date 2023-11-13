@@ -3,6 +3,7 @@ package me.ppvan.moon.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import me.ppvan.moon.data.model.Album
 import me.ppvan.moon.data.model.Track
@@ -41,6 +42,6 @@ class AlbumViewModel @Inject constructor(
     }
 
     fun getAlbumById(albumId: Long): Album? {
-        return repository.getAlbumById(albumId);
+        return repository.getAlbumById(albumId)
     }
 }
