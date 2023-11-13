@@ -1,7 +1,6 @@
 package me.ppvan.moon.ui.Nav.graph
 
 import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
@@ -22,7 +21,7 @@ fun NavGraphBuilder.AlbumGraph(context: ViewContext){
                 context.navigator.getBackStackEntry(HomeNavGraph.root.route)
             }
 
-            AlbumsPage(context = context, albumViewModel = hiltViewModel())
+            AlbumsPage(context = context)
         }
 
         composable(
