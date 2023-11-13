@@ -7,16 +7,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.AlbumGrid
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 
 @Composable
-fun AlbumsPage(albumViewModel: AlbumViewModel) {
-    val allAlbums by albumViewModel.allAlbums.collectAsState()
+fun AlbumsPage(context: ViewContext, albumViewModel: AlbumViewModel) {
+    val allAlbums = albumViewModel.allAlbums
     Surface(
         modifier = Modifier
             .fillMaxSize(), color = MaterialTheme.colorScheme.surface
     ){
-        AlbumGrid(allAlbums)
+        AlbumGrid(context, allAlbums)
     }
 }

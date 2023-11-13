@@ -46,7 +46,7 @@ import me.ppvan.moon.data.model.Album
 import me.ppvan.moon.ui.activity.ViewContext
 
 @Composable
-fun AlbumTile(album: Album) {
+fun AlbumTile(album: Album , context: ViewContext, onClick: () -> Unit) {
     SquareGrooveTile(
         image = ImageRequest.Builder(LocalContext.current)
             .data(data = album.id)
@@ -85,7 +85,8 @@ fun AlbumTile(album: Album) {
 //            )
         },
         onClick = {
-//            context.navController.navigate(RoutesBuilder.buildAlbumRoute(album.id))
+            onClick();
+
         }
     )
 }
