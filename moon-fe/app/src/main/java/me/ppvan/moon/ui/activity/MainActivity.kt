@@ -21,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.ppvan.moon.services.MoonMediaService
 import me.ppvan.moon.services.PermissionsManager
+import me.ppvan.moon.ui.Nav.graphs.AlbumGraph
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.AlbumView
 import me.ppvan.moon.ui.view.ArtistView
@@ -28,8 +29,12 @@ import me.ppvan.moon.ui.view.DownloadView
 import me.ppvan.moon.ui.view.HomeView
 import me.ppvan.moon.ui.view.SettingView
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
+import me.ppvan.moon.ui.viewmodel.AlbumViewModel
+import me.ppvan.moon.ui.viewmodel.YoutubeViewModel
+
 import me.ppvan.moon.ui.viewmodel.YTViewModel
 import me.ppvan.moon.utils.DownloadUtils
+
 import me.ppvan.moon.utils.FadeTransition
 import me.ppvan.moon.utils.ScaleTransition
 import me.ppvan.moon.utils.SlideTransition
@@ -60,10 +65,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-//                    SearchView(YTViewModel)
-                    MoonApp(activity = this)
-                    
-//                    Text(text = "Hello")
+                  MoonApp(activity = this)
                 }
 
             }
@@ -85,7 +87,7 @@ class MainActivity : ComponentActivity() {
 
 data class ViewContext(
     val navigator: NavHostController,
-    val activity: Activity
+    val activity: Activity,
 )
 
 @Composable
@@ -94,6 +96,7 @@ fun MoonApp(activity: Activity, navController: NavHostController = rememberNavCo
     val context = ViewContext(navigator = navController, activity = activity)
 
     NavHost(navController = navController, startDestination = Routes.Home.name) {
+        AlbumGraph(context)
         composable(
             Routes.Home.name,
             enterTransition = { FadeTransition.enterTransition() }
@@ -116,13 +119,7 @@ fun MoonApp(activity: Activity, navController: NavHostController = rememberNavCo
         ) {
             ArtistView(context)
         }
-        composable(
-            Routes.Album.name,
-            enterTransition = { SlideTransition.slideLeft.enterTransition() },
-            exitTransition = { FadeTransition.exitTransition() },
-        ) {
-            AlbumView(context)
-        }
+
 
         composable(
             Routes.Settings.name,
