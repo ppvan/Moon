@@ -26,6 +26,7 @@ import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import me.ppvan.moon.services.MoonMediaService
 import me.ppvan.moon.services.PermissionsManager
+import me.ppvan.moon.ui.Nav.graphs.AlbumGraph
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.AlbumView
 import me.ppvan.moon.ui.view.ArtistView
@@ -33,6 +34,7 @@ import me.ppvan.moon.ui.view.HomeView
 import me.ppvan.moon.ui.view.SearchView
 import me.ppvan.moon.ui.view.SettingView
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
+import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.ui.viewmodel.YoutubeViewModel
 import me.ppvan.moon.utils.FadeTransition
 import me.ppvan.moon.utils.ScaleTransition
@@ -63,7 +65,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    SearchView(youtubeViewModel)
+                    MoonApp(activity = this)
                 }
 
             }
@@ -79,7 +81,7 @@ class MainActivity : ComponentActivity() {
 
 data class ViewContext(
     val navigator: NavHostController,
-    val activity: Activity
+    val activity: Activity,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,6 +114,7 @@ fun MoonApp(activity: Activity, navController: NavHostController = rememberNavCo
     val context = ViewContext(navigator = navController, activity = activity)
 
     NavHost(navController = navController, startDestination = Routes.Home.name) {
+        AlbumGraph(context)
         composable(
             Routes.Home.name,
             enterTransition = { FadeTransition.enterTransition() }
@@ -134,13 +137,7 @@ fun MoonApp(activity: Activity, navController: NavHostController = rememberNavCo
         ) {
             ArtistView(context)
         }
-        composable(
-            Routes.Album.name,
-            enterTransition = { SlideTransition.slideLeft.enterTransition() },
-            exitTransition = { FadeTransition.exitTransition() },
-        ) {
-            AlbumView(context)
-        }
+
 
         composable(
             Routes.Settings.name,
@@ -156,3 +153,5 @@ fun MoonApp(activity: Activity, navController: NavHostController = rememberNavCo
 enum class Routes() {
     Home, NowPlaying, Album, Artist, Playlist, Settings
 }
+
+
