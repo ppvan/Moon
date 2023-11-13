@@ -22,12 +22,13 @@ import kotlinx.coroutines.launch
 import me.ppvan.moon.services.MoonMediaService
 import me.ppvan.moon.services.PermissionsManager
 import me.ppvan.moon.ui.theme.MoonTheme
-import me.ppvan.moon.ui.view.AlbumView
 import me.ppvan.moon.ui.view.ArtistView
 import me.ppvan.moon.ui.view.DownloadView
 import me.ppvan.moon.ui.view.HomeView
 import me.ppvan.moon.ui.view.SettingView
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
+import me.ppvan.moon.ui.viewmodel.AlbumViewModel
+import me.ppvan.moon.ui.viewmodel.TrackViewModel
 import me.ppvan.moon.ui.viewmodel.YTViewModel
 import me.ppvan.moon.utils.DownloadUtils
 import me.ppvan.moon.utils.FadeTransition
@@ -45,6 +46,12 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var ytViewModel: YTViewModel
 
+    @Inject
+    lateinit var trackViewModel: TrackViewModel
+
+    @Inject
+    lateinit var albumViewModel: AlbumViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -61,7 +68,12 @@ class MainActivity : ComponentActivity() {
                 ) {
 
 //                    SearchView(YTViewModel)
-                    MoonApp(activity = this)
+                    MoonApp(
+                        activity = this,
+                        ytViewModel = ytViewModel,
+                        trackViewModel = trackViewModel,
+                        albumViewModel = albumViewModel,
+                    )
                     
 //                    Text(text = "Hello")
                 }
@@ -85,13 +97,28 @@ class MainActivity : ComponentActivity() {
 
 data class ViewContext(
     val navigator: NavHostController,
-    val activity: Activity
+    val activity: Activity,
+    val ytViewModel: YTViewModel,
+    val trackViewModel: TrackViewModel,
+    val albumViewModel: AlbumViewModel
 )
 
 @Composable
-fun MoonApp(activity: Activity, navController: NavHostController = rememberNavController()) {
+fun MoonApp(
+    activity: Activity,
+    ytViewModel: YTViewModel,
+    trackViewModel: TrackViewModel,
+    albumViewModel: AlbumViewModel,
+    navController: NavHostController = rememberNavController()
+) {
 
-    val context = ViewContext(navigator = navController, activity = activity)
+    val context = ViewContext(
+        navigator = navController,
+        activity = activity,
+        ytViewModel = ytViewModel,
+        trackViewModel = trackViewModel,
+        albumViewModel = albumViewModel,
+    )
 
     NavHost(navController = navController, startDestination = Routes.Home.name) {
         composable(
@@ -107,7 +134,7 @@ fun MoonApp(activity: Activity, navController: NavHostController = rememberNavCo
             popEnterTransition = { FadeTransition.enterTransition() },
             popExitTransition = { SlideTransition.slideDown.exitTransition() },
         ) {
-            NowPlayingView(context = context, )
+            NowPlayingView(context = context)
         }
         composable(
             Routes.Artist.name,
@@ -121,7 +148,7 @@ fun MoonApp(activity: Activity, navController: NavHostController = rememberNavCo
             enterTransition = { SlideTransition.slideLeft.enterTransition() },
             exitTransition = { FadeTransition.exitTransition() },
         ) {
-            AlbumView(context)
+//            AlbumView(context)
         }
 
         composable(

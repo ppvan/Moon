@@ -2,7 +2,6 @@ package me.ppvan.moon.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,8 +12,9 @@ import me.ppvan.moon.data.repository.TrackRepository
 import me.ppvan.moon.services.PermissionEvents
 import me.ppvan.moon.services.PermissionsManager
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@HiltViewModel
+@Singleton
 class TrackViewModel @Inject constructor(
     private val repository: TrackRepository,
     val player: MoonPlayer,
@@ -30,7 +30,7 @@ class TrackViewModel @Inject constructor(
 //        observePlayerState()
 
         viewModelScope.launch(Dispatchers.IO) {
-            _tracks.update { repository.findAll() }
+            _tracks.update { repository.findAll().subList(0, 1) }
         }
 
         // Load new track if we has storage permission

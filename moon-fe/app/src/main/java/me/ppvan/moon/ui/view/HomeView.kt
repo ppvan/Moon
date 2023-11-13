@@ -37,21 +37,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.CenterTopAppBar
 import me.ppvan.moon.ui.component.CenterTopAppBarAction
-import me.ppvan.moon.ui.view.home.AlbumsPage
 import me.ppvan.moon.ui.view.home.ArtistsPage
 import me.ppvan.moon.ui.view.home.BottomPlayer
 import me.ppvan.moon.ui.view.home.PlaylistPage
 import me.ppvan.moon.ui.view.home.SearchPage
 import me.ppvan.moon.ui.view.home.SongsPage
-import me.ppvan.moon.ui.viewmodel.AlbumViewModel
-import me.ppvan.moon.ui.viewmodel.TrackViewModel
-import me.ppvan.moon.ui.viewmodel.YTViewModel
 import me.ppvan.moon.utils.ScaleTransition
 import me.ppvan.moon.utils.SlideTransition
 
@@ -61,13 +56,9 @@ import me.ppvan.moon.utils.SlideTransition
 @Composable
 fun HomeView(
     context: ViewContext,
-    trackViewModel: TrackViewModel = hiltViewModel(),
-    albumViewModel: AlbumViewModel = hiltViewModel(),
-    ytViewModel: YTViewModel = hiltViewModel()
-
 ) {
     var selectedTab by remember { mutableStateOf(MoonPages.Song) }
-    val player = trackViewModel.player
+    val player = context.trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
     val bottomPlayerVisible = playbackState.track != Track.DEFAULT
 
@@ -185,9 +176,9 @@ fun HomeView(
             }
         ) { page ->
             when (page) {
-                MoonPages.Song -> SongsPage(trackViewModel)
-                MoonPages.Album -> AlbumsPage(albumViewModel)
-                MoonPages.Search -> SearchPage(ytViewModel)
+                MoonPages.Song -> SongsPage(context.trackViewModel)
+//                MoonPages.Album -> AlbumsPage(albumViewModel)
+                MoonPages.Search -> SearchPage(context.ytViewModel)
                 MoonPages.Artist -> ArtistsPage()
                 MoonPages.Playlist -> PlaylistPage()
 
