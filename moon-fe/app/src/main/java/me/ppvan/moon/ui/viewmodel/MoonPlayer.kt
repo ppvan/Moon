@@ -3,16 +3,23 @@ package me.ppvan.moon.ui.viewmodel
 import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import me.ppvan.moon.data.model.Track
@@ -29,7 +36,7 @@ class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.L
      * A state flow that emits the current playback state of the player.
      */
     private val _playerState = MutableStateFlow(PlayerState.STATE_IDLE)
-    val playerState = _playerState.asStateFlow()
+    private val playerState = _playerState.asStateFlow()
 
     /**
      * Current player position and duration.
@@ -37,8 +44,13 @@ class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.L
     private var _playbackState = MutableStateFlow(PlaybackState.DEFAULT)
     val playbackState = _playbackState.asStateFlow()
 
-    private var currentIndex = 0
-    private var _tracks = emptyList<Track>()
+    private var _currentTrack = MutableStateFlow(Track.DEFAULT)
+    val currentTrack = playbackState.map { it.track }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _currentTrack.value)
+
+    private var _currentQueue = MutableStateFlow(emptyList<Track>())
+    val currentQueue = playbackState.map { getShuffleQueue(it) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _currentQueue.value)
 
 
     /**
@@ -58,6 +70,20 @@ class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.L
         }
     }
 
+    private fun getShuffleQueue(playbackState: PlaybackState) : List<Track> {
+        val timeline = player.currentTimeline
+
+        val shuffledOrder = mutableListOf<Int>()
+        var index = timeline.getFirstWindowIndex(playbackState.shuffleMode)
+        while (index != C.INDEX_UNSET) {
+            shuffledOrder.add(index)
+            index = timeline.getNextWindowIndex(index, Player.REPEAT_MODE_OFF, playbackState.shuffleMode)
+        }
+
+        return shuffledOrder.map { i ->
+            Track.fromMediaItem(player.currentTimeline.getWindow(i, Timeline.Window()).mediaItem)
+        }
+    }
 
 
     /**
@@ -72,7 +98,8 @@ class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.L
     }
 
     fun load(tracks: List<Track>) {
-        _tracks = tracks.toList()
+//        _currentQueue.update { tracks }
+
         if (player.playbackState == Player.STATE_IDLE) player.prepare()
         player.setMediaItems(tracks.map {
             MediaItem.fromUri(it.contentUri)
@@ -94,30 +121,81 @@ class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.L
 
     fun preparePlay(track: Track, playWhenReady: Boolean = true) {
         if (player.playbackState == Player.STATE_IDLE) player.prepare()
+        val tracks = getShuffleQueue(playbackState.value)
 
-        val index = _tracks.indexOf(track).let {
-            if (it == -1) 0
-            else it
+        val index = tracks.indexOf(track)
+        if (index != -1) {
+            player.seekTo(index, 0)
+        } else {
+            player.seekTo(0, 0)
         }
-        currentIndex = index
-        player.seekTo(index, 0)
+
 
         player.playWhenReady = playWhenReady
-
-        val oldPlayBack = playbackState.value
-        _playbackState.tryEmit(oldPlayBack.copy(position = 0, duration = 0, track = _tracks[index]))
     }
 
     fun next() {
-        if (currentIndex >= _tracks.size - 1 || currentIndex < 0) {
-            Log.i("INFO", "Invalid index $currentIndex")
-            return
-        }
-//        emit signal to higher layer
-        currentIndex += 1
-        val oldPlayBack = playbackState.value
-        _playbackState.tryEmit(oldPlayBack.copy(track = _tracks[currentIndex]))
+//        val allTracks = _tracks.value
+//        val index = _currentIndex.value
+//
+//        if (index >= allTracks.size - 1 || index < 0) {
+//            Log.i("INFO", "Invalid index $index")
+//            return
+//        }
+////        emit signal to higher layer
+//        _currentIndex.update { index + 1 }
+
+//        val oldPlayBack = playbackState.value
+//        _playbackState.tryEmit(oldPlayBack.copy(track = allTracks[index + 1]))
         player.seekToNextMediaItem()
+    }
+
+    fun previous() {
+//        val allTracks = _tracks.value
+//        val index = _currentIndex.value
+//        if (index <= 0) {
+//            return
+//        }
+
+//        _currentIndex.update { index - 1 }
+
+//        val oldPlayBack = playbackState.value
+//        _playbackState.tryEmit(oldPlayBack.copy(track = allTracks[index - 1]))
+        player.seekToPreviousMediaItem()
+    }
+
+    fun seek(position: Long) {
+        val playbackState = _playbackState.value
+        val updated = playbackState.copy(
+            position = position
+        )
+
+        _playbackState.update { updated }
+        player.seekTo(position)
+    }
+
+    fun switchRepeatMode() {
+        val oldPlayBack = _playbackState.value
+
+        val newMode = when (oldPlayBack.repeatMode) {
+            RepeatMode.OFF -> RepeatMode.ALL
+            RepeatMode.ONE -> RepeatMode.OFF
+            RepeatMode.ALL -> RepeatMode.ONE
+        }
+
+        _playbackState.update { oldPlayBack.copy(repeatMode = newMode) }
+    }
+
+    fun shuffle() {
+        val oldPlayBack = _playbackState.value
+        val newShuffle = !oldPlayBack.shuffleMode
+
+        _playbackState.update { oldPlayBack.copy(shuffleMode = newShuffle) }
+        player.shuffleModeEnabled = newShuffle
+    }
+
+    fun clear() {
+
     }
 
     /**
@@ -145,9 +223,9 @@ class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.L
         player.playWhenReady = !player.isPlaying
     }
 
-    private suspend fun updateState(state: PlayerState) {
+    private fun updateState(state: PlayerState) {
         val updatedState = _playbackState.value.copy(state = state)
-        _playbackState.emit(updatedState)
+        _playbackState.update { updatedState }
 
         Log.i("INFO", state.name)
     }
@@ -189,6 +267,13 @@ class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.L
             _playerState.tryEmit(PlayerState.STATE_NEXT_TRACK)
             _playerState.tryEmit(PlayerState.STATE_PLAYING)
         }
+        if (mediaItem?.mediaMetadata == null) {
+            return
+        }
+
+        val track = Track.fromMediaItem(mediaItem)
+        val oldPlayback = _playbackState.value
+        _playbackState.tryEmit(oldPlayback.copy(track = track))
     }
 
 
@@ -270,12 +355,13 @@ data class PlaybackState(
     val state: PlayerState,
     val position: Long,
     val duration: Long,
+    val shuffleMode: Boolean = false,
+    val repeatMode: RepeatMode = RepeatMode.OFF
 ) {
     val progress: Float
         get() = if (duration != 0L)
             position.toFloat() / duration
         else 0.0f
-
     companion object {
         val DEFAULT = PlaybackState(
             track = Track.DEFAULT,
@@ -284,5 +370,10 @@ data class PlaybackState(
             state = PlayerState.STATE_IDLE
         )
     }
+}
 
+enum class RepeatMode(val id: Int) {
+    OFF(0),
+    ONE(1),
+    ALL(2);
 }

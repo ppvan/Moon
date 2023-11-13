@@ -48,15 +48,11 @@ import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.CenterTopAppBar
 import me.ppvan.moon.ui.component.CenterTopAppBarAction
-import me.ppvan.moon.ui.view.home.AlbumsPage
 import me.ppvan.moon.ui.view.home.ArtistsPage
 import me.ppvan.moon.ui.view.home.BottomPlayer
 import me.ppvan.moon.ui.view.home.PlaylistPage
 import me.ppvan.moon.ui.view.home.SearchPage
 import me.ppvan.moon.ui.view.home.SongsPage
-import me.ppvan.moon.ui.viewmodel.AlbumViewModel
-import me.ppvan.moon.ui.viewmodel.TrackViewModel
-import me.ppvan.moon.ui.viewmodel.YTViewModel
 import me.ppvan.moon.utils.ScaleTransition
 import me.ppvan.moon.utils.SlideTransition
 
@@ -66,10 +62,6 @@ import me.ppvan.moon.utils.SlideTransition
 @Composable
 fun HomeView(
     context: ViewContext,
-    trackViewModel: TrackViewModel = hiltViewModel(),
-    albumViewModel: AlbumViewModel = hiltViewModel(),
-    ytViewModel: YTViewModel = hiltViewModel()
-
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(MoonPages.Song) }
     val player = trackViewModel.player
