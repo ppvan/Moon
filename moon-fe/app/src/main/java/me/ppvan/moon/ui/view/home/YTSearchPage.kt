@@ -14,11 +14,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.SaveAlt
 import androidx.compose.material.icons.outlined.Search
@@ -31,6 +35,8 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -43,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -60,34 +67,10 @@ import me.ppvan.moon.utils.DownloadUtils
 @Composable
 fun SearchPage(viewModel: YTViewModel) {
 
-    val query by viewModel.searchQuery.collectAsState()
-    val recommendations by viewModel.recommendations.collectAsState()
-    val active by viewModel.active.collectAsState()
-//    val isRecommendationsLoading by viewModel.isRecommending.collectAsState()
     val resultItems by viewModel.searchResult.collectAsState()
 
+
     Column {
-        DockedSearchBar(
-            modifier = Modifier.fillMaxWidth(),
-            query = query,
-            onQueryChange = viewModel::onQueryChange,
-            onSearch = viewModel::onSearch,
-            active = active,
-            onActiveChange = viewModel::onActiveChange,
-            placeholder = {
-                Text(text = "Search music on Youtube")
-            },
-            leadingIcon = {
-                Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search Icon")
-            },
-            trailingIcon = {
-                IconButton(onClick = viewModel::onClose) {
-                    Icon(imageVector = Icons.Outlined.Close, contentDescription = "Close Icon")
-                }
-            }
-        ) {
-            RecommendationList(recommendations, viewModel::onSearch)
-        }
 
         Spacer(modifier = Modifier.height(16.dp))
         ResultList(resultItems = resultItems, onDownloadClick = {
@@ -97,6 +80,46 @@ fun SearchPage(viewModel: YTViewModel) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchBar(
+    query: String,
+    viewModel: YTViewModel,
+    active: Boolean,
+    recommendations: List<String>,
+    closeClick: () -> Unit,
+    ) {
+   Row(
+       modifier = Modifier
+       .fillMaxWidth()
+       .statusBarsPadding()
+       .padding(7.dp),
+       ){
+       IconButton(onClick = closeClick) {
+           Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "BackButton")
+       }
+       DockedSearchBar(
+           query = query,
+           onQueryChange = viewModel::onQueryChange,
+           onSearch = { viewModel.onSearch(query) },
+           active = active,
+           onActiveChange = viewModel::onActiveChange,
+           placeholder = {
+               Text(text = "Search music on Youtube")
+           },
+           leadingIcon = {
+               Icon(imageVector = Icons.Outlined.Search, contentDescription = "Search Icon")
+           },
+           trailingIcon = {
+               IconButton(onClick = viewModel::onClose) {
+                   Icon(imageVector = Icons.Outlined.Close, contentDescription = "Close Icon")
+               }
+           }
+       ) {
+           RecommendationList(recommendations, viewModel::onSearch)
+       }
+   }
+}
 
 @Composable
 fun ResultList(
