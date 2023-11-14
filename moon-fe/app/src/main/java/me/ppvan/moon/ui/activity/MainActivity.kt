@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import me.ppvan.moon.services.MoonMediaService
 import me.ppvan.moon.services.PermissionsManager
 import me.ppvan.moon.ui.Nav.graphs.AlbumGraph
+import me.ppvan.moon.ui.Nav.graphs.ArtistGraph
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.AlbumView
 import me.ppvan.moon.ui.view.ArtistView
@@ -112,13 +113,7 @@ fun MoonApp(activity: Activity, navController: NavHostController = rememberNavCo
         ) {
             NowPlayingView(context = context, )
         }
-        composable(
-            Routes.Artist.name,
-            enterTransition = { SlideTransition.slideLeft.enterTransition() },
-            exitTransition = { FadeTransition.exitTransition() },
-        ) {
-            ArtistView(context)
-        }
+        ArtistGraph(context)
 
 
         composable(

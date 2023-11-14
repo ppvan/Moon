@@ -18,7 +18,6 @@ sealed class AppNavGraph(
     object Home : AppNavGraph("home", Icons.Rounded.Home, "Home")
     object Album : AppNavGraph("album", Icons.Rounded.Search, "Explore")
     object Artist : AppNavGraph("artist", Icons.Rounded.Person, "Profile")
-
     object Playlist: AppNavGraph("playlist", Icons.Rounded.PlaylistAdd,"Album")
 }
 
@@ -41,5 +40,13 @@ object AlbumNavGraph {
     val album = NavGraphItem(
         "album_page/{albumId}",
         listOf(navArgument("albumId") { type = NavType.StringType })
+    )
+}
+
+object ArtistNavGraph {
+    val root = NavGraphItem("artist_page")
+    val artist = NavGraphItem(
+        "artist_page/{artistId}",
+        listOf(navArgument("artistId") { type = NavType.StringType })
     )
 }

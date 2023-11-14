@@ -55,6 +55,7 @@ import me.ppvan.moon.ui.view.home.PlaylistPage
 import me.ppvan.moon.ui.view.home.SearchPage
 import me.ppvan.moon.ui.view.home.SongsPage
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
+import me.ppvan.moon.ui.viewmodel.ArtistViewModel
 import me.ppvan.moon.ui.viewmodel.TrackViewModel
 import me.ppvan.moon.ui.viewmodel.YTViewModel
 import me.ppvan.moon.utils.ScaleTransition
@@ -68,9 +69,10 @@ fun HomeView(
     context: ViewContext,
     trackViewModel: TrackViewModel = hiltViewModel(),
     albumViewModel: AlbumViewModel = hiltViewModel(),
-    ytViewModel: YTViewModel = hiltViewModel()
+    ytViewModel: YTViewModel = hiltViewModel(),
+    artistViewModel: ArtistViewModel = hiltViewModel(),
 
-) {
+    ) {
     var selectedTab by rememberSaveable { mutableStateOf(MoonPages.Song) }
     val player = trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
@@ -193,7 +195,7 @@ fun HomeView(
                 MoonPages.Song -> SongsPage(trackViewModel)
                 MoonPages.Album -> AlbumsPage(context, albumViewModel)
                 MoonPages.Search -> SearchPage(ytViewModel)
-                MoonPages.Artist -> ArtistsPage()
+                MoonPages.Artist -> ArtistsPage(context, artistViewModel)
                 MoonPages.Playlist -> PlaylistPage()
 
                 else -> {
