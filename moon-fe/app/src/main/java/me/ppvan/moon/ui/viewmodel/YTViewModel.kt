@@ -44,6 +44,9 @@ class YTViewModel @Inject constructor() : ViewModel() {
     private val _query = MutableStateFlow("")
     val searchQuery = _query.asStateFlow()
 
+    private val _isDataLoaded = MutableStateFlow(true)
+    val isDataLoaded = _isDataLoaded.asStateFlow()
+
     private val _recommendations = MutableStateFlow(listOf<String>())
 
     @OptIn(FlowPreview::class)
@@ -108,7 +111,7 @@ class YTViewModel @Inject constructor() : ViewModel() {
     private suspend fun getMatchedSearchItem(query: String): List<ResultItem> {
 
 //        return emptyList()
-
+        _isDataLoaded.emit(false)
         val url = SEARCH_API + "search?q=${query}&filter=videos&region=vi"
         val parser: Parser = Parser.default()
 
@@ -144,6 +147,7 @@ class YTViewModel @Inject constructor() : ViewModel() {
             )
         }
 
+        _isDataLoaded.emit(true)
         return result
     }
 
@@ -187,6 +191,7 @@ data class ResultItem(
     val uploader: String,
     val duration: Long,
     val thumbnailUrl: String,
+    val isLoading: Boolean = true,
 
     val state: ResultItemState = ResultItemState.NONE
 )
