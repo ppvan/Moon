@@ -48,6 +48,7 @@ object DownloadUtils {
         val request = YoutubeDLRequest(url)
         request.addOption("-o", "${downloadDir}/%(title)s.%(ext)s")
         request.addOption("-x")
+        request.addOption("--audio-format", "mp3")
         request.addOption("--audio-quality", "0")
         request.addOption("--embed-metadata")
         request.addOption("--parse-metadata", "%(release_year,upload_date)s:%(meta_date)s")
