@@ -1,18 +1,26 @@
 package me.ppvan.moon.ui.view
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.Album
 import androidx.compose.material.icons.filled.AudioFile
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Pin
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Title
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,13 +35,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import me.ppvan.moon.R
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.ViewContext
-import me.ppvan.moon.ui.component.CenterTopAppBar
+import me.ppvan.moon.ui.component.CenterTopAppBarAction
 
 
 @Composable
@@ -53,7 +65,7 @@ fun TagEditView(context: ViewContext, track: Track = Track.DEFAULT) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            CenterTopAppBar(
+            CenterTopAppBarAction(
                 title = "Edit tags",
                 navigationIcon = {
                     IconButton(onClick = {
@@ -65,7 +77,11 @@ fun TagEditView(context: ViewContext, track: Track = Track.DEFAULT) {
                         )
                     }
                 },
-                menuItems = {}
+                actions = {
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(imageVector = Icons.Filled.Save, contentDescription = "Save")
+                    }
+                }
             )
 
         },
@@ -80,6 +96,9 @@ fun TagEditView(context: ViewContext, track: Track = Track.DEFAULT) {
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    CoverField("") {
+
+                    }
                     TagField(
                         modifier = fillWidth,
                         value = fileName,
@@ -215,9 +234,32 @@ fun TagField(
 
 @Composable
 fun CoverField(
-
+    contentUrl: String,
+    onClick: () -> Unit
 ) {
-//    Image(painter = painterResource(id = R.drawable.bocc), contentDescription = )
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .height(144.dp)
+                .aspectRatio(1f)
+                .padding(4.dp)
+                .clickable { onClick() },
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            Image(
+                modifier = Modifier
+                    .aspectRatio(1f)
+                    .clip(CircleShape),
+                painter = painterResource(id = R.drawable.bocchi),
+                contentDescription = "cover",
+                contentScale = ContentScale.Crop
+            )
+            Icon(imageVector = Icons.Filled.AddPhotoAlternate, contentDescription = null)
+        }
+    }
 }
 
 @Composable
