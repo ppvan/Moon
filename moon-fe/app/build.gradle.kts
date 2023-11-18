@@ -69,6 +69,9 @@ dependencies {
     val media3Version = "1.1.1"
     val materialVersion = "1.2.0-alpha10"
 
+    // ID3 Tagger
+    implementation("com.mpatric:mp3agic:0.9.1")
+
     // ExoPlayer
     implementation("androidx.media3:media3-exoplayer:$media3Version")
     implementation("androidx.media3:media3-session:$media3Version")

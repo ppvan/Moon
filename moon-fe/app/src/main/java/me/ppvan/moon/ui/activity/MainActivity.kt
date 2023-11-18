@@ -34,7 +34,7 @@ import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.ui.viewmodel.ArtistViewModel
 import me.ppvan.moon.ui.viewmodel.TrackViewModel
 import me.ppvan.moon.ui.viewmodel.YTViewModel
-import me.ppvan.moon.utils.DownloadUtils
+import me.ppvan.moon.utils.DownloadViewModel
 import me.ppvan.moon.utils.FadeTransition
 import me.ppvan.moon.utils.ScaleTransition
 import me.ppvan.moon.utils.SlideTransition
@@ -59,6 +59,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var artistViewModel: ArtistViewModel
 
+    @Inject
+    lateinit var downloadViewModel: DownloadViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -81,6 +84,7 @@ class MainActivity : ComponentActivity() {
                         trackViewModel = trackViewModel,
                         albumViewModel = albumViewModel,
                         artistViewModel = artistViewModel,
+                        downloadViewModel = downloadViewModel,
                     )
 
                 }
@@ -90,7 +94,6 @@ class MainActivity : ComponentActivity() {
 
         startPlayerService()
         permissionsManager.handle(this)
-        DownloadUtils.init(applicationContext)
     }
 
     private fun startPlayerService() {
@@ -109,6 +112,7 @@ data class ViewContext(
     val trackViewModel: TrackViewModel,
     val albumViewModel: AlbumViewModel,
     val artistViewModel: ArtistViewModel,
+    val downloadViewModel: DownloadViewModel,
 )
 
 @Composable
@@ -118,6 +122,7 @@ fun MoonApp(
     trackViewModel: TrackViewModel,
     albumViewModel: AlbumViewModel,
     artistViewModel: ArtistViewModel,
+    downloadViewModel: DownloadViewModel,
     navController: NavHostController = rememberNavController()
 ) {
 
@@ -127,10 +132,11 @@ fun MoonApp(
         ytViewModel = ytViewModel,
         trackViewModel = trackViewModel,
         albumViewModel = albumViewModel,
-        artistViewModel = artistViewModel
+        artistViewModel = artistViewModel,
+        downloadViewModel = downloadViewModel
     )
 
-    NavHost(navController = navController, startDestination = Routes.TagEdit.name) {
+    NavHost(navController = navController, startDestination = Routes.Home.name) {
         AlbumGraph(context)
         composable(
             Routes.Home.name,
