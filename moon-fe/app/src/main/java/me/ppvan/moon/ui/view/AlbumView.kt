@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
@@ -28,7 +29,10 @@ import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.view.home.BottomPlayer
+import me.ppvan.moon.ui.component.TopAppBarMinimalTitle
 import me.ppvan.moon.ui.view.home.SongList
+import me.ppvan.moon.ui.view.nowplaying.NowPlayingBottomBar
+import androidx.compose.ui.text.style.TextOverflow
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.utils.SlideTransition
 
@@ -57,7 +61,13 @@ fun AlbumView(context: ViewContext, albumId: Long) {
                     }
                 },
                 title = {
-                     Text("Album" + (album?.let { " - ${it.name}" } ?: ""),)
+                    TopAppBarMinimalTitle {
+                        Text(
+                            "Album" + (album?.let { " - ${it.name}" } ?: ""),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = Color.Transparent
@@ -86,7 +96,7 @@ fun AlbumView(context: ViewContext, albumId: Long) {
             AnimatedContent(
                 targetState = bottomPlayerVisible,
                 label = "player",
-//                modifier = Modifier.,
+//               modifier = Modifier.navigationBarsPadding(),
                 transitionSpec = {
                     SlideTransition.slideUp.enterTransition()
                         .togetherWith(SlideTransition.slideDown.exitTransition())

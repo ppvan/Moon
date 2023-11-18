@@ -46,8 +46,13 @@ import me.ppvan.moon.ui.view.home.AlbumsPage
 import me.ppvan.moon.ui.view.home.ArtistsPage
 import me.ppvan.moon.ui.view.home.BottomPlayer
 import me.ppvan.moon.ui.view.home.PlaylistPage
+import me.ppvan.moon.ui.view.home.SearchBar
 import me.ppvan.moon.ui.view.home.SearchPage
 import me.ppvan.moon.ui.view.home.SongsPage
+import me.ppvan.moon.ui.viewmodel.AlbumViewModel
+import me.ppvan.moon.ui.viewmodel.ArtistViewModel
+import me.ppvan.moon.ui.viewmodel.TrackViewModel
+import me.ppvan.moon.ui.viewmodel.YTViewModel
 import me.ppvan.moon.utils.ScaleTransition
 import me.ppvan.moon.utils.SlideTransition
 
@@ -63,6 +68,10 @@ fun HomeView(
     val player = trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
     val bottomPlayerVisible = playbackState.track != Track.DEFAULT
+    val query by  ytViewModel.searchQuery.collectAsState()
+    val recommendations by  ytViewModel.recommendations.collectAsState()
+    val active by  ytViewModel.active.collectAsState()
+    val resultItems by  ytViewModel.searchResult.collectAsState()
 
 
     Scaffold(
@@ -70,33 +79,42 @@ fun HomeView(
             Crossfade(targetState = selectedTab, label = "top-bar-page") { page ->
                 when (page) {
                     MoonPages.Search -> {
-                        CenterTopAppBarAction(
-                            title = page.label,
-                            navigationIcon = {
-
-                            },
-                            actions = {
-                                BadgedBox(
-                                    badge = {
-                                        Badge(
-                                            modifier = Modifier.offset(y=10.dp, x= (-8).dp),
-                                        ){
-                                            val badgeNumber = "8"
-                                            Text(
-                                                badgeNumber,
-                                                modifier = Modifier.semantics {
-                                                    contentDescription = "$badgeNumber new notifications"
-                                                }
-                                            )
+                        var isOpenSearchBar by remember { mutableStateOf(false) }
+                        if (!isOpenSearchBar) {
+                            CenterTopAppBarAction(
+                                title = page.label,
+                                navigationIcon = {
+                                    IconButton(onClick = {isOpenSearchBar = true }) {
+                                        Icon(imageVector = Icons.Default.Search, contentDescription = "OpenSearchBar")
+                                    }
+                                },
+                                actions = {
+                                    BadgedBox(
+                                        badge = {
+                                            Badge(
+                                                modifier = Modifier.offset(y=10.dp, x= (-8).dp),
+                                            ){
+                                                val badgeNumber = "8"
+                                                Text(
+                                                    badgeNumber,
+                                                    modifier = Modifier.semantics {
+                                                        contentDescription = "$badgeNumber new notifications"
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    ) {
+                                        IconButton(onClick = { context.navigator.navigate(route = Routes.Download.name) }) {
+                                            Icon(imageVector = Icons.Default.FileDownload, contentDescription = "FileDownload")
                                         }
                                     }
-                                ) {
-                                    IconButton(onClick = { context.navigator.navigate(route = Routes.Download.name) }) {
-                                        Icon(imageVector = Icons.Default.FileDownload, contentDescription = "FileDownload")
-                                    }
                                 }
+                            )
+                        } else {
+                            SearchBar(query = query, viewModel = ytViewModel, active = active, recommendations) {
+                                isOpenSearchBar = false
                             }
-                        )
+                        }
                     }
 
                     else -> {
@@ -181,7 +199,7 @@ fun HomeView(
                 MoonPages.Song -> SongsPage(trackViewModel)
                 MoonPages.Album -> AlbumsPage(context)
                 MoonPages.Search -> SearchPage(context.ytViewModel)
-                MoonPages.Artist -> ArtistsPage()
+                MoonPages.Artist -> ArtistsPage(context, artistViewModel)
                 MoonPages.Playlist -> PlaylistPage()
 
                 else -> {

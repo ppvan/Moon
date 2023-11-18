@@ -45,6 +45,7 @@ import me.ppvan.moon.R
 import me.ppvan.moon.data.model.Album
 import me.ppvan.moon.ui.activity.ViewContext
 
+
 @Composable
 fun AlbumTile(album: Album , context: ViewContext, onClick: () -> Unit) {
     SquareGrooveTile(

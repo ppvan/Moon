@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 import me.ppvan.moon.services.MoonMediaService
 import me.ppvan.moon.services.PermissionsManager
 import me.ppvan.moon.ui.Nav.graphs.AlbumGraph
+import me.ppvan.moon.ui.Nav.graphs.ArtistGraph
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.ArtistView
 import me.ppvan.moon.ui.view.DownloadView
@@ -77,7 +78,7 @@ class MainActivity : ComponentActivity() {
                         trackViewModel = trackViewModel,
                         albumViewModel = albumViewModel,
                     )
-                    
+
                 }
 
             }
@@ -149,21 +150,8 @@ fun MoonApp(
         ) {
             NowPlayingQueue(context = context)
         }
+        ArtistGraph(context)
 
-        composable(
-            Routes.Artist.name,
-            enterTransition = { SlideTransition.slideLeft.enterTransition() },
-            exitTransition = { FadeTransition.exitTransition() },
-        ) {
-            ArtistView(context)
-        }
-        composable(
-            Routes.Album.name,
-            enterTransition = { SlideTransition.slideLeft.enterTransition() },
-            exitTransition = { FadeTransition.exitTransition() },
-        ) {
-//            AlbumView(context)
-        }
 
         composable(
             Routes.Settings.name,
@@ -187,4 +175,3 @@ fun MoonApp(
 enum class Routes() {
     Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download
 }
-
