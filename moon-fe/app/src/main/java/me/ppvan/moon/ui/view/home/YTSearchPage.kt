@@ -57,6 +57,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import me.ppvan.moon.R
 import me.ppvan.moon.ui.component.LoadingShimmerEffect
+import me.ppvan.moon.ui.component.SpeechToTextButton
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.viewmodel.ResultItem
 import me.ppvan.moon.ui.viewmodel.ResultItemState
@@ -112,8 +113,16 @@ fun SearchBar(
 
            },
            trailingIcon = {
-               IconButton(onClick = viewModel::onClose) {
-                   Icon(imageVector = Icons.Outlined.Close, contentDescription = "Close Icon")
+               if (!active) {
+                   IconButton(onClick = viewModel::onClose) {
+                       Icon(imageVector = Icons.Outlined.Close, contentDescription = "Close Icon")
+                   }
+               }
+               else {
+                   SpeechToTextButton { spokenText ->
+                       viewModel.onQueryChange(spokenText)
+                       viewModel.onSearch(spokenText)
+                   }
                }
            }
        ) {
