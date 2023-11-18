@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -49,10 +50,6 @@ import me.ppvan.moon.ui.view.home.PlaylistPage
 import me.ppvan.moon.ui.view.home.SearchBar
 import me.ppvan.moon.ui.view.home.SearchPage
 import me.ppvan.moon.ui.view.home.SongsPage
-import me.ppvan.moon.ui.viewmodel.AlbumViewModel
-import me.ppvan.moon.ui.viewmodel.ArtistViewModel
-import me.ppvan.moon.ui.viewmodel.TrackViewModel
-import me.ppvan.moon.ui.viewmodel.YTViewModel
 import me.ppvan.moon.utils.ScaleTransition
 import me.ppvan.moon.utils.SlideTransition
 
@@ -65,6 +62,7 @@ fun HomeView(
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(MoonPages.Song) }
     val trackViewModel = context.trackViewModel
+    val ytViewModel = context.ytViewModel
     val player = trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
     val bottomPlayerVisible = playbackState.track != Track.DEFAULT
@@ -199,7 +197,7 @@ fun HomeView(
                 MoonPages.Song -> SongsPage(trackViewModel)
                 MoonPages.Album -> AlbumsPage(context)
                 MoonPages.Search -> SearchPage(context.ytViewModel)
-                MoonPages.Artist -> ArtistsPage(context, artistViewModel)
+                MoonPages.Artist -> ArtistsPage(context)
                 MoonPages.Playlist -> PlaylistPage()
 
                 else -> {

@@ -2,7 +2,6 @@ package me.ppvan.moon.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -14,8 +13,9 @@ import me.ppvan.moon.data.repository.ArtistRepository
 import me.ppvan.moon.services.PermissionEvents
 import me.ppvan.moon.services.PermissionsManager
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@HiltViewModel
+@Singleton
 class ArtistViewModel @Inject constructor(
     private val repository: ArtistRepository,
     val player: MoonPlayer,
