@@ -3,9 +3,14 @@ package me.ppvan.moon.ui.view
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -20,28 +25,30 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.hilt.navigation.compose.hiltViewModel
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
-import me.ppvan.moon.ui.component.TopAppBarMinimalTitle
 import me.ppvan.moon.ui.view.home.BottomPlayer
+import me.ppvan.moon.ui.component.TopAppBarMinimalTitle
 import me.ppvan.moon.ui.view.home.SongList
+import me.ppvan.moon.ui.view.nowplaying.NowPlayingBottomBar
+import androidx.compose.ui.text.style.TextOverflow
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
-import me.ppvan.moon.ui.viewmodel.MoonPlayer
-import me.ppvan.moon.ui.viewmodel.TrackViewModel
 import me.ppvan.moon.utils.SlideTransition
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlbumView(context: ViewContext,albumId: Long, albumViewModel: AlbumViewModel = hiltViewModel(), trackViewModel: TrackViewModel = hiltViewModel()) {
-    val allTracks = albumViewModel.getSongsByAlbumId(albumId);
-    val album = albumViewModel.getAlbumById(albumId);
-    val player: MoonPlayer = trackViewModel.player
+fun AlbumView(context: ViewContext, albumId: Long) {
+
+    val albumViewModel: AlbumViewModel = context.albumViewModel
+    val allTracks = albumViewModel.getSongsByAlbumId(albumId)
+    val album = albumViewModel.getAlbumById(albumId)
+    val player = context.trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
     val bottomPlayerVisible = playbackState.track != Track.DEFAULT
+
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -78,30 +85,37 @@ fun AlbumView(context: ViewContext,albumId: Long, albumViewModel: AlbumViewModel
             ) {
                     SongList(
                         allTracks,
-                    ){
-                        player.load(allTracks)
-                        player.preparePlay(it)
-                    }
-
+                        onItemClick = {
+                            player.load(allTracks)
+                            player.preparePlay(it)
+                        }
+                    )
             }
         },
         bottomBar = {
             AnimatedContent(
                 targetState = bottomPlayerVisible,
                 label = "player",
-                modifier = Modifier.navigationBarsPadding(),
+//               modifier = Modifier.navigationBarsPadding(),
                 transitionSpec = {
                     SlideTransition.slideUp.enterTransition()
                         .togetherWith(SlideTransition.slideDown.exitTransition())
                 }
             ) { visible ->
                 if (visible) {
-                    BottomPlayer(
-                        playbackState = playbackState,
-                        onPausePlayClick = { player.playPause() },
-                        onNextClick = { player.next() },
-                        onClick = { context.navigator.navigate(Routes.NowPlaying.name) }
-                    )
+                    Column {
+                        BottomPlayer(
+                            playbackState = playbackState,
+                            onPausePlayClick = { player.playPause() },
+                            onNextClick = { player.next() },
+                            onClick = { context.navigator.navigate(Routes.NowPlaying.name) }
+                        )
+                        Spacer(
+                            Modifier.windowInsetsBottomHeight(
+                                WindowInsets.systemBars
+                            )
+                        )
+                    }
                 }
             }
         }

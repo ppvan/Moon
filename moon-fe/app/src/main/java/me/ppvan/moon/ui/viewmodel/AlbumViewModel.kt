@@ -1,13 +1,9 @@
 package me.ppvan.moon.ui.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import me.ppvan.moon.data.model.Album
 import me.ppvan.moon.data.model.Track
@@ -15,8 +11,9 @@ import me.ppvan.moon.data.repository.AlbumRepository
 import me.ppvan.moon.services.PermissionEvents
 import me.ppvan.moon.services.PermissionsManager
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@HiltViewModel
+@Singleton
 class AlbumViewModel @Inject constructor(
     private val repository: AlbumRepository,
     val player: MoonPlayer,
@@ -34,7 +31,7 @@ class AlbumViewModel @Inject constructor(
             }
 
             viewModelScope.launch(Dispatchers.IO) {
-                _albums.update { repository.findAll() }
+//                _albums.update { repository.findAll() }
             }
         }
     }
@@ -45,6 +42,6 @@ class AlbumViewModel @Inject constructor(
     }
 
     fun getAlbumById(albumId: Long): Album? {
-        return repository.getAlbumById(albumId);
+        return repository.getAlbumById(albumId)
     }
 }
