@@ -27,6 +27,7 @@ import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.DownloadView
 import me.ppvan.moon.ui.view.HomeView
 import me.ppvan.moon.ui.view.SettingView
+import me.ppvan.moon.ui.view.TagEditView
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingQueue
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
@@ -129,7 +130,7 @@ fun MoonApp(
         artistViewModel = artistViewModel
     )
 
-    NavHost(navController = navController, startDestination = Routes.Home.name) {
+    NavHost(navController = navController, startDestination = Routes.TagEdit.name) {
         AlbumGraph(context)
         composable(
             Routes.Home.name,
@@ -174,10 +175,18 @@ fun MoonApp(
         ) {
             DownloadView(context)
         }
+
+        composable(
+            Routes.TagEdit.name,
+            enterTransition = { ScaleTransition.scaleDown.enterTransition() },
+            exitTransition = { ScaleTransition.scaleUp.exitTransition() },
+        ) {
+            TagEditView(context)
+        }
     }
 }
 
 
 enum class Routes() {
-    Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download
+    Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download, TagEdit
 }
