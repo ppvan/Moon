@@ -24,17 +24,16 @@ import me.ppvan.moon.services.PermissionsManager
 import me.ppvan.moon.ui.Nav.graphs.AlbumGraph
 import me.ppvan.moon.ui.Nav.graphs.ArtistGraph
 import me.ppvan.moon.ui.theme.MoonTheme
-import me.ppvan.moon.ui.view.ArtistView
 import me.ppvan.moon.ui.view.DownloadView
 import me.ppvan.moon.ui.view.HomeView
 import me.ppvan.moon.ui.view.SettingView
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingQueue
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
+import me.ppvan.moon.ui.viewmodel.ArtistViewModel
 import me.ppvan.moon.ui.viewmodel.TrackViewModel
 import me.ppvan.moon.ui.viewmodel.YTViewModel
 import me.ppvan.moon.utils.DownloadUtils
-
 import me.ppvan.moon.utils.FadeTransition
 import me.ppvan.moon.utils.ScaleTransition
 import me.ppvan.moon.utils.SlideTransition
@@ -55,6 +54,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var albumViewModel: AlbumViewModel
+
+    @Inject
+    lateinit var artistViewModel: ArtistViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +79,7 @@ class MainActivity : ComponentActivity() {
                         ytViewModel = ytViewModel,
                         trackViewModel = trackViewModel,
                         albumViewModel = albumViewModel,
+                        artistViewModel = artistViewModel,
                     )
 
                 }
@@ -103,7 +106,8 @@ data class ViewContext(
     val activity: Activity,
     val ytViewModel: YTViewModel,
     val trackViewModel: TrackViewModel,
-    val albumViewModel: AlbumViewModel
+    val albumViewModel: AlbumViewModel,
+    val artistViewModel: ArtistViewModel,
 )
 
 @Composable
@@ -112,6 +116,7 @@ fun MoonApp(
     ytViewModel: YTViewModel,
     trackViewModel: TrackViewModel,
     albumViewModel: AlbumViewModel,
+    artistViewModel: ArtistViewModel,
     navController: NavHostController = rememberNavController()
 ) {
 
@@ -121,6 +126,7 @@ fun MoonApp(
         ytViewModel = ytViewModel,
         trackViewModel = trackViewModel,
         albumViewModel = albumViewModel,
+        artistViewModel = artistViewModel
     )
 
     NavHost(navController = navController, startDestination = Routes.Home.name) {
