@@ -49,8 +49,9 @@ import me.ppvan.moon.ui.component.CenterTopAppBarAction
 
 
 @Composable
-fun TagEditView(context: ViewContext, track: Track = Track.DEFAULT) {
+fun TagEditView(context: ViewContext, mediaId: String) {
 
+    val track = Track.DEFAULT
     var fileName by remember { mutableStateOf("") }
     var artist by remember { mutableStateOf(track.artist) }
     var musicTitle by remember { mutableStateOf(track.title) }
@@ -96,6 +97,7 @@ fun TagEditView(context: ViewContext, track: Track = Track.DEFAULT) {
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
+                    Text(text = mediaId)
                     CoverField("") {
 
                     }

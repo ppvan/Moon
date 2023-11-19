@@ -194,7 +194,7 @@ fun HomeView(
             }
         ) { page ->
             when (page) {
-                MoonPages.Song -> SongsPage(trackViewModel)
+                MoonPages.Song -> SongsPage(context)
                 MoonPages.Album -> AlbumsPage(context)
                 MoonPages.Search -> SearchPage(context)
                 MoonPages.Artist -> ArtistsPage(context)

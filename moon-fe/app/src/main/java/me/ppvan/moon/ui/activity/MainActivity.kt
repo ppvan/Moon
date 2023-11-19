@@ -183,11 +183,11 @@ fun MoonApp(
         }
 
         composable(
-            Routes.TagEdit.name,
+            "${Routes.TagEdit.name}/{mediaId}",
             enterTransition = { ScaleTransition.scaleDown.enterTransition() },
             exitTransition = { ScaleTransition.scaleUp.exitTransition() },
         ) {
-            TagEditView(context)
+            it.arguments?.let { it1 -> TagEditView(context, it1.getString("mediaId", "")) }
         }
     }
 }
