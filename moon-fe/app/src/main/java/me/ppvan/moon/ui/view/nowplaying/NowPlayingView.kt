@@ -43,12 +43,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -59,6 +64,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import kotlinx.coroutines.delay
 import me.ppvan.moon.R
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
@@ -77,7 +83,8 @@ fun NowPlayingView(
 
     val player = context.trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
-
+    val currentTime = playbackState.position
+    val isPlaying = playbackState.state == PlayerState.STATE_PLAYING
 
     Column(
         Modifier.fillMaxSize(),
@@ -88,7 +95,7 @@ fun NowPlayingView(
             context.navigator.popBackStack()
         })
 
-        NowPlayingThumbnail(playbackState.track)
+        NowPlayingThumbnail(playbackState.track,currentTime, isPlaying)
 //        Text(text = playbackState.toString())
 
         NowPlayingBottomBar(
@@ -369,7 +376,9 @@ fun NowPlayingAppBar(
 
 @Composable
 fun NowPlayingThumbnail(
-    currentTrack: Track
+    currentTrack: Track,
+    currentTime: Long,
+    isPlaying: Boolean
 ) {
     Box(
         modifier = Modifier
@@ -377,13 +386,16 @@ fun NowPlayingThumbnail(
 //            .background(Brush.horizontalGradient(listOf(Color.Blue, Color.Green)))
             .padding(32.dp)
             .fillMaxWidth(),
+
         contentAlignment = Alignment.Center
     ) {
+        var rotationState by remember { mutableFloatStateOf(0f) }
         AsyncImage(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .clip(shape = RoundedCornerShape(8.dp)),
+                .rotate(rotationState)
+                .clip(CircleShape),
             model = ImageRequest.Builder(LocalContext.current)
                 .data(currentTrack.thumbnailUri)
                 .error(R.drawable.thumbnail)
@@ -393,6 +405,23 @@ fun NowPlayingThumbnail(
             contentDescription = "Music thumbnail",
             contentScale = ContentScale.Crop
         )
+        if (isPlaying){
+            LaunchedEffect(currentTime) {
+                val animationDuration = 1000
+                val targetRotation = 15f
+                val initialRotation = rotationState
+                val startTimeMillis = System.currentTimeMillis()
+
+                while (System.currentTimeMillis() - startTimeMillis < animationDuration) {
+                    val elapsedMillis = (System.currentTimeMillis() - startTimeMillis).toFloat()
+                    val progress = elapsedMillis / animationDuration
+                    rotationState = initialRotation + targetRotation * progress
+                    delay(11) // Đợi 16 milliseconds (tương đương với khoảng 60 fps) trước khi cập nhật giá trị tiếp theo
+                }
+
+                rotationState = initialRotation + targetRotation // Đảm bảo giá trị cuối cùng là giá trị cuối cùng của animation
+            }
+        }
 
     }
 }
