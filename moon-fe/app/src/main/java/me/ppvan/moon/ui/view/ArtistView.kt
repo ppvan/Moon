@@ -30,6 +30,7 @@ import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.TopAppBarMinimalTitle
 import me.ppvan.moon.ui.view.home.BottomPlayer
 import me.ppvan.moon.ui.view.home.SongList
+import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.ui.viewmodel.ArtistViewModel
 import me.ppvan.moon.ui.viewmodel.MoonPlayer
 import me.ppvan.moon.ui.viewmodel.TrackViewModel
@@ -38,7 +39,9 @@ import me.ppvan.moon.utils.SlideTransition
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArtistView(context: ViewContext, artistId: Long, artistViewModel: ArtistViewModel = hiltViewModel(), trackViewModel: TrackViewModel = hiltViewModel()) {
+fun ArtistView(context: ViewContext, artistId: Long) {
+    val artistViewModel: ArtistViewModel = context.artistViewModel
+    val trackViewModel: TrackViewModel = context. trackViewModel
     val artist = artistViewModel.getArtistById(artistId)
     val allSongs = artistViewModel.getSongsByAlbumId(artistId)
     val allAlbums = artistViewModel.getAlbumById(artistId)
