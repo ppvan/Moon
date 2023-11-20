@@ -32,6 +32,7 @@ import me.ppvan.moon.ui.view.nowplaying.NowPlayingQueue
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.ui.viewmodel.ArtistViewModel
+import me.ppvan.moon.ui.viewmodel.TagEditViewModel
 import me.ppvan.moon.ui.viewmodel.TrackViewModel
 import me.ppvan.moon.ui.viewmodel.YTViewModel
 import me.ppvan.moon.utils.DownloadViewModel
@@ -62,6 +63,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var downloadViewModel: DownloadViewModel
 
+    @Inject
+    lateinit var tagEditViewModel: TagEditViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -85,6 +89,7 @@ class MainActivity : ComponentActivity() {
                         albumViewModel = albumViewModel,
                         artistViewModel = artistViewModel,
                         downloadViewModel = downloadViewModel,
+                        tagEditViewModel = tagEditViewModel
                     )
 
                 }
@@ -113,6 +118,7 @@ data class ViewContext(
     val albumViewModel: AlbumViewModel,
     val artistViewModel: ArtistViewModel,
     val downloadViewModel: DownloadViewModel,
+    val tagEditViewModel: TagEditViewModel,
 )
 
 @Composable
@@ -123,6 +129,7 @@ fun MoonApp(
     albumViewModel: AlbumViewModel,
     artistViewModel: ArtistViewModel,
     downloadViewModel: DownloadViewModel,
+    tagEditViewModel: TagEditViewModel,
     navController: NavHostController = rememberNavController()
 ) {
 
@@ -133,7 +140,8 @@ fun MoonApp(
         trackViewModel = trackViewModel,
         albumViewModel = albumViewModel,
         artistViewModel = artistViewModel,
-        downloadViewModel = downloadViewModel
+        downloadViewModel = downloadViewModel,
+        tagEditViewModel = tagEditViewModel
     )
 
     NavHost(navController = navController, startDestination = Routes.Home.name) {

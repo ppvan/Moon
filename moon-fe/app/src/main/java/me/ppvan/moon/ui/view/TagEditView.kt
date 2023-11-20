@@ -1,6 +1,5 @@
 package me.ppvan.moon.ui.view
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,37 +28,45 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import me.ppvan.moon.R
-import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.CenterTopAppBarAction
 
 
 @Composable
-fun TagEditView(context: ViewContext, mediaId: String) {
+fun TagEditView(
+    context: ViewContext,
+    mediaId: String
+) {
+    LaunchedEffect(key1 = "mediaId") {
+        context.tagEditViewModel.loadTrack(mediaId)
+    }
 
-    val track = Track.DEFAULT
-    var fileName by remember { mutableStateOf("") }
-    var artist by remember { mutableStateOf(track.artist) }
-    var musicTitle by remember { mutableStateOf(track.title) }
-    var album by remember { mutableStateOf(track.album) }
-    var albumArtist by remember { mutableStateOf("") }
-    var trackNum by remember { mutableStateOf("") }
-    var discNum by remember { mutableStateOf("") }
-    var comment by remember { mutableStateOf("") }
+    val tagEditViewModel = context.tagEditViewModel
+    val track by tagEditViewModel.currentTrack.collectAsState()
+
+    val cover by tagEditViewModel.cover.collectAsState()
+    val artist by tagEditViewModel.artist.collectAsState()
+    val title by tagEditViewModel.title.collectAsState()
+    val album by tagEditViewModel.album.collectAsState()
+    val trackNum by tagEditViewModel.trackNumber.collectAsState()
+    val discNum by tagEditViewModel.discNumber.collectAsState()
+    val comment by tagEditViewModel.comment.collectAsState()
 
     val fillWidth = Modifier.fillMaxWidth()
 
@@ -97,29 +104,14 @@ fun TagEditView(context: ViewContext, mediaId: String) {
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(text = mediaId)
-                    CoverField("") {
+                    CoverField(cover) {
 
                     }
-                    TagField(
-                        modifier = fillWidth,
-                        value = fileName,
-                        onValueChange = { fileName = it },
-                        label = {
-                            Text(text = "File name")
-                        },
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.AudioFile,
-                                contentDescription = "music Icon"
-                            )
-                        }
-                    )
 
                     TagField(
                         modifier = fillWidth,
-                        value = musicTitle,
-                        onValueChange = { musicTitle = it },
+                        value = title,
+                        onValueChange = tagEditViewModel::onTitleChange,
                         label = {
                             Text(text = "Title")
                         },
@@ -133,7 +125,7 @@ fun TagEditView(context: ViewContext, mediaId: String) {
                     TagField(
                         modifier = fillWidth,
                         value = artist,
-                        onValueChange = { artist = it },
+                        onValueChange = tagEditViewModel::onArtistChange,
                         label = {
                             Text(text = "Artist")
                         },
@@ -148,7 +140,7 @@ fun TagEditView(context: ViewContext, mediaId: String) {
                     TagField(
                         modifier = fillWidth,
                         value = album,
-                        onValueChange = { album = it },
+                        onValueChange = tagEditViewModel::onAlbumChange,
                         label = {
                             Text(text = "Album")
                         },
@@ -166,7 +158,7 @@ fun TagEditView(context: ViewContext, mediaId: String) {
                         TagField(
                             modifier = Modifier.weight(1f),
                             value = trackNum,
-                            onValueChange = { trackNum = it },
+                            onValueChange = tagEditViewModel::onTrackNumberChange,
                             label = {
                                 Text(text = "Track number")
                             },
@@ -180,7 +172,7 @@ fun TagEditView(context: ViewContext, mediaId: String) {
                         TagField(
                             modifier = Modifier.weight(1f),
                             value = discNum,
-                            onValueChange = { discNum = it },
+                            onValueChange = tagEditViewModel::onDiscNumberChange,
                             label = {
                                 Text(text = "Disc number")
                             },
@@ -203,7 +195,7 @@ fun TagEditView(context: ViewContext, mediaId: String) {
                                 contentDescription = "music Icon"
                             )
                         },
-                        onValueChange = { comment = it }
+                        onValueChange = tagEditViewModel::onCommentChange
                     )
                 }
             }
@@ -251,12 +243,18 @@ fun CoverField(
                 .clickable { onClick() },
             contentAlignment = Alignment.BottomEnd
         ) {
-            Image(
+
+            AsyncImage(
                 modifier = Modifier
                     .aspectRatio(1f)
                     .clip(CircleShape),
-                painter = painterResource(id = R.drawable.bocchi),
-                contentDescription = "cover",
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(contentUrl)
+                    .error(R.drawable.thumbnail)
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(R.drawable.thumbnail),
+                contentDescription = "Music thumbnail",
                 contentScale = ContentScale.Crop
             )
             Icon(imageVector = Icons.Filled.AddPhotoAlternate, contentDescription = null)
