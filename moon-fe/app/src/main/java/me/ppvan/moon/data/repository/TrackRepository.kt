@@ -2,6 +2,7 @@ package me.ppvan.moon.data.repository
 
 import android.content.ContentUris
 import android.content.Context
+import android.net.Uri
 import android.provider.MediaStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import me.ppvan.moon.data.model.Track
@@ -11,12 +12,9 @@ class TrackRepository @Inject constructor(@ApplicationContext val context: Conte
 
     private var _all = emptyList<Track>()
 
-
-
     fun findAll(): List<Track> {
         return fetchTrackList()
     }
-
 
     fun invalidateCache() {
         _all = fetchTrackList()
@@ -67,13 +65,16 @@ class TrackRepository @Inject constructor(@ApplicationContext val context: Conte
                     albumId
                 )
 
+                val songUri = getSongUri(id) // Gọi hàm để lấy Uri của bài hát
+
                 val track = Track(
                     id = id,
                     title = title,
                     artist = artist,
                     album = album,
                     thumbnailUri = albumArt.toString(),
-                    contentUri = data
+                    contentUri = data,
+                    songUri = songUri
                 )
                 trackList.add(track)
 
@@ -82,5 +83,12 @@ class TrackRepository @Inject constructor(@ApplicationContext val context: Conte
         }
 
         return trackList
+    }
+
+    /**
+     * Get the Uri of a song using its ID.
+     */
+    private fun getSongUri(songId: Long): Uri {
+        return ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songId)
     }
 }

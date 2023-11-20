@@ -1,5 +1,6 @@
 package me.ppvan.moon.data.model
 
+import android.net.Uri
 import androidx.media3.common.MediaItem
 
 /**
@@ -13,7 +14,8 @@ data class Track(
     val artist: String = "Alan Walker",
     val album: String = "Faded Song",
     val thumbnailUri: String = "",
-    val contentUri: String = ""
+    val contentUri: String = "",
+    val songUri: Uri = Uri.EMPTY
 ) {
     companion object {
         val DEFAULT = Track()
