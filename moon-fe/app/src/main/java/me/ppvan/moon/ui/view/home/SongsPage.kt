@@ -17,6 +17,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.EditNote
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,6 +28,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,16 +39,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import me.ppvan.moon.R
 import me.ppvan.moon.data.model.Track
+import me.ppvan.moon.ui.activity.Routes
+import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.viewmodel.MoonPlayer
-import me.ppvan.moon.ui.viewmodel.TrackViewModel
 
 
 @Composable
-fun SongsPage(trackViewModel: TrackViewModel) {
+fun SongsPage(context: ViewContext) {
+
+    val trackViewModel = context.trackViewModel
     val allTracks by trackViewModel.allTracks.collectAsState()
     val player: MoonPlayer = trackViewModel.player
 
@@ -50,7 +60,7 @@ fun SongsPage(trackViewModel: TrackViewModel) {
         modifier = Modifier
             .fillMaxSize(), color = MaterialTheme.colorScheme.surface
     ) {
-        SongList(allTracks) {
+        SongList(songs = allTracks, navigator = context.navigator) {
             player.load(allTracks)
             player.preparePlay(it)
         }
@@ -60,9 +70,9 @@ fun SongsPage(trackViewModel: TrackViewModel) {
 
 @Composable
 fun SongList(
+    navigator : NavHostController,
     songs: List<Track> = List(10) { Track.DEFAULT },
-    onItemClick: (item: Track) -> Unit = {}
-
+    onItemClick: (item: Track) -> Unit = {},
 ) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -71,7 +81,8 @@ fun SongList(
             SongListItem(
                 Modifier.fillMaxWidth(),
                 track = song,
-                onClick = { onItemClick(song) }
+                onClick = { onItemClick(song) },
+                navigator = navigator
             )
         }
     }
@@ -81,7 +92,8 @@ fun SongList(
 fun SongListItem(
     modifier: Modifier = Modifier,
     track: Track = Track.DEFAULT,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    navigator: NavHostController
 ) {
     Column(
         modifier = modifier.clickable {
@@ -118,11 +130,38 @@ fun SongListItem(
                 Text(text = track.title)
                 Text(text = track.artist, style = MaterialTheme.typography.labelMedium)
             }
+            SongListItemMenu(
+                onEditTagClick = {
+                    navigator.navigate("${Routes.TagEdit.name}/${track.id}")
+                }
+            )
 
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "More")
-            }
+        }
+    }
+}
 
+@Composable
+fun SongListItemMenu(
+    onEditTagClick: () -> Unit
+) {
+
+    var expand by remember {
+        mutableStateOf(false)
+    }
+
+    IconButton(onClick = { expand = true }) {
+        Icon(imageVector = Icons.Filled.MoreVert, contentDescription = "More")
+
+        DropdownMenu(expanded = expand, onDismissRequest = { expand = false}) {
+            DropdownMenuItem(
+                text = { Text("Edit tags") },
+                onClick = { expand = false; onEditTagClick() },
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.EditNote,
+                        contentDescription = null
+                    )
+                })
         }
     }
 }
@@ -131,5 +170,5 @@ fun SongListItem(
 @Preview(showBackground = true)
 @Composable
 fun SongsPagePreview() {
-    SongList()
+//    SongList()
 }

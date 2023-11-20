@@ -1,5 +1,6 @@
 package me.ppvan.moon.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -29,15 +30,22 @@ class TrackViewModel @Inject constructor(
     init {
 //        observePlayerState()
 
-        viewModelScope.launch(Dispatchers.IO) {
-            _tracks.update { repository.findAll() }
-        }
+        reloadTracks()
 
         // Load new track if we has storage permission
         permissionsManager.onUpdate.subscribe {
-            when (it) {
-                PermissionEvents.MEDIA_PERMISSION_GRANTED -> repository.invalidateCache()
+            viewModelScope.launch (Dispatchers.IO) {
+                when (it) {
+                    PermissionEvents.MEDIA_PERMISSION_GRANTED ->  _tracks.update { repository.findAll() }
+                }
             }
+        }
+    }
+
+    fun reloadTracks() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _tracks.update { repository.findAll() }
+            Log.d("INFO", "Tracks Reloaded")
         }
     }
 }

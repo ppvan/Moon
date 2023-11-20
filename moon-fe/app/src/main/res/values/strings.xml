@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Moon</string>
+    <string name="permission_error">Access Media Permission denied</string>
 </resources>

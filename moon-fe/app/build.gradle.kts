@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId = "me.ppvan.moon"
-        minSdk = 29
+        minSdk = 30
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -69,6 +69,14 @@ dependencies {
     val media3Version = "1.1.1"
     val materialVersion = "1.2.0-alpha10"
 
+    // Simple Storage
+    implementation("com.anggrayudi:storage:1.5.5")
+
+    // ID3 Tagger
+    implementation("com.mpatric:mp3agic:0.9.1")
+    implementation("net.jthink:jaudiotagger:3.0.1")
+
+
     // ExoPlayer
     implementation("androidx.media3:media3-exoplayer:$media3Version")
     implementation("androidx.media3:media3-session:$media3Version")
@@ -87,9 +95,9 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
 
     // DI
-    implementation("com.google.dagger:hilt-android:2.44")
+    implementation("com.google.dagger:hilt-android:2.48")
     implementation("androidx.navigation:navigation-compose:2.7.5")
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0-rc01")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
 
     // added by default

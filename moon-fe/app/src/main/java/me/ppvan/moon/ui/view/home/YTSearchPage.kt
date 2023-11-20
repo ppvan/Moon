@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
@@ -35,8 +33,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,36 +45,35 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import me.ppvan.moon.R
+import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.LoadingShimmerEffect
-import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.viewmodel.ResultItem
 import me.ppvan.moon.ui.viewmodel.ResultItemState
 import me.ppvan.moon.ui.viewmodel.YTViewModel
-import me.ppvan.moon.utils.DownloadUtils
-
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchPage(viewModel: YTViewModel) {
+fun SearchPage(context: ViewContext) {
 
-    val resultItems by viewModel.searchResult.collectAsState()
-    val isLoading by viewModel.isDataLoaded.collectAsState()
+
+    val ytViewModel = context.ytViewModel
+    val downloadViewModel = context.downloadViewModel
+
+    val resultItems by ytViewModel.searchResult.collectAsState()
+    val isLoading by ytViewModel.isDataLoaded.collectAsState()
 
     Column {
 
         Spacer(modifier = Modifier.height(16.dp))
         ResultList(resultItems = resultItems, onDownloadClick = {
             val url = "https://www.youtube.com/watch?v=${it.id}"
-            DownloadUtils.downloadAudio(url)
+            downloadViewModel.downloadAudio(url)
         }, isLoading)
     }
 }

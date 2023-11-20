@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
@@ -25,14 +24,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
-import me.ppvan.moon.ui.view.home.BottomPlayer
 import me.ppvan.moon.ui.component.TopAppBarMinimalTitle
+import me.ppvan.moon.ui.view.home.BottomPlayer
 import me.ppvan.moon.ui.view.home.SongList
-import me.ppvan.moon.ui.view.nowplaying.NowPlayingBottomBar
-import androidx.compose.ui.text.style.TextOverflow
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.utils.SlideTransition
 
@@ -84,6 +82,7 @@ fun AlbumView(context: ViewContext, albumId: Long) {
                     .fillMaxSize()
             ) {
                     SongList(
+                        context.navigator,
                         allTracks,
                         onItemClick = {
                             player.load(allTracks)

@@ -13,7 +13,10 @@ data class Track(
     val artist: String = "Alan Walker",
     val album: String = "Faded Song",
     val thumbnailUri: String = "",
-    val contentUri: String = ""
+    val contentUri: String = "",
+    val trackNumber: Int = 124,
+    val discNumber: Int = 125,
+    val comment: String = "WW is the best"
 ) {
     companion object {
         val DEFAULT = Track()
@@ -27,7 +30,10 @@ data class Track(
                 artist = metadata.artist.toString(),
                 contentUri = mediaItem.mediaId,
                 album = metadata.albumTitle.toString(),
-                thumbnailUri = metadata.artworkUri.toString()
+                thumbnailUri = metadata.artworkUri.toString(),
+                trackNumber = metadata.trackNumber ?: 0,
+                discNumber = metadata.discNumber ?: 0,
+                comment = metadata.description.toString()
             )
         }
     }

@@ -124,7 +124,7 @@ fun HomeView(
                             menuItems = {
                                 DropdownMenuItem(
                                     text = { Text("ReScan") },
-                                    onClick = { /* Handle edit! */ },
+                                    onClick = { context.trackViewModel.reloadTracks() },
                                     leadingIcon = {
                                         Icon(
                                             Icons.Outlined.Refresh,
@@ -194,9 +194,9 @@ fun HomeView(
             }
         ) { page ->
             when (page) {
-                MoonPages.Song -> SongsPage(trackViewModel)
+                MoonPages.Song -> SongsPage(context)
                 MoonPages.Album -> AlbumsPage(context)
-                MoonPages.Search -> SearchPage(context.ytViewModel)
+                MoonPages.Search -> SearchPage(context)
                 MoonPages.Artist -> ArtistsPage(context)
                 MoonPages.Playlist -> PlaylistPage()
 
