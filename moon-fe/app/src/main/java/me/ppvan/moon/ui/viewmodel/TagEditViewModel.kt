@@ -17,7 +17,8 @@ import javax.inject.Singleton
 
 
 @Singleton
-class TagEditViewModel @Inject constructor(private val trackRepository: TrackRepository) : ViewModel() {
+class TagEditViewModel @Inject constructor(private val trackRepository: TrackRepository) :
+    ViewModel() {
 
 
     private val _track = MutableStateFlow(Track.DEFAULT)
@@ -52,6 +53,10 @@ class TagEditViewModel @Inject constructor(private val trackRepository: TrackRep
         }
     }
 
+    fun onCoverChange(uri: String) {
+        this.cover.update { uri }
+    }
+
     fun onTitleChange(title: String) {
         this.title.update { title }
     }
@@ -63,9 +68,11 @@ class TagEditViewModel @Inject constructor(private val trackRepository: TrackRep
     fun onAlbumChange(album: String) {
         this.album.update { album }
     }
+
     fun onTrackNumberChange(trackNumber: String) {
         this.trackNumber.update { trackNumber }
     }
+
     fun onDiscNumberChange(discNumber: String) {
         this.discNumber.update { discNumber }
     }

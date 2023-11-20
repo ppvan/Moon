@@ -1,5 +1,8 @@
 package me.ppvan.moon.ui.view
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -58,6 +61,14 @@ fun TagEditView(
     }
 
     val tagEditViewModel = context.tagEditViewModel
+    val photoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = {uri ->
+            tagEditViewModel.onCoverChange(uri.toString())
+        }
+    )
+
+
     val track by tagEditViewModel.currentTrack.collectAsState()
 
     val cover by tagEditViewModel.cover.collectAsState()
@@ -105,7 +116,9 @@ fun TagEditView(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     CoverField(cover) {
-
+                        photoPicker.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        )
                     }
 
                     TagField(
