@@ -1,16 +1,11 @@
 package me.ppvan.moon.ui.viewmodel
 
-import android.app.PendingIntent
-import android.app.RecoverableSecurityException
-import android.content.IntentSender
-import android.os.Build
-import android.provider.MediaStore
+import android.content.Context
 import android.util.Log
-import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.core.app.ActivityCompat.startIntentSenderForResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anggrayudi.storage.media.MediaStoreCompat
+import com.anggrayudi.storage.media.MediaType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,6 +16,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.data.repository.TrackRepository
+import me.ppvan.moon.utils.scanMedia
+import org.jaudiotagger.audio.AudioFileIO
+import org.jaudiotagger.audio.exceptions.CannotWriteException
+import org.jaudiotagger.tag.FieldKey
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,7 +32,7 @@ class TagEditViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    val permissionEvents: MutableStateFlow<IntentSender?> = MutableStateFlow(null)
+    val pendingTrackWriteRequest: MutableStateFlow<Track> = MutableStateFlow(Track.DEFAULT)
 
 
     private val _track = MutableStateFlow(Track.DEFAULT)
@@ -95,31 +95,37 @@ class TagEditViewModel @Inject constructor(
         this.comment.update { comment }
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.R)
-    fun onSave() {
-        viewModelScope.launch (Dispatchers.IO) {
-            try {
-                val updatedTrack = _track.value.copy(
-                    title = title.value
-                )
-
-                trackRepository.save(updatedTrack)
-            } catch (securityException: SecurityException) {
-                Log.d("INFO", securityException.message.orEmpty())
-
-                val recoverableSecurityException = securityException as?
-                        RecoverableSecurityException ?:
-                throw RuntimeException(securityException.message, securityException)
-                val intentSender =
-                    recoverableSecurityException.userAction.actionIntent.intentSender
-
-                permissionEvents.update { intentSender }
-//                MediaStore.createWriteRequest(null, listOf())
-
+    fun writeTagToFile(context: Context) {
+        try {
+            val updatedTrack = _track.value.copy(title = title.value)
+            val mediaFile = MediaStoreCompat.fromMediaId(context, MediaType.AUDIO, updatedTrack.id)
+            val file = File(mediaFile?.absolutePath!!)
+            val audioFile = AudioFileIO.read(file)
+            audioFile.run {
+                tag.setField(FieldKey.TITLE, title.value)
+                tag.setField(FieldKey.ARTIST, title.value)
+                tag.setField(FieldKey.ALBUM, album.value)
+                tag.setField(FieldKey.TRACK, trackNumber.value)
+                tag.setField(FieldKey.DISC_NO, discNumber.value)
+                tag.setField(FieldKey.COMMENT, comment.value)
             }
+
+            audioFile.commit()
+            scanMedia(listOf(mediaFile.absolutePath), context)
+
+        } catch (exception: CannotWriteException) {
+            Log.d("Exception", exception.message.toString())
         }
 
+        trackRepository.findAll().forEach {
+            Log.d("Track", it.title)
+        }
+    }
 
+    fun onSaveRequest() {
+        val updatedTrack = _track.value.copy(title = title.value)
+
+//        _track.update { updatedTrack }
+        pendingTrackWriteRequest.update { updatedTrack }
     }
 }

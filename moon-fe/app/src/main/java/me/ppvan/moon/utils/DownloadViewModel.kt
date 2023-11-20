@@ -1,7 +1,6 @@
 package me.ppvan.moon.utils
 
 import android.content.Context
-import android.media.MediaScannerConnection
 import android.os.Environment
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.io.File
 import java.nio.file.Path
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -67,21 +65,7 @@ class DownloadViewModel @Inject constructor(@ApplicationContext context: Context
         _downloadProgress.update { progress }
     }
 
-    fun scanMedia(files: List<String>, context: Context) : List<String> {
-        try {
-            val paths = files.sortedByDescending { File(it).length() }
-            runCatching {
-                paths.forEach {
-                    MediaScannerConnection.scanFile(context, arrayOf(it), null, null)
-                }
-            }
-            return paths
-        }catch (e: Exception){
-            e.printStackTrace()
-        }
 
-        return listOf()
-    }
 
 
     private fun defaultDownloadLocation() =

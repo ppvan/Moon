@@ -3,9 +3,9 @@ package me.ppvan.moon.services
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
+import me.ppvan.moon.R
 import me.ppvan.moon.ui.activity.MainActivity
 import me.ppvan.moon.utils.Eventer
 import javax.inject.Inject
@@ -27,7 +27,6 @@ data class PermissionsState(
 class PermissionsManager @Inject constructor() {
     val onUpdate = Eventer<PermissionEvents>()
 
-    @RequiresApi(Build.VERSION_CODES.S)
     fun handle(activity: MainActivity) {
         val state = getState(activity)
         if (state.hasAll()) return
@@ -37,31 +36,25 @@ class PermissionsManager @Inject constructor() {
         ) { permissions ->
             if (permissions.count { it.value } > 0) {
                 this.onUpdate.dispatch(PermissionEvents.MEDIA_PERMISSION_GRANTED)
-                Log.i("INFO", "MEDIA_PERMISSION_GRANTED")
+            } else {
+                Toast.makeText(activity, R.string.permission_error, Toast.LENGTH_SHORT).show()
             }
         }.launch(state.denied.toTypedArray())
     }
-    @RequiresApi(Build.VERSION_CODES.S)
+
     private fun getRequiredPermissions(): List<String> {
         val required = mutableListOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.FOREGROUND_SERVICE,
-            Manifest.permission.MANAGE_MEDIA
+            Manifest.permission.FOREGROUND_SERVICE
         )
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             required.add(Manifest.permission.READ_MEDIA_AUDIO)
-            required.add(Manifest.permission.ACCESS_MEDIA_LOCATION)
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            required.add(Manifest.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK)
+//            required.add(Manifest.permission.ACCESS_MEDIA_LOCATION)
         }
 
         return required
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun getState(activity: MainActivity): PermissionsState {
         val required = getRequiredPermissions()
         val granted = mutableListOf<String>()

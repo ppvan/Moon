@@ -97,8 +97,8 @@ fun TagEditView(
                 },
                 actions = {
                     IconButton(onClick = {
-                        tagEditViewModel.onSave()
-                        viewContext.navigator.popBackStack()
+                        tagEditViewModel.onSaveRequest()
+//                        viewContext.navigator.popBackStack()
                         Toast.makeText(context, "Tag Updated", Toast.LENGTH_SHORT).show()
                     }) {
                         Icon(imageVector = Icons.Filled.Save, contentDescription = "Save")

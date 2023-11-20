@@ -124,7 +124,7 @@ fun HomeView(
                             menuItems = {
                                 DropdownMenuItem(
                                     text = { Text("ReScan") },
-                                    onClick = { /* Handle edit! */ },
+                                    onClick = { context.trackViewModel.reloadTracks() },
                                     leadingIcon = {
                                         Icon(
                                             Icons.Outlined.Refresh,
