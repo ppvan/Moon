@@ -2,6 +2,7 @@ package me.ppvan.moon.data.repository
 
 import android.content.ContentUris
 import android.content.Context
+import android.net.Uri
 import android.provider.MediaStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import me.ppvan.moon.data.model.Album
@@ -109,14 +110,15 @@ class AlbumRepository @Inject constructor(@ApplicationContext val context: Conte
                     MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                     currentAlbumId
                 )
-
+                val songUri = getSongUri(id)
                 val track = Track(
                     id = id,
                     title = title,
                     artist = artist,
                     album = album,
                     thumbnailUri = albumArt.toString(),
-                    contentUri = data
+                    contentUri = data,
+                    songUri = songUri
                 )
                 trackList.add(track)
             }
@@ -150,18 +152,25 @@ class AlbumRepository @Inject constructor(@ApplicationContext val context: Conte
             val artistColumn = it.getColumnIndex(MediaStore.Audio.Albums.ARTIST)
             val numberOfSongsColumn = it.getColumnIndex(MediaStore.Audio.Albums.NUMBER_OF_SONGS)
 
+
             if (it.moveToFirst()) {
                 val fetchedAlbumId = it.getLong(albumIdColumn)
                 val albumName = it.getString(albumNameColumn)
                 val artist = it.getString(artistColumn)
                 val numberOfSongs = it.getInt(numberOfSongsColumn)
+                val albumArt = ContentUris.withAppendedId(
+                    MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                    albumId
+                )
 
-                Album(fetchedAlbumId, albumName, artist, numberOfSongs)
+                Album(fetchedAlbumId, albumName, artist, numberOfSongs, albumArt.toString())
             } else {
                 null
             }
         }
     }
-
+    private fun getSongUri(songId: Long): Uri {
+        return ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songId)
+    }
 
 }
