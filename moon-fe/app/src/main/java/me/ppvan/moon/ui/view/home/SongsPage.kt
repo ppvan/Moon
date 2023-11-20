@@ -151,7 +151,8 @@ fun SongListItem(
                     onDismissRequest = {
                         showOptionsMenu = false
                     },
-                    track
+                    track,
+                    navigator
                 )
             }
 
@@ -162,8 +163,8 @@ fun SongListItem(
 fun SongDropdownMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
-    track: Track
-
+    track: Track,
+    navigator: NavHostController
 ) {
 
     DropdownMenu(
@@ -187,7 +188,7 @@ fun SongDropdownMenu(
         )
         DropdownMenuItem(
             text = { Text("Edit tags") },
-            onClick = {  },
+            onClick = { navigator.navigate("${Routes.TagEdit.name}/${track.id}") },
             leadingIcon = {
                 Icon(
                     Icons.Outlined.EditNote,
