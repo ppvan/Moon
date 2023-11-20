@@ -27,7 +27,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listener {
+class
+
+MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listener {
 
 
     private val scope = CoroutineScope(Dispatchers.Main + Job())
@@ -92,7 +94,6 @@ class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.L
      */
     fun setCustomPlayer(player: Player) {
         this.player = player
-
         player.addListener(this)
         player.prepare()
     }
@@ -118,7 +119,9 @@ class MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.L
                 .build()
         })
     }
-
+    fun isPlaying(): Boolean {
+        return _playerState.value == PlayerState.STATE_PLAYING
+    }
     fun preparePlay(track: Track, playWhenReady: Boolean = true) {
         if (player.playbackState == Player.STATE_IDLE) player.prepare()
         val tracks = getShuffleQueue(playbackState.value)

@@ -2,6 +2,7 @@ package me.ppvan.moon.data.repository
 
 import android.content.ContentUris
 import android.content.Context
+import android.net.Uri
 import android.provider.MediaStore
 import dagger.hilt.android.qualifiers.ApplicationContext
 import me.ppvan.moon.data.model.Album
@@ -120,6 +121,7 @@ class ArtistRepository @Inject constructor(@ApplicationContext val context: Cont
                     MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                     currentAlbumId
                 )
+                val songUri = getSongUri(id)
 
                 val track = Track(
                     id = id,
@@ -127,7 +129,9 @@ class ArtistRepository @Inject constructor(@ApplicationContext val context: Cont
                     artist = artist,
                     album = album,
                     thumbnailUri = albumArt.toString(),
-                    contentUri = data
+                    contentUri = data,
+                    songUri = songUri
+
                 )
                 trackList.add(track)
             }
@@ -231,6 +235,9 @@ class ArtistRepository @Inject constructor(@ApplicationContext val context: Cont
                 null
             }
         }
+    }
+    private fun getSongUri(songId: Long): Uri {
+        return ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songId)
     }
 
 }

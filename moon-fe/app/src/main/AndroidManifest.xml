@@ -49,6 +49,7 @@
                 <action android:name="androidx.media3.session.MediaSessionService"/>
             </intent-filter>
         </service>
+
     </application>
 
 

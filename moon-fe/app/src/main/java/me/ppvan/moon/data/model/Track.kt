@@ -1,5 +1,6 @@
 package me.ppvan.moon.data.model
 
+import android.net.Uri
 import androidx.media3.common.MediaItem
 
 /**
@@ -14,6 +15,7 @@ data class Track(
     val album: String = "Faded Song",
     val thumbnailUri: String = "",
     val contentUri: String = "",
+    val songUri: Uri = Uri.EMPTY,
     val trackNumber: Int = 124,
     val discNumber: Int = 125,
     val comment: String = "WW is the best"
