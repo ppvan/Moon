@@ -1,5 +1,6 @@
 package me.ppvan.moon.ui.view
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -53,23 +54,21 @@ import me.ppvan.moon.ui.component.CenterTopAppBarAction
 
 @Composable
 fun TagEditView(
-    context: ViewContext,
+    viewContext: ViewContext,
     mediaId: String
 ) {
     LaunchedEffect(key1 = "mediaId") {
-        context.tagEditViewModel.loadTrack(mediaId)
+        viewContext.tagEditViewModel.loadTrack(mediaId)
     }
 
-    val tagEditViewModel = context.tagEditViewModel
+    val context = LocalContext.current
+    val tagEditViewModel = viewContext.tagEditViewModel
     val photoPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = {uri ->
             tagEditViewModel.onCoverChange(uri.toString())
         }
     )
-
-
-    val track by tagEditViewModel.currentTrack.collectAsState()
 
     val cover by tagEditViewModel.cover.collectAsState()
     val artist by tagEditViewModel.artist.collectAsState()
@@ -88,7 +87,7 @@ fun TagEditView(
                 title = "Edit tags",
                 navigationIcon = {
                     IconButton(onClick = {
-                        context.navigator.popBackStack()
+                        viewContext.navigator.popBackStack()
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
@@ -97,7 +96,11 @@ fun TagEditView(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = {
+                        tagEditViewModel.onSave()
+                        viewContext.navigator.popBackStack()
+                        Toast.makeText(context, "Tag Updated", Toast.LENGTH_SHORT).show()
+                    }) {
                         Icon(imageVector = Icons.Filled.Save, contentDescription = "Save")
                     }
                 }

@@ -2,9 +2,15 @@ package me.ppvan.moon.ui.activity
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
+import android.provider.Settings
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,6 +24,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import me.ppvan.moon.services.MoonMediaService
 import me.ppvan.moon.services.PermissionsManager
@@ -66,12 +75,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var tagEditViewModel: TagEditViewModel
 
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-//        permissionsManager.handle(this)
-//        startPlayerService()
-
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             MoonTheme {
@@ -98,7 +104,22 @@ class MainActivity : ComponentActivity() {
         }
 
         startPlayerService()
+//        askManageMediaPermission()
+        lifecycleScope.launch {
+            tagEditViewModel.permissionEvents
+                .filter { it != null }
+                .onEach {
+               startIntentSender(it!!, null, 0,0, 0)
+            }.collect()
+        }
         permissionsManager.handle(this)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun askManageMediaPermission() {
+        if (!MediaStore.canManageMedia(this)) {
+            launchMediaManagementIntent { }
+        }
     }
 
     private fun startPlayerService() {
@@ -106,6 +127,14 @@ class MainActivity : ComponentActivity() {
             val serviceIntent = Intent(this@MainActivity, MoonMediaService::class.java)
             startService(serviceIntent)
         }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    private fun launchMediaManagementIntent(callback: () -> Unit) {
+        val intent = Intent(Settings.ACTION_REQUEST_MANAGE_MEDIA).apply {
+            data = Uri.parse("package:$packageName")
+        }
+        startActivity(intent)
     }
 
 }

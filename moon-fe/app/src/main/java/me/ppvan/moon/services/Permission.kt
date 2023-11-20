@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import me.ppvan.moon.ui.activity.MainActivity
 import me.ppvan.moon.utils.Eventer
 import javax.inject.Inject
@@ -26,6 +27,7 @@ data class PermissionsState(
 class PermissionsManager @Inject constructor() {
     val onUpdate = Eventer<PermissionEvents>()
 
+    @RequiresApi(Build.VERSION_CODES.S)
     fun handle(activity: MainActivity) {
         val state = getState(activity)
         if (state.hasAll()) return
@@ -39,11 +41,12 @@ class PermissionsManager @Inject constructor() {
             }
         }.launch(state.denied.toTypedArray())
     }
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun getRequiredPermissions(): List<String> {
         val required = mutableListOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.FOREGROUND_SERVICE,
-//            Manifest.permission.INTERNET
+            Manifest.permission.MANAGE_MEDIA
         )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -58,6 +61,7 @@ class PermissionsManager @Inject constructor() {
         return required
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
     private fun getState(activity: MainActivity): PermissionsState {
         val required = getRequiredPermissions()
         val granted = mutableListOf<String>()

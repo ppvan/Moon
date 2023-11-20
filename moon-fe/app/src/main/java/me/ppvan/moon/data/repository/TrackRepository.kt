@@ -1,8 +1,11 @@
 package me.ppvan.moon.data.repository
 
 import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.provider.MediaStore
+import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import me.ppvan.moon.data.model.Track
 import javax.inject.Inject
@@ -76,6 +79,27 @@ class TrackRepository @Inject constructor(@ApplicationContext val context: Conte
         return Track.DEFAULT
     }
 
+
+    fun save(track: Track) {
+        // Step 1: Query the MediaStore to find the media item by its _ID
+        val uri: Uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+        val id = track.id
+        val updateUri: Uri = ContentUris.withAppendedId(uri, id)
+
+        val values = ContentValues().apply {
+            put(MediaStore.Audio.Media.IS_PENDING, 1)
+        }
+        context.contentResolver.update(updateUri, values, null, null)
+
+        values.run {
+            clear()
+            put(MediaStore.MediaColumns.TITLE, track.title)
+            put(MediaStore.Audio.Media.IS_PENDING, 0)
+        }
+        val affected = context.contentResolver.update(updateUri, values, null, null)
+
+        Log.d("INFO", "$affected")
+    }
     fun invalidateCache() {
         _all = fetchTrackList()
     }

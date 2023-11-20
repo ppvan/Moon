@@ -7,6 +7,8 @@
         android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+    <uses-permission android:name="android.permission.MANAGE_MEDIA"
+        tools:ignore="ProtectedPermissions" />
 
 <!--  Something about lockscreen  -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -26,7 +28,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Moon"
-        tools:targetApi="33">
+        tools:targetApi="34">
         <activity
             android:name=".ui.activity.MainActivity"
             android:hardwareAccelerated="true"

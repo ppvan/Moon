@@ -1,5 +1,14 @@
 package me.ppvan.moon.ui.viewmodel
 
+import android.app.PendingIntent
+import android.app.RecoverableSecurityException
+import android.content.IntentSender
+import android.os.Build
+import android.provider.MediaStore
+import android.util.Log
+import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat.startIntentSenderForResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
@@ -17,8 +26,13 @@ import javax.inject.Singleton
 
 
 @Singleton
-class TagEditViewModel @Inject constructor(private val trackRepository: TrackRepository) :
+class TagEditViewModel @Inject constructor(
+    private val trackRepository: TrackRepository,
+
+) :
     ViewModel() {
+
+    val permissionEvents: MutableStateFlow<IntentSender?> = MutableStateFlow(null)
 
 
     private val _track = MutableStateFlow(Track.DEFAULT)
@@ -81,4 +95,31 @@ class TagEditViewModel @Inject constructor(private val trackRepository: TrackRep
         this.comment.update { comment }
     }
 
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    fun onSave() {
+        viewModelScope.launch (Dispatchers.IO) {
+            try {
+                val updatedTrack = _track.value.copy(
+                    title = title.value
+                )
+
+                trackRepository.save(updatedTrack)
+            } catch (securityException: SecurityException) {
+                Log.d("INFO", securityException.message.orEmpty())
+
+                val recoverableSecurityException = securityException as?
+                        RecoverableSecurityException ?:
+                throw RuntimeException(securityException.message, securityException)
+                val intentSender =
+                    recoverableSecurityException.userAction.actionIntent.intentSender
+
+                permissionEvents.update { intentSender }
+//                MediaStore.createWriteRequest(null, listOf())
+
+            }
+        }
+
+
+    }
 }
