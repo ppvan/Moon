@@ -69,6 +69,13 @@ dependencies {
     val media3Version = "1.1.1"
     val materialVersion = "1.2.0-alpha10"
 
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // Converter-gson (for Retrofit)
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
     // Simple Storage
     implementation("com.anggrayudi:storage:1.5.5")
 
