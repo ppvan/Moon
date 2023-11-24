@@ -1,6 +1,5 @@
 package me.ppvan.moon.ui.view
 
-import android.app.AlertDialog
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,10 +11,10 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,7 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.graphics.Color
 import me.ppvan.moon.data.dto.RegisterDto
 import me.ppvan.moon.data.dto.TokenResponseDto
 import me.ppvan.moon.data.retrofit.ApiService
@@ -116,7 +114,10 @@ fun RegisterScreen() {
 
                 apiService.register(registerDto)
                     .enqueue(object : Callback<TokenResponseDto> {
-                        override fun onResponse(call: Call<TokenResponseDto>, response: Response<TokenResponseDto>) {
+                        override fun onResponse(
+                            call: Call<TokenResponseDto>,
+                            response: Response<TokenResponseDto>
+                        ) {
                             if (response.isSuccessful) {
                                 val tokenResponse = response.body()
                                 val accessToken = tokenResponse?.accessToken
@@ -156,7 +157,7 @@ fun RegisterScreen() {
 
             if (isRegistrationSuccessful != null) {
                 AlertDialog(
-                    onDismissRequest = { isRegistrationSuccessful = null }, // Đóng AlertDialog khi người dùng nhấn nút đóng
+                    onDismissRequest = { isRegistrationSuccessful = null },
                     title = { Text("Registration Status") },
                     text = { Text(message) },
                     confirmButton = {
