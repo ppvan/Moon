@@ -204,7 +204,8 @@ fun MoonApp(
         tagEditViewModel = tagEditViewModel
     )
 
-    NavHost(navController = navController, startDestination = Routes.Login.name) {
+//    NavHost(navController = navController, startDestination = Routes.Home.name) {
+    NavHost(navController = navController, startDestination = Routes.Register.name) {
         AlbumGraph(context)
         composable(
             Routes.Home.name,

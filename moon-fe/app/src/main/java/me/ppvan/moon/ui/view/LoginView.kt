@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,8 +24,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,106 +58,137 @@ fun LoginScreen() {
         mutableStateOf("")
     }
 
-    Surface(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(start = 30.dp, end = 30.dp, top = 20.dp, bottom = 20.dp)
-            .navigationBarsPadding()
-            .statusBarsPadding()
-    ) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+    var currentScreen by remember {
+        mutableStateOf("Login")
+    }
+
+    if (currentScreen == "Register") {
+        RegisterPreview()
+    } else {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 30.dp, end = 30.dp, top = 20.dp, bottom = 20.dp)
+                .navigationBarsPadding()
+                .statusBarsPadding()
         ) {
-            TopAppBarMinimalTitle {
-                Text(text = "Log In")
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-            CommonTextField(
-                text = email,
-                placeholder = "Email",
-                onValueChange = { email = it },
-                isPasswordTextField = false
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            CommonTextField(
-                text = password,
-                placeholder = "Password",
-                onValueChange = { password = it },
-                isPasswordTextField = true
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Forgot Password?",
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.End,
-                fontSize = 16.sp,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            CommonLoginButton(text = "Login", modifier = Modifier.fillMaxWidth()) {
-                val authenticationDto = AuthenticationDto(email, password)
-
-                val retrofitService = RetrofitService()
-                val apiService = retrofitService.retrofit.create(ApiService::class.java)
-
-                apiService.authenticate(authenticationDto)
-                    .enqueue(object : Callback<TokenResponseDto> {
-                        override fun onResponse(
-                            call: Call<TokenResponseDto>,
-                            response: Response<TokenResponseDto>
-                        ) {
-                            if (response.isSuccessful) {
-                                val tokenResponse = response.body()
-                                val accessToken = tokenResponse?.accessToken
-                                val refreshToken = tokenResponse?.refreshToken
-                                isAuthenticationSuccessful = true
-                                message = "Login successful"
-                            } else {
-                                isAuthenticationSuccessful = false
-                                message = "Login failed"
-                            }
-                        }
-
-                        override fun onFailure(call: Call<TokenResponseDto>, t: Throwable) {
-                            isAuthenticationSuccessful = false
-                            message = "Error: ${t.message}"
-                        }
-
-                    })
-            }
-            Spacer(modifier = Modifier.weight(0.4f))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                CommonText(text = "I'm a new user,", fontSize = 18.sp) {}
-                Spacer(modifier = Modifier.width(4.dp))
-                CommonText(
-                    text = "Sign Up",
-                    color = PinkColor,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.W500
-                ) {
-//                    navController.navigate("register_screen")
+                TopAppBarMinimalTitle {
+                    Text(text = "Log In")
                 }
-            }
-
-            if (isAuthenticationSuccessful != null) {
-                AlertDialog(
-                    onDismissRequest = { isAuthenticationSuccessful = null },
-                    title = { Text("Login Status") },
-                    text = { Text(message) },
-                    confirmButton = {
-                        Button(
-                            onClick = { isAuthenticationSuccessful = null },
-                        ) {
-                            Text("OK")
-                        }
-                    }
+                Spacer(modifier = Modifier.height(20.dp))
+                CommonTextField(
+                    text = email,
+                    placeholder = "Email",
+                    onValueChange = { email = it },
+                    isPasswordTextField = false
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+                CommonTextField(
+                    text = password,
+                    placeholder = "Password",
+                    onValueChange = { password = it },
+                    isPasswordTextField = true
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Forgot Password?",
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.End,
+                    fontSize = 16.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                CommonLoginButton(text = "Login", modifier = Modifier.fillMaxWidth()) {
+                    val authenticationDto = AuthenticationDto(email, password)
+
+                    val retrofitService = RetrofitService()
+                    val apiService = retrofitService.retrofit.create(ApiService::class.java)
+
+                    apiService.authenticate(authenticationDto)
+                        .enqueue(object : Callback<TokenResponseDto> {
+                            override fun onResponse(
+                                call: Call<TokenResponseDto>,
+                                response: Response<TokenResponseDto>
+                            ) {
+                                if (response.isSuccessful) {
+                                    val tokenResponse = response.body()
+                                    val accessToken = tokenResponse?.accessToken
+                                    val refreshToken = tokenResponse?.refreshToken
+                                    isAuthenticationSuccessful = true
+                                    message = "Login successful"
+                                } else {
+                                    isAuthenticationSuccessful = false
+                                    message = "Login failed"
+                                }
+                            }
+
+                            override fun onFailure(call: Call<TokenResponseDto>, t: Throwable) {
+                                isAuthenticationSuccessful = false
+                                message = "Error: ${t.message}"
+                            }
+
+                        })
+                }
+                Spacer(modifier = Modifier.weight(0.4f))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    CommonText(
+                        text = "Don't have an account,",
+                        fontSize = 18.sp
+                    ) {}
+                    Spacer(modifier = Modifier.width(4.dp))
+                    ClickableText(
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = PinkColor,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.W500
+                                )
+                            ) {
+                                append("Sign up")
+                            }
+                        },
+                        onClick = {
+                            currentScreen = "Register"
+                        }
+                    )
+    //                CommonText(
+    //                    text = "Sign Up",
+    //                    color = PinkColor,
+    //                    fontSize = 18.sp,
+    //                    fontWeight = FontWeight.W500
+    //                ) {
+    ////                    navController.navigate("register_screen")
+    //                }
+                }
+
+                if (isAuthenticationSuccessful != null) {
+                    AlertDialog(
+                        onDismissRequest = { isAuthenticationSuccessful = null },
+                        title = { Text("Login Status") },
+                        text = { Text(message) },
+                        confirmButton = {
+                            Button(
+                                onClick = { isAuthenticationSuccessful = null },
+                            ) {
+                                Text("OK")
+                            }
+                        }
+                    )
+                }
+
+                if (currentScreen == "Register") {
+                    RegisterPreview()
+                }
             }
         }
     }
@@ -161,5 +197,7 @@ fun LoginScreen() {
 @Composable
 @Preview(showBackground = true)
 fun LoginPreview(){
-    LoginScreen()
+    MaterialTheme {
+        LoginScreen()
+    }
 }
