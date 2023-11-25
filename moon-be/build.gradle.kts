@@ -44,3 +44,7 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+//bootJar {
+//    mainClassName = "vnu.uet.moonbe.MoonBeApplication"
+//}
