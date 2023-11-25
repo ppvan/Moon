@@ -66,20 +66,21 @@ android {
 
 dependencies {
 
-    val media3Version = "1.1.1"
+    val media3Version = "1.2.0"
     val materialVersion = "1.2.0-alpha10"
 
     // Simple Storage
     implementation("com.anggrayudi:storage:1.5.5")
 
     // ID3 Tagger
-    implementation("com.mpatric:mp3agic:0.9.1")
+//    implementation("com.mpatric:mp3agic:0.9.1")
     implementation("net.jthink:jaudiotagger:3.0.1")
 
 
     // ExoPlayer
     implementation("androidx.media3:media3-exoplayer:$media3Version")
     implementation("androidx.media3:media3-session:$media3Version")
+    implementation("androidx.media3:media3-exoplayer-dash:$media3Version")
 
     // YT android
     implementation("com.github.yausername.youtubedl-android:library:-SNAPSHOT")

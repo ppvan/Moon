@@ -1,5 +1,6 @@
 package me.ppvan.moon.ui.view.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,6 +51,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import me.ppvan.moon.R
+import me.ppvan.moon.data.model.Track
+import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.LoadingShimmerEffect
 import me.ppvan.moon.ui.component.SpeechToTextButton
@@ -66,6 +69,7 @@ fun SearchPage(context: ViewContext) {
 
     val ytViewModel = context.ytViewModel
     val downloadViewModel = context.downloadViewModel
+    val player = context.trackViewModel.player
 
     val resultItems by ytViewModel.searchResult.collectAsState()
     val isLoading by ytViewModel.isDataLoaded.collectAsState()
@@ -73,10 +77,20 @@ fun SearchPage(context: ViewContext) {
     Column {
 
         Spacer(modifier = Modifier.height(16.dp))
-        ResultList(resultItems = resultItems, onDownloadClick = {
-            val url = "https://www.youtube.com/watch?v=${it.id}"
-            downloadViewModel.downloadAudio(url)
-        }, isLoading)
+        ResultList(
+            resultItems = resultItems,
+            isLoading = isLoading,
+            onDownloadClick = {
+                downloadViewModel.downloadFromId(it.id)
+            },
+            onItemClick = {id ->
+                val url = ytViewModel.getPlayableUrl(id)
+                Log.d("INFO", url)
+                val track = Track.DEFAULT.copy(contentUri = url)
+                player.load(listOf(track))
+                context.navigator.navigate(Routes.NowPlaying.name)
+            }
+        )
     }
 }
 
@@ -88,52 +102,52 @@ fun SearchBar(
     active: Boolean,
     recommendations: List<String>,
     closeClick: () -> Unit,
-    ) {
-        DockedSearchBar(
-           modifier = Modifier
-               .fillMaxWidth()
-               .statusBarsPadding()
-               .padding(7.dp),
-           query = query,
-           onQueryChange = viewModel::onQueryChange,
-           onSearch = { viewModel.onSearch(query) },
-           active = active,
-           onActiveChange = viewModel::onActiveChange,
-           placeholder = {
-               Text(text = "Search music on Youtube")
-           },
-           leadingIcon = {
-               IconButton(onClick = closeClick) {
-                   Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "BackButton")
-               }
+) {
+    DockedSearchBar(
+        modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .padding(7.dp),
+        query = query,
+        onQueryChange = viewModel::onQueryChange,
+        onSearch = { viewModel.onSearch(query) },
+        active = active,
+        onActiveChange = viewModel::onActiveChange,
+        placeholder = {
+            Text(text = "Search music on Youtube")
+        },
+        leadingIcon = {
+            IconButton(onClick = closeClick) {
+                Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "BackButton")
+            }
 
-           },
-           trailingIcon = {
-               if (!active) {
-                   IconButton(onClick = viewModel::onClose) {
-                       Icon(imageVector = Icons.Outlined.Close, contentDescription = "Close Icon")
-                   }
-               }
-               else {
-                   SpeechToTextButton { spokenText ->
-                       viewModel.onQueryChange(spokenText)
-                       viewModel.onSearch(spokenText)
-                   }
-               }
-           }
-       ) {
-           RecommendationList(recommendations, viewModel::onSearch)
-       }
+        },
+        trailingIcon = {
+            if (!active) {
+                IconButton(onClick = viewModel::onClose) {
+                    Icon(imageVector = Icons.Outlined.Close, contentDescription = "Close Icon")
+                }
+            } else {
+                SpeechToTextButton { spokenText ->
+                    viewModel.onQueryChange(spokenText)
+                    viewModel.onSearch(spokenText)
+                }
+            }
+        }
+    ) {
+        RecommendationList(recommendations, viewModel::onSearch)
+    }
 
 }
 
 @Composable
 fun ResultList(
     resultItems: List<ResultItem>,
+    isLoading: Boolean,
     onDownloadClick: (ResultItem) -> Unit = {},
-    isLoading: Boolean
+    onItemClick: (String) -> Unit = {}
 ) {
-    if(!isLoading){
+    if (!isLoading) {
         LoadingShimmerEffect()
     } else {
         LazyColumn() {
@@ -141,7 +155,7 @@ fun ResultList(
                 ResultItem(
                     resultItem = item,
                     onDownloadClick = onDownloadClick,
-                    isLoading = isLoading
+                    onClick = { onItemClick(item.id) }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
@@ -151,7 +165,7 @@ fun ResultList(
 
 @Composable
 fun RecommendationList(recommendations: List<String>, onItemClick: (String) -> Unit) {
-    LazyColumn (modifier = Modifier.imePadding()) {
+    LazyColumn(modifier = Modifier.imePadding()) {
         items(recommendations) { item ->
             ListItem(
                 modifier = Modifier.clickable { onItemClick(item) },
@@ -171,8 +185,7 @@ fun RecommendationList(recommendations: List<String>, onItemClick: (String) -> U
 fun ResultItem(
     resultItem: ResultItem,
     onDownloadClick: (ResultItem) -> Unit = {},
-    onClick: () -> Unit = {},
-    isLoading: Boolean
+    onClick: () -> Unit = {}
 ) {
 
     var openDialog by remember {
@@ -193,57 +206,60 @@ fun ResultItem(
                 .height(IntrinsicSize.Min)
                 .background(color = MaterialTheme.colorScheme.surface),
             verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                Modifier
+                    .size(50.dp, 50.dp)
+                    .clip(shape = RoundedCornerShape(8.dp))
             ) {
-                Box(
-                    Modifier
-                        .size(50.dp, 50.dp)
-                        .clip(shape = RoundedCornerShape(8.dp))
-                ) {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(resultItem.thumbnailUrl)
-                            .error(R.drawable.thumbnail)
-                            .crossfade(true)
-                            .build(),
-                        placeholder = painterResource(R.drawable.thumbnail),
-                        contentDescription = "Music thumbnail",
-                        contentScale = ContentScale.Crop
-                    )
-                }
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(resultItem.thumbnailUrl)
+                        .error(R.drawable.thumbnail)
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(R.drawable.thumbnail),
+                    contentDescription = "Music thumbnail",
+                    contentScale = ContentScale.Crop
+                )
+            }
 
-                Spacer(modifier = Modifier.width(12.dp))
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight(),
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
 //                verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = resultItem.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                    Text(text = resultItem.uploader, style = MaterialTheme.typography.labelMedium)
+            ) {
+                Text(text = resultItem.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(text = resultItem.uploader, style = MaterialTheme.typography.labelMedium)
 
-                    when (resultItem.state) {
-                        ResultItemState.NONE -> {}
-                        ResultItemState.DOWNLOADING -> {
-                            Text(text = resultItem.state.message, style = MaterialTheme.typography.labelSmall)
-                        }
-                    }
-                }
-
-                IconButton(onClick = { openDialog = true }) {
-                    Icon(imageVector = Icons.Outlined.SaveAlt, contentDescription = "SaveAlt")
-                }
-
-                if (openDialog) {
-                    ConfirmDialog(
-                        title = "",
-                        content = "Download ${resultItem.title} ?",
-                        onDismissRequest = { openDialog =  false }) {
-
-                        onDownloadClick(resultItem)
-                        openDialog = false
+                when (resultItem.state) {
+                    ResultItemState.NONE -> {}
+                    ResultItemState.DOWNLOADING -> {
+                        Text(
+                            text = resultItem.state.message,
+                            style = MaterialTheme.typography.labelSmall
+                        )
                     }
                 }
             }
+
+            IconButton(onClick = { openDialog = true }) {
+                Icon(imageVector = Icons.Outlined.SaveAlt, contentDescription = "SaveAlt")
+            }
+
+            if (openDialog) {
+                ConfirmDialog(
+                    title = "",
+                    content = "Download ${resultItem.title} ?",
+                    onDismissRequest = { openDialog = false }) {
+
+                    onDownloadClick(resultItem)
+                    openDialog = false
+                }
+            }
+        }
 
 
     }
@@ -258,8 +274,7 @@ fun ConfirmDialog(
     onConfirmation: () -> Unit,
 
 
-
-) {
+    ) {
     AlertDialog(
         text = {
             Text(text = content)

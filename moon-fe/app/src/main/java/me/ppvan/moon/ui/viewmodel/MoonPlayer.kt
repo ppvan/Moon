@@ -119,14 +119,16 @@ MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listene
                 .build()
         })
     }
+
+    fun addUrlItem(url: String) {
+        player.addMediaItem(0, MediaItem.fromUri(url))
+    }
+
     fun isPlaying(): Boolean {
         return _playerState.value == PlayerState.STATE_PLAYING
     }
-    fun preparePlay(track: Track, playWhenReady: Boolean = true) {
-        if (player.playbackState == Player.STATE_IDLE) player.prepare()
-        val tracks = getShuffleQueue(playbackState.value)
 
-        val index = tracks.indexOf(track)
+    fun preparePlayAtIndex(index: Int, playWhenReady: Boolean) {
         if (index != -1) {
             player.seekTo(index, 0)
         } else {
@@ -135,6 +137,14 @@ MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listene
 
 
         player.playWhenReady = playWhenReady
+    }
+
+    fun preparePlay(track: Track, playWhenReady: Boolean = true) {
+        if (player.playbackState == Player.STATE_IDLE) player.prepare()
+        val tracks = getShuffleQueue(playbackState.value)
+
+        val index = tracks.indexOf(track)
+        preparePlayAtIndex(index, playWhenReady)
     }
 
     fun next() {
