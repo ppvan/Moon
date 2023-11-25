@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import vnu.uet.moonbe.dto.AuthenticationDto;
 import vnu.uet.moonbe.dto.RegisterDto;
 import vnu.uet.moonbe.dto.TokenResponseDto;
+import vnu.uet.moonbe.exceptions.EmailAlreadyExistsException;
 import vnu.uet.moonbe.models.Role;
 import vnu.uet.moonbe.models.Token;
 import vnu.uet.moonbe.models.TokenType;
@@ -32,6 +35,9 @@ public class AuthenticationService {
   private final AuthenticationManager authenticationManager;
 
   public TokenResponseDto register(RegisterDto request) {
+    if (repository.existsByEmail(request.getEmail())) {
+      throw new EmailAlreadyExistsException("Email already exists");
+    }
     var user = User.builder()
         .firstname(request.getFirstname())
         .lastname(request.getLastname())
@@ -51,6 +57,7 @@ public class AuthenticationService {
   }
 
   public TokenResponseDto authenticate(AuthenticationDto request) {
+
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
             request.getEmail(),
