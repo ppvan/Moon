@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.EditNote
@@ -40,13 +41,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import me.ppvan.moon.R
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
+import me.ppvan.moon.ui.component.AddToPlaylistDialog
 import me.ppvan.moon.ui.viewmodel.MoonPlayer
 
 
@@ -66,7 +67,7 @@ fun SongsPage(context: ViewContext) {
 //                Text(text = track.title)
 //            }
 //        }
-        SongList(songs = allTracks, navigator = context.navigator) {
+        SongList(songs = allTracks, context = context) {
             player.load(allTracks)
             player.preparePlay(it)
         }
@@ -76,7 +77,7 @@ fun SongsPage(context: ViewContext) {
 
 @Composable
 fun SongList(
-    navigator : NavHostController,
+    context: ViewContext,
     songs: List<Track> = List(10) { Track.DEFAULT },
     onItemClick: (item: Track) -> Unit = {},
 ) {
@@ -86,12 +87,12 @@ fun SongList(
         ) {
             items(songs, key = { track ->
                 track.contentUri
-            }) {song ->
+            }) { song ->
                 SongListItem(
                     Modifier.fillMaxWidth(),
                     track = song,
                     onClick = { onItemClick(song) },
-                    navigator = navigator
+                    context = context
                 )
             }
         }
@@ -103,7 +104,7 @@ fun SongListItem(
     modifier: Modifier = Modifier,
     track: Track = Track.DEFAULT,
     onClick: () -> Unit = {},
-    navigator: NavHostController
+    context: ViewContext
 ) {
     Column(
         modifier = modifier.clickable {
@@ -148,21 +149,25 @@ fun SongListItem(
                     onDismissRequest = {
                         showOptionsMenu = false
                     },
-                    track,
-                    navigator
+                    track = track,
+                    viewContext = context
                 )
             }
 
         }
     }
 }
+
 @Composable
 fun SongDropdownMenu(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     track: Track,
-    navigator: NavHostController
+    viewContext: ViewContext
 ) {
+    var showPlaylistDialog by remember {
+        mutableStateOf(false)
+    }
 
     DropdownMenu(
         expanded = expanded,
@@ -185,13 +190,31 @@ fun SongDropdownMenu(
         )
         DropdownMenuItem(
             text = { Text("Edit tags") },
-            onClick = { navigator.navigate("${Routes.TagEdit.name}/${track.id}") },
+            onClick = {
+                onDismissRequest()
+                viewContext.navigator.navigate("${Routes.TagEdit.name}/${track.id}")
+            },
             leadingIcon = {
                 Icon(
                     Icons.Outlined.EditNote,
                     contentDescription = null
                 )
             })
+        DropdownMenuItem(
+            text = { Text("Add to playlist") },
+            onClick = { showPlaylistDialog = !showPlaylistDialog },
+            leadingIcon = {
+                Icon(
+                    Icons.AutoMirrored.Filled.PlaylistAdd,
+                    contentDescription = null
+                )
+            })
+    }
+
+    if (showPlaylistDialog) {
+        AddToPlaylistDialog(context = viewContext, songIds = emptyList()) {
+            showPlaylistDialog = false
+        }
     }
 }
 

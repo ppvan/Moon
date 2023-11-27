@@ -21,14 +21,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.hilt.navigation.compose.hiltViewModel
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.TopAppBarMinimalTitle
 import me.ppvan.moon.ui.view.home.BottomPlayer
 import me.ppvan.moon.ui.view.home.SongList
-import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.ui.viewmodel.ArtistViewModel
 import me.ppvan.moon.ui.viewmodel.MoonPlayer
 import me.ppvan.moon.ui.viewmodel.TrackViewModel
@@ -82,7 +80,7 @@ fun ArtistView(context: ViewContext, artistId: Long) {
                     .fillMaxSize()
             ) {
                     SongList(
-                        navigator = context.navigator,
+                        context = context,
                         songs = allSongs,
                         ){
                         player.load(allSongs)
