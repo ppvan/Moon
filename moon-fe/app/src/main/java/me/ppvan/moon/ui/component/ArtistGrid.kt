@@ -15,7 +15,6 @@ import me.ppvan.moon.ui.activity.ViewContext
 fun ArtistGrid(
     context: ViewContext,
     artistList: List<Artist>,
-    artistsCount: Int? = null,
 ) {
     when {
         artistList.isEmpty() -> IconTextBody(
