@@ -17,9 +17,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.SaveAlt
@@ -51,7 +54,10 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import me.ppvan.moon.R
 import me.ppvan.moon.ui.activity.ViewContext
+import me.ppvan.moon.ui.component.ArtistTile
+import me.ppvan.moon.ui.component.IconTextBody
 import me.ppvan.moon.ui.component.LoadingShimmerEffect
+import me.ppvan.moon.ui.component.ResponsiveGrid
 import me.ppvan.moon.ui.component.SpeechToTextButton
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.viewmodel.ResultItem
@@ -69,15 +75,29 @@ fun SearchPage(context: ViewContext) {
 
     val resultItems by ytViewModel.searchResult.collectAsState()
     val isLoading by ytViewModel.isDataLoaded.collectAsState()
+    when {
+        resultItems.isEmpty() -> IconTextBody(
+            icon = { modifier ->
+                Icon(
+                    Icons.Filled.Search,
+                    null,
+                    modifier = modifier,
+                )
+            },
+            content = { Text("Search your favourite music") }
+        )
 
-    Column {
+        else -> Column {
 
-        Spacer(modifier = Modifier.height(16.dp))
-        ResultList(resultItems = resultItems, onDownloadClick = {
-            val url = "https://www.youtube.com/watch?v=${it.id}"
-            downloadViewModel.downloadAudio(url)
-        }, isLoading)
+            Spacer(modifier = Modifier.height(16.dp))
+            ResultList(resultItems = resultItems, onDownloadClick = {
+                val url = "https://www.youtube.com/watch?v=${it.id}"
+                downloadViewModel.downloadAudio(url)
+            }, isLoading)
+        }
     }
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
