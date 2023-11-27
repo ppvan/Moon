@@ -54,14 +54,6 @@ fun AlbumTile(album: Album , context: ViewContext, onClick: () -> Unit) {
             .error(R.drawable.thumbnail)
             .crossfade(true)
             .build(),
-        options = { expanded, onDismissRequest ->
-            AlbumDropdownMenu(
-//                context,
-//                album,
-                expanded = expanded,
-                onDismissRequest = onDismissRequest,
-            )
-        },
         content = {
             Text(
                 album.name,
@@ -96,7 +88,6 @@ fun AlbumTile(album: Album , context: ViewContext, onClick: () -> Unit) {
 @Composable
 fun SquareGrooveTile(
     image: ImageRequest,
-    options: @Composable (Boolean, () -> Unit) -> Unit,
     content: @Composable ColumnScope.() -> Unit,
     onPlay: () -> Unit,
     onClick: () -> Unit,
@@ -122,21 +113,6 @@ fun SquareGrooveTile(
                     )
                     Box(
                         modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(top = 4.dp)
-                    ) {
-                        var showOptionsMenu by remember { mutableStateOf(false) }
-                        IconButton(
-                            onClick = { showOptionsMenu = !showOptionsMenu }
-                        ) {
-                            Icon(Icons.Filled.MoreVert, null)
-                            options(showOptionsMenu) {
-                                showOptionsMenu = false
-                            }
-                        }
-                    }
-                    Box(
-                        modifier = Modifier
                             .align(Alignment.BottomStart)
                             .padding(8.dp)
                     ) {
@@ -158,103 +134,4 @@ fun SquareGrooveTile(
             }
         }
     }
-}
-@Composable
-fun AlbumDropdownMenu(
-//    context: ViewContext,
-//    album: Album,
-    expanded: Boolean,
-    onDismissRequest: () -> Unit
-) {
-//    var showAddToPlaylistDialog by remember { mutableStateOf(false) }
-
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = onDismissRequest
-    ) {
-        DropdownMenuItem(
-            leadingIcon = {
-                Icon(Icons.Filled.Person, null)
-            },
-            text = {
-//                Text(context.symphony.t.ShufflePlay)
-                Text(text = "Shuffle Play")
-            },
-            onClick = {
-                onDismissRequest()
-//                context.symphony.radio.shorty.playQueue(
-//                    context.symphony.groove.album.getSongIds(album.id),
-//                    shuffle = true,
-//                )
-            }
-        )
-        DropdownMenuItem(
-            leadingIcon = {
-                Icon(Icons.Filled.Person, null)
-            },
-            text = {
-                Text("Play Next")
-
-            },
-            onClick = {
-                onDismissRequest()
-//                context.symphony.radio.queue.add(
-//                    context.symphony.groove.album.getSongIds(album.id),
-//                    context.symphony.radio.queue.currentSongIndex + 1
-//                )
-            }
-        )
-        DropdownMenuItem(
-            leadingIcon = {
-                Icon(Icons.Filled.Person, null)
-            },
-            text = {
-                Text("Add to queue")
-            },
-            onClick = {
-                onDismissRequest()
-//                context.symphony.radio.queue.add(
-//                    context.symphony.groove.album.getSongIds(album.id)
-//                )
-            }
-        )
-        DropdownMenuItem(
-            leadingIcon = {
-                Icon(Icons.Filled.Person, null)
-            },
-            text = {
-                Text("Add to playlist")
-            },
-            onClick = {
-                onDismissRequest()
-//                showAddToPlaylistDialog = true
-            }
-        )
-//        album.artist?.let { artistName ->
-//            DropdownMenuItem(
-//                leadingIcon = {
-//                    Icon(Icons.Filled.Person, null)
-//                },
-//                text = {
-//                    Text(context.symphony.t.ViewArtist)
-//                },
-//                onClick = {
-//                    onDismissRequest()
-//                    context.navController.navigate(
-//                        RoutesBuilder.buildArtistRoute(artistName)
-//                    )
-//                }
-//            )
-//        }
-    }
-
-//    if (showAddToPlaylistDialog) {
-//        AddToPlaylistDialog(
-//            context,
-//            songIds = context.symphony.groove.album.getSongIds(album.id),
-//            onDismissRequest = {
-//                showAddToPlaylistDialog = false
-//            }
-//        )
-//    }
 }

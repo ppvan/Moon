@@ -29,14 +29,6 @@ fun ArtistTile(context: ViewContext, artist: Artist, onClick: () -> Unit) {
             .error(R.drawable.thumbnail)
             .crossfade(true)
             .build(),
-        options = { expanded, onDismissRequest ->
-            ArtistDropdownMenu(
-                context,
-                artist,
-                expanded = expanded,
-                onDismissRequest = onDismissRequest,
-            )
-        },
         content = {
             Text(
                 artist.name,
@@ -112,14 +104,4 @@ fun ArtistDropdownMenu(
             }
         )
     }
-
-//    if (showAddToPlaylistDialog) {
-//        AddToPlaylistDialog(
-//            context,
-//            songIds = context.symphony.groove.artist.getSongIds(artist.name),
-//            onDismissRequest = {
-//                showAddToPlaylistDialog = false
-//            }
-//        )
-//    }
 }
