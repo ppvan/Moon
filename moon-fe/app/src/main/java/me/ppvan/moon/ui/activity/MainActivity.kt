@@ -47,6 +47,7 @@ import me.ppvan.moon.ui.view.nowplaying.NowPlayingQueue
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.ui.viewmodel.ArtistViewModel
+import me.ppvan.moon.ui.viewmodel.PlaylistViewModel
 import me.ppvan.moon.ui.viewmodel.TagEditViewModel
 import me.ppvan.moon.ui.viewmodel.TrackViewModel
 import me.ppvan.moon.ui.viewmodel.YTViewModel
@@ -80,6 +81,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var tagEditViewModel: TagEditViewModel
+
+    @Inject
+    lateinit var playlistViewModel: PlaylistViewModel
 
     private val storageHelper = SimpleStorageHelper(this)
 
@@ -119,7 +123,8 @@ class MainActivity : ComponentActivity() {
                         albumViewModel = albumViewModel,
                         artistViewModel = artistViewModel,
                         downloadViewModel = downloadViewModel,
-                        tagEditViewModel = tagEditViewModel
+                        tagEditViewModel = tagEditViewModel,
+                        playlistViewModel = playlistViewModel
                     )
 
                 }
@@ -177,6 +182,7 @@ data class ViewContext(
     val artistViewModel: ArtistViewModel,
     val downloadViewModel: DownloadViewModel,
     val tagEditViewModel: TagEditViewModel,
+    val playlistViewModel: PlaylistViewModel
 )
 
 @Composable
@@ -188,6 +194,7 @@ fun MoonApp(
     artistViewModel: ArtistViewModel,
     downloadViewModel: DownloadViewModel,
     tagEditViewModel: TagEditViewModel,
+    playlistViewModel: PlaylistViewModel,
     navController: NavHostController = rememberNavController()
 ) {
 
@@ -199,7 +206,8 @@ fun MoonApp(
         albumViewModel = albumViewModel,
         artistViewModel = artistViewModel,
         downloadViewModel = downloadViewModel,
-        tagEditViewModel = tagEditViewModel
+        tagEditViewModel = tagEditViewModel,
+        playlistViewModel = playlistViewModel
     )
 
     NavHost(navController = navController, startDestination = Routes.Home.name) {
