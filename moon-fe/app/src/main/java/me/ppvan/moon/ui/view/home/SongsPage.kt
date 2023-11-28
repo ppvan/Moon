@@ -85,9 +85,7 @@ fun SongList(
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            items(songs, key = { track ->
-                track.contentUri
-            }) { song ->
+            items(songs) { song ->
                 SongListItem(
                     Modifier.fillMaxWidth(),
                     track = song,

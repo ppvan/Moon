@@ -33,7 +33,7 @@ fun PlaylistGrid(
             itemsIndexed(playlists) { _,
                                       playlist ->
                 PlaylistTile(context = context, playlist = playlist) {
-//                    context.navigator.navigate("playlist_page/${playlist.id}")
+                    context.navigator.navigate("playlist_page/${playlist.id}")
                 }
             }
         }

@@ -2,7 +2,6 @@ package me.ppvan.moon.ui.view
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -81,7 +80,6 @@ fun PlaylistView(context: ViewContext, playlistId: Long) {
                 modifier = Modifier
                     .padding(contentPadding)
                     .fillMaxSize()
-                    .background(Color.Red)
             ) {
 
                 SongList(
@@ -122,4 +120,6 @@ fun PlaylistView(context: ViewContext, playlistId: Long) {
             }
         }
     )
+
+//    Box(modifier = Modifier.background(Color.Red))
 }
