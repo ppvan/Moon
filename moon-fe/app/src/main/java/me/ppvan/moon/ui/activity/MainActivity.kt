@@ -41,12 +41,14 @@ import me.ppvan.moon.ui.Nav.graphs.ArtistGraph
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.DownloadView
 import me.ppvan.moon.ui.view.HomeView
+import me.ppvan.moon.ui.view.ProfileView
 import me.ppvan.moon.ui.view.SettingView
 import me.ppvan.moon.ui.view.TagEditView
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingQueue
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.ui.viewmodel.ArtistViewModel
+import me.ppvan.moon.ui.viewmodel.ProfileViewModel
 import me.ppvan.moon.ui.viewmodel.TagEditViewModel
 import me.ppvan.moon.ui.viewmodel.TrackViewModel
 import me.ppvan.moon.ui.viewmodel.YTViewModel
@@ -80,6 +82,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var tagEditViewModel: TagEditViewModel
+
+    @Inject
+    lateinit var profileViewModel: ProfileViewModel
 
     private val storageHelper = SimpleStorageHelper(this)
 
@@ -119,7 +124,8 @@ class MainActivity : ComponentActivity() {
                         albumViewModel = albumViewModel,
                         artistViewModel = artistViewModel,
                         downloadViewModel = downloadViewModel,
-                        tagEditViewModel = tagEditViewModel
+                        tagEditViewModel = tagEditViewModel,
+                        profileViewModel = profileViewModel
                     )
 
                 }
@@ -177,6 +183,7 @@ data class ViewContext(
     val artistViewModel: ArtistViewModel,
     val downloadViewModel: DownloadViewModel,
     val tagEditViewModel: TagEditViewModel,
+    val profileViewModel: ProfileViewModel
 )
 
 @Composable
@@ -188,7 +195,8 @@ fun MoonApp(
     artistViewModel: ArtistViewModel,
     downloadViewModel: DownloadViewModel,
     tagEditViewModel: TagEditViewModel,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    profileViewModel: ProfileViewModel
 ) {
 
     val context = ViewContext(
@@ -199,7 +207,8 @@ fun MoonApp(
         albumViewModel = albumViewModel,
         artistViewModel = artistViewModel,
         downloadViewModel = downloadViewModel,
-        tagEditViewModel = tagEditViewModel
+        tagEditViewModel = tagEditViewModel,
+        profileViewModel =  profileViewModel
     )
 
     NavHost(navController = navController, startDestination = Routes.Home.name) {
@@ -247,7 +256,13 @@ fun MoonApp(
         ) {
             DownloadView(context)
         }
-
+        composable(
+            Routes.Profile.name,
+            enterTransition = { ScaleTransition.scaleDown.enterTransition() },
+            exitTransition = { ScaleTransition.scaleUp.exitTransition() },
+        ) {
+            ProfileView(context)
+        }
         composable(
             "${Routes.TagEdit.name}/{mediaId}",
             enterTransition = { ScaleTransition.scaleDown.enterTransition() },
@@ -260,5 +275,5 @@ fun MoonApp(
 
 
 enum class Routes() {
-    Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download, TagEdit
+    Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download, TagEdit, Profile
 }

@@ -122,7 +122,7 @@ fun HomeView(
                             title = page.label,
                             navigationIcon = {
                                 AvatarIcon(imageResource = R.drawable.bocchi) {
-
+                                    context.navigator.navigate(Routes.Profile.name)
                                 }
                             },
                             menuItems = {
@@ -203,7 +203,6 @@ fun HomeView(
                 MoonPages.Search -> SearchPage(context)
                 MoonPages.Artist -> ArtistsPage(context)
                 MoonPages.Playlist -> PlaylistPage()
-
                 else -> {
                     Text(text = "Not implemented")
                 }
