@@ -19,7 +19,8 @@ class PlaylistViewModel @Inject constructor(
 
 
     init {
-
+        playListSongs.clear()
+        playListSongs.addAll(List(10) { Track.DEFAULT })
     }
 
     fun updatePlaylist() {

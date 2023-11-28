@@ -16,7 +16,7 @@ import me.ppvan.moon.ui.component.ResponsiveGrid
 fun PlaylistGrid(
     context: ViewContext,
     playlists: List<Playlist> = List(10) { Playlist.default() },
-){
+) {
     when {
         playlists.isEmpty() -> IconTextBody(
             icon = { modifier ->
@@ -30,12 +30,11 @@ fun PlaylistGrid(
         )
 
         else -> ResponsiveGrid {
-            itemsIndexed(
-                playlists,
-                key = { i, x -> "$i-$x" },
-
-            ) { _,
-                playlist -> PlaylistTile(context = context, playlist = playlist) { context.navigator.navigate("album_page/${playlist.id}") }
+            itemsIndexed(playlists) { _,
+                                      playlist ->
+                PlaylistTile(context = context, playlist = playlist) {
+//                    context.navigator.navigate("playlist_page/${playlist.id}")
+                }
             }
         }
     }

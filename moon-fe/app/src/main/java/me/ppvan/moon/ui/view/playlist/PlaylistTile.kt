@@ -48,7 +48,6 @@ fun PlaylistTile(context: ViewContext, playlist: Playlist, onClick: () -> Unit) 
         },
         onClick = {
             onClick();
-
         }
     )
 }

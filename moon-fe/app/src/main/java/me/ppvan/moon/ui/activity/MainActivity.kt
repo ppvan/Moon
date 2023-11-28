@@ -36,8 +36,9 @@ import kotlinx.coroutines.launch
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.services.MoonMediaService
 import me.ppvan.moon.services.PermissionsManager
-import me.ppvan.moon.ui.Nav.graphs.AlbumGraph
-import me.ppvan.moon.ui.Nav.graphs.ArtistGraph
+import me.ppvan.moon.ui.nav.graphs.AlbumGraph
+import me.ppvan.moon.ui.nav.graphs.ArtistGraph
+import me.ppvan.moon.ui.nav.graphs.PlaylistGraph
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.DownloadView
 import me.ppvan.moon.ui.view.HomeView
@@ -263,6 +264,8 @@ fun MoonApp(
         ) {
             it.arguments?.let { it1 -> TagEditView(context, it1.getString("mediaId", "")) }
         }
+
+        PlaylistGraph(context)
     }
 }
 

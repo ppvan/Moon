@@ -1,4 +1,4 @@
-package me.ppvan.moon.ui.Nav
+package me.ppvan.moon.ui.nav
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
@@ -48,5 +48,14 @@ object ArtistNavGraph {
     val artist = NavGraphItem(
         "artist_page/{artistId}",
         listOf(navArgument("artistId") { type = NavType.StringType })
+    )
+}
+
+object PlaylistNavGraph {
+    val root = NavGraphItem("playlist_page")
+    val search = NavGraphItem("playlist_search")
+    val playlist = NavGraphItem(
+        "playlist_page/{playlistId}",
+        listOf(navArgument("playlistId") { type = NavType.StringType })
     )
 }
