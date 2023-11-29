@@ -1,27 +1,33 @@
 package me.ppvan.moon.data.model
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 data class Playlist(
-    val id: Int,
-    val name: String,
-    val songs: List<Track>
+    @PrimaryKey(autoGenerate = true)
+    val playlistId: Long = 0,
+    @ColumnInfo(name = "name")
+    val name: String
 ) {
     companion object {
         fun default() : Playlist {
             return Playlist(
-                id = 123,
-                name = "My Default playlist",
-                songs = List(10) {Track.DEFAULT },
+                playlistId = 123,
+                name = "My Default playlist"
             )
         }
     }
 
     val thumbnail: String
-        get() {
-            return if (songs.isEmpty()) {
-                ""
-            } else {
-                songs.first().thumbnailUri
-            }
-        }
+        get() = ""
+//        get() {
+//            return if (songs.isEmpty()) {
+//                ""
+//            } else {
+//                songs.first().thumbnailUri
+//            }
+//        }
 }
 

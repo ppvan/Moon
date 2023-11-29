@@ -200,7 +200,10 @@ fun SongDropdownMenu(
             })
         DropdownMenuItem(
             text = { Text("Add to playlist") },
-            onClick = { showPlaylistDialog = !showPlaylistDialog },
+            onClick = {
+                onDismissRequest()
+                showPlaylistDialog = !showPlaylistDialog
+            },
             leadingIcon = {
                 Icon(
                     Icons.AutoMirrored.Filled.PlaylistAdd,

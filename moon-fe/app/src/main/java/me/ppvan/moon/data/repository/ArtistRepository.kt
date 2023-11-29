@@ -10,7 +10,6 @@ import me.ppvan.moon.data.model.Artist
 import me.ppvan.moon.data.model.Track
 import javax.inject.Inject
 
-@Suppress("DEPRECATION")
 class ArtistRepository @Inject constructor(@ApplicationContext val context: Context) {
     private var _allArtists = emptyList<Artist>()
 
