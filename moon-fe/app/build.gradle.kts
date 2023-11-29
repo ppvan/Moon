@@ -81,6 +81,13 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
 
 
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // Converter-gson (for Retrofit)
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
     // Simple Storage
     implementation("com.anggrayudi:storage:1.5.5")
 

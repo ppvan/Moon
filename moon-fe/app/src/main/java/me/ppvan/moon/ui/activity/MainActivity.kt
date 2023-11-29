@@ -42,6 +42,8 @@ import me.ppvan.moon.ui.nav.graphs.PlaylistGraph
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.DownloadView
 import me.ppvan.moon.ui.view.HomeView
+import me.ppvan.moon.ui.view.LoginScreen
+import me.ppvan.moon.ui.view.RegisterScreen
 import me.ppvan.moon.ui.view.SettingView
 import me.ppvan.moon.ui.view.TagEditView
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingQueue
@@ -266,10 +268,26 @@ fun MoonApp(
         }
 
         PlaylistGraph(context)
+
+        composable(
+            Routes.Register.name,
+            enterTransition = { ScaleTransition.scaleDown.enterTransition() },
+            exitTransition = { ScaleTransition.scaleUp.exitTransition() },
+        ) {
+            RegisterScreen()
+        }
+
+        composable(
+            Routes.Login.name,
+            enterTransition = { ScaleTransition.scaleDown.enterTransition() },
+            exitTransition = { ScaleTransition.scaleUp.exitTransition() },
+        ) {
+            LoginScreen()
+        }
     }
 }
 
 
 enum class Routes() {
-    Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download, TagEdit
+    Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download, TagEdit, Register, Login
 }
