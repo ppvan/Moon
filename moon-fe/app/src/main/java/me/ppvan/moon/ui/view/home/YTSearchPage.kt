@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.SaveAlt
@@ -54,9 +55,9 @@ import me.ppvan.moon.R
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
+import me.ppvan.moon.ui.component.IconTextBody
 import me.ppvan.moon.ui.component.LoadingShimmerEffect
 import me.ppvan.moon.ui.component.SpeechToTextButton
-import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.viewmodel.ResultItem
 import me.ppvan.moon.ui.viewmodel.ResultItemState
 import me.ppvan.moon.ui.viewmodel.YTViewModel
@@ -73,25 +74,39 @@ fun SearchPage(context: ViewContext) {
 
     val resultItems by ytViewModel.searchResult.collectAsState()
     val isLoading by ytViewModel.isDataLoaded.collectAsState()
-
-    Column {
-
-        Spacer(modifier = Modifier.height(16.dp))
-        ResultList(
-            resultItems = resultItems,
-            isLoading = isLoading,
-            onDownloadClick = {
-                downloadViewModel.downloadFromId(it.id)
+    when {
+        resultItems.isEmpty() -> IconTextBody(
+            icon = { modifier ->
+                Icon(
+                    Icons.Filled.Search,
+                    null,
+                    modifier = modifier,
+                )
             },
-            onItemClick = {id ->
-                val url = ytViewModel.getPlayableUrl(id)
-                Log.d("INFO", url)
-                val track = Track.DEFAULT.copy(contentUri = url)
-                player.load(listOf(track))
-                context.navigator.navigate(Routes.NowPlaying.name)
-            }
+            content = { Text("Search your favourite music") }
         )
-    }
+
+        else -> Column {
+
+            Spacer(modifier = Modifier.height(16.dp))
+            ResultList(
+                resultItems = resultItems,
+                isLoading = isLoading,
+                onDownloadClick = {
+                    downloadViewModel.downloadFromId(it.id)
+                },
+                onItemClick = {id ->
+                    val url = ytViewModel.getPlayableUrl(id)
+                    Log.d("INFO", url)
+                    val track = Track.DEFAULT.copy(contentUri = url)
+                    player.load(listOf(track))
+                    context.navigator.navigate(Routes.NowPlaying.name)
+                }
+            )
+        }
+}
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -155,6 +170,7 @@ fun ResultList(
                 ResultItem(
                     resultItem = item,
                     onDownloadClick = onDownloadClick,
+                    isLoading = isLoading,
                     onClick = { onItemClick(item.id) }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -185,7 +201,8 @@ fun RecommendationList(recommendations: List<String>, onItemClick: (String) -> U
 fun ResultItem(
     resultItem: ResultItem,
     onDownloadClick: (ResultItem) -> Unit = {},
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    isLoading: Boolean
 ) {
 
     var openDialog by remember {
@@ -206,60 +223,57 @@ fun ResultItem(
                 .height(IntrinsicSize.Min)
                 .background(color = MaterialTheme.colorScheme.surface),
             verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                Modifier
-                    .size(50.dp, 50.dp)
-                    .clip(shape = RoundedCornerShape(8.dp))
             ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(resultItem.thumbnailUrl)
-                        .error(R.drawable.thumbnail)
-                        .crossfade(true)
-                        .build(),
-                    placeholder = painterResource(R.drawable.thumbnail),
-                    contentDescription = "Music thumbnail",
-                    contentScale = ContentScale.Crop
-                )
-            }
+                Box(
+                    Modifier
+                        .size(50.dp, 50.dp)
+                        .clip(shape = RoundedCornerShape(8.dp))
+                ) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(resultItem.thumbnailUrl)
+                            .error(R.drawable.thumbnail)
+                            .crossfade(true)
+                            .build(),
+                        placeholder = painterResource(R.drawable.thumbnail),
+                        contentDescription = "Music thumbnail",
+                        contentScale = ContentScale.Crop
+                    )
+                }
 
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
 //                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = resultItem.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
-                Text(text = resultItem.uploader, style = MaterialTheme.typography.labelMedium)
+                ) {
+                    Text(text = resultItem.title, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(text = resultItem.uploader, style = MaterialTheme.typography.labelMedium)
 
-                when (resultItem.state) {
-                    ResultItemState.NONE -> {}
-                    ResultItemState.DOWNLOADING -> {
-                        Text(
-                            text = resultItem.state.message,
-                            style = MaterialTheme.typography.labelSmall
-                        )
+                    when (resultItem.state) {
+                        ResultItemState.NONE -> {}
+                        ResultItemState.DOWNLOADING -> {
+                            Text(text = resultItem.state.message, style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
+                }
+
+                IconButton(onClick = { openDialog = true }) {
+                    Icon(imageVector = Icons.Outlined.SaveAlt, contentDescription = "SaveAlt")
+                }
+
+                if (openDialog) {
+                    ConfirmDialog(
+                        title = "",
+                        content = "Download ${resultItem.title} ?",
+                        onDismissRequest = { openDialog =  false }) {
+
+                        onDownloadClick(resultItem)
+                        openDialog = false
                     }
                 }
             }
-
-            IconButton(onClick = { openDialog = true }) {
-                Icon(imageVector = Icons.Outlined.SaveAlt, contentDescription = "SaveAlt")
-            }
-
-            if (openDialog) {
-                ConfirmDialog(
-                    title = "",
-                    content = "Download ${resultItem.title} ?",
-                    onDismissRequest = { openDialog = false }) {
-
-                    onDownloadClick(resultItem)
-                    openDialog = false
-                }
-            }
-        }
 
 
     }
@@ -274,7 +288,8 @@ fun ConfirmDialog(
     onConfirmation: () -> Unit,
 
 
-    ) {
+
+) {
     AlertDialog(
         text = {
             Text(text = content)

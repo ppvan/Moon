@@ -43,6 +43,7 @@ import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.DownloadView
 import me.ppvan.moon.ui.view.HomeView
 import me.ppvan.moon.ui.view.LoginScreen
+import me.ppvan.moon.ui.view.ProfileView
 import me.ppvan.moon.ui.view.RegisterScreen
 import me.ppvan.moon.ui.view.SettingView
 import me.ppvan.moon.ui.view.TagEditView
@@ -51,6 +52,7 @@ import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.ui.viewmodel.ArtistViewModel
 import me.ppvan.moon.ui.viewmodel.PlaylistViewModel
+import me.ppvan.moon.ui.viewmodel.ProfileViewModel
 import me.ppvan.moon.ui.viewmodel.TagEditViewModel
 import me.ppvan.moon.ui.viewmodel.TrackViewModel
 import me.ppvan.moon.ui.viewmodel.YTViewModel
@@ -87,6 +89,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var playlistViewModel: PlaylistViewModel
+
+    @Inject
+    lateinit var profileViewModel: ProfileViewModel
 
     private val storageHelper = SimpleStorageHelper(this)
 
@@ -127,7 +132,8 @@ class MainActivity : ComponentActivity() {
                         artistViewModel = artistViewModel,
                         downloadViewModel = downloadViewModel,
                         tagEditViewModel = tagEditViewModel,
-                        playlistViewModel = playlistViewModel
+                        playlistViewModel = playlistViewModel,
+                        profileViewModel = profileViewModel
                     )
 
                 }
@@ -185,7 +191,8 @@ data class ViewContext(
     val artistViewModel: ArtistViewModel,
     val downloadViewModel: DownloadViewModel,
     val tagEditViewModel: TagEditViewModel,
-    val playlistViewModel: PlaylistViewModel
+    val playlistViewModel: PlaylistViewModel,
+    val profileViewModel: ProfileViewModel
 )
 
 @Composable
@@ -198,6 +205,7 @@ fun MoonApp(
     downloadViewModel: DownloadViewModel,
     tagEditViewModel: TagEditViewModel,
     playlistViewModel: PlaylistViewModel,
+    profileViewModel: ProfileViewModel,
     navController: NavHostController = rememberNavController()
 ) {
 
@@ -210,7 +218,8 @@ fun MoonApp(
         artistViewModel = artistViewModel,
         downloadViewModel = downloadViewModel,
         tagEditViewModel = tagEditViewModel,
-        playlistViewModel = playlistViewModel
+        playlistViewModel = playlistViewModel,
+        profileViewModel =  profileViewModel
     )
 
     NavHost(navController = navController, startDestination = Routes.Home.name) {
@@ -258,7 +267,13 @@ fun MoonApp(
         ) {
             DownloadView(context)
         }
-
+        composable(
+            Routes.Profile.name,
+            enterTransition = { ScaleTransition.scaleDown.enterTransition() },
+            exitTransition = { ScaleTransition.scaleUp.exitTransition() },
+        ) {
+            ProfileView(context)
+        }
         composable(
             "${Routes.TagEdit.name}/{mediaId}",
             enterTransition = { ScaleTransition.scaleDown.enterTransition() },
@@ -289,5 +304,5 @@ fun MoonApp(
 
 
 enum class Routes() {
-    Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download, TagEdit, Register, Login
+    Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download, TagEdit, Register, Login, Profile
 }
