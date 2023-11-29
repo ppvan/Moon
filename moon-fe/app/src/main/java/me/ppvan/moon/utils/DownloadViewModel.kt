@@ -57,6 +57,11 @@ class DownloadViewModel @Inject constructor(@ApplicationContext context: Context
         }
     }
 
+    fun downloadFromId(id: String) {
+        val url = "https://www.youtube.com/watch?v=${id}"
+        downloadAudio(url)
+    }
+
     private fun onProgress(progress: Float, duration: Long, message: String) {
         Log.i("INFO", "progress = $progress, duration = $duration, message = $message")
 

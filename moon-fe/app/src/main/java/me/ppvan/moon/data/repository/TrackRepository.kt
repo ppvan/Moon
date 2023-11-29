@@ -164,6 +164,8 @@ class TrackRepository @Inject constructor(@ApplicationContext val context: Conte
             }
         }
 
+        trackList.forEach { Log.d("INFO", it.title) }
+
         return trackList
     }
 

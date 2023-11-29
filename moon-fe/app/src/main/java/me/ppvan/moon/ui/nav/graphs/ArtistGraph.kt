@@ -1,13 +1,11 @@
-package me.ppvan.moon.ui.Nav.graphs
+package me.ppvan.moon.ui.nav.graphs
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import me.ppvan.moon.ui.Nav.AlbumNavGraph
-import me.ppvan.moon.ui.Nav.AppNavGraph
-import me.ppvan.moon.ui.Nav.ArtistNavGraph
 import me.ppvan.moon.ui.activity.ViewContext
-import me.ppvan.moon.ui.view.AlbumView
+import me.ppvan.moon.ui.nav.AppNavGraph
+import me.ppvan.moon.ui.nav.ArtistNavGraph
 import me.ppvan.moon.ui.view.ArtistView
 
 fun NavGraphBuilder.ArtistGraph(context: ViewContext) {

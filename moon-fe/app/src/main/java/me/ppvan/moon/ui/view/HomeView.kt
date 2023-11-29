@@ -198,7 +198,7 @@ fun HomeView(
                 MoonPages.Album -> AlbumsPage(context)
                 MoonPages.Search -> SearchPage(context)
                 MoonPages.Artist -> ArtistsPage(context)
-                MoonPages.Playlist -> PlaylistPage()
+                MoonPages.Playlist -> PlaylistPage(context)
 
                 else -> {
                     Text(text = "Not implemented")

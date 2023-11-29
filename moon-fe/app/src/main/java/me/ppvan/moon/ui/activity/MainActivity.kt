@@ -36,8 +36,9 @@ import kotlinx.coroutines.launch
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.services.MoonMediaService
 import me.ppvan.moon.services.PermissionsManager
-import me.ppvan.moon.ui.Nav.graphs.AlbumGraph
-import me.ppvan.moon.ui.Nav.graphs.ArtistGraph
+import me.ppvan.moon.ui.nav.graphs.AlbumGraph
+import me.ppvan.moon.ui.nav.graphs.ArtistGraph
+import me.ppvan.moon.ui.nav.graphs.PlaylistGraph
 import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.DownloadView
 import me.ppvan.moon.ui.view.HomeView
@@ -49,6 +50,7 @@ import me.ppvan.moon.ui.view.nowplaying.NowPlayingQueue
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.ui.viewmodel.ArtistViewModel
+import me.ppvan.moon.ui.viewmodel.PlaylistViewModel
 import me.ppvan.moon.ui.viewmodel.TagEditViewModel
 import me.ppvan.moon.ui.viewmodel.TrackViewModel
 import me.ppvan.moon.ui.viewmodel.YTViewModel
@@ -82,6 +84,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var tagEditViewModel: TagEditViewModel
+
+    @Inject
+    lateinit var playlistViewModel: PlaylistViewModel
 
     private val storageHelper = SimpleStorageHelper(this)
 
@@ -121,7 +126,8 @@ class MainActivity : ComponentActivity() {
                         albumViewModel = albumViewModel,
                         artistViewModel = artistViewModel,
                         downloadViewModel = downloadViewModel,
-                        tagEditViewModel = tagEditViewModel
+                        tagEditViewModel = tagEditViewModel,
+                        playlistViewModel = playlistViewModel
                     )
 
                 }
@@ -179,6 +185,7 @@ data class ViewContext(
     val artistViewModel: ArtistViewModel,
     val downloadViewModel: DownloadViewModel,
     val tagEditViewModel: TagEditViewModel,
+    val playlistViewModel: PlaylistViewModel
 )
 
 @Composable
@@ -190,6 +197,7 @@ fun MoonApp(
     artistViewModel: ArtistViewModel,
     downloadViewModel: DownloadViewModel,
     tagEditViewModel: TagEditViewModel,
+    playlistViewModel: PlaylistViewModel,
     navController: NavHostController = rememberNavController()
 ) {
 
@@ -201,11 +209,11 @@ fun MoonApp(
         albumViewModel = albumViewModel,
         artistViewModel = artistViewModel,
         downloadViewModel = downloadViewModel,
-        tagEditViewModel = tagEditViewModel
+        tagEditViewModel = tagEditViewModel,
+        playlistViewModel = playlistViewModel
     )
 
-//    NavHost(navController = navController, startDestination = Routes.Home.name) {
-    NavHost(navController = navController, startDestination = Routes.Register.name) {
+    NavHost(navController = navController, startDestination = Routes.Home.name) {
         AlbumGraph(context)
         composable(
             Routes.Home.name,
@@ -258,6 +266,8 @@ fun MoonApp(
         ) {
             it.arguments?.let { it1 -> TagEditView(context, it1.getString("mediaId", "")) }
         }
+
+        PlaylistGraph(context)
 
         composable(
             Routes.Register.name,

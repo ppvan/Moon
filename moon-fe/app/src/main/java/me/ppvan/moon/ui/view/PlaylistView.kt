@@ -3,9 +3,13 @@ package me.ppvan.moon.ui.view
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -27,23 +31,24 @@ import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.TopAppBarMinimalTitle
 import me.ppvan.moon.ui.view.home.BottomPlayer
 import me.ppvan.moon.ui.view.home.SongList
-import me.ppvan.moon.ui.viewmodel.ArtistViewModel
-import me.ppvan.moon.ui.viewmodel.MoonPlayer
-import me.ppvan.moon.ui.viewmodel.TrackViewModel
 import me.ppvan.moon.utils.SlideTransition
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ArtistView(context: ViewContext, artistId: Long) {
-    val artistViewModel: ArtistViewModel = context.artistViewModel
-    val trackViewModel: TrackViewModel = context. trackViewModel
-    val artist = artistViewModel.getArtistById(artistId)
-    val allSongs = artistViewModel.getSongsByAlbumId(artistId)
-    val allAlbums = artistViewModel.getAlbumById(artistId)
-    val player: MoonPlayer = trackViewModel.player
+fun PlaylistView(context: ViewContext, playlistId: Long) {
+
+    val playlistViewModel = context.playlistViewModel
+    val allTracks = playlistViewModel.playListSongs.toList()
+    val playlist by playlistViewModel.currentPlaylist.collectAsState()
+    val player = context.trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
     val bottomPlayerVisible = playbackState.track != Track.DEFAULT
+
+//    LaunchedEffect(key1 = playlistId) {
+//        playlistViewModel.updatePlaylist()
+//        Log.d("INFO", "Load playlist with id $playlistId}")
+//    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -51,7 +56,7 @@ fun ArtistView(context: ViewContext, artistId: Long) {
             CenterAlignedTopAppBar(
                 navigationIcon = {
                     IconButton(
-                        onClick = { context.navigator.popBackStack() }
+                        onClick = { context.navigator.popBackStack()  }
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
                     }
@@ -59,7 +64,7 @@ fun ArtistView(context: ViewContext, artistId: Long) {
                 title = {
                     TopAppBarMinimalTitle {
                         Text(
-                            "Artist" + (artist?.let { " - ${it.name}" } ?: ""),
+                            "Playlist - ${playlist.name}",
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -68,9 +73,6 @@ fun ArtistView(context: ViewContext, artistId: Long) {
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = Color.Transparent
                 ),
-                actions = {
-//                    IconButtonPlaceholder()
-                },
             )
         },
         content = { contentPadding ->
@@ -79,35 +81,45 @@ fun ArtistView(context: ViewContext, artistId: Long) {
                     .padding(contentPadding)
                     .fillMaxSize()
             ) {
-                    SongList(
-                        context = context,
-                        songs = allSongs,
-                        ){
-                        player.load(allSongs)
+
+                SongList(
+                    context,
+                    allTracks,
+                    onItemClick = {
+                        player.load(allTracks)
                         player.preparePlay(it)
                     }
-                }
-
+                )
+            }
         },
         bottomBar = {
             AnimatedContent(
                 targetState = bottomPlayerVisible,
                 label = "player",
-                modifier = Modifier.navigationBarsPadding(),
+//               modifier = Modifier.navigationBarsPadding(),
                 transitionSpec = {
                     SlideTransition.slideUp.enterTransition()
                         .togetherWith(SlideTransition.slideDown.exitTransition())
                 }
             ) { visible ->
                 if (visible) {
-                    BottomPlayer(
-                        playbackState = playbackState,
-                        onPausePlayClick = { player.playPause() },
-                        onNextClick = { player.next() },
-                        onClick = { context.navigator.navigate(Routes.NowPlaying.name) }
-                    )
+                    Column {
+                        BottomPlayer(
+                            playbackState = playbackState,
+                            onPausePlayClick = { player.playPause() },
+                            onNextClick = { player.next() },
+                            onClick = { context.navigator.navigate(Routes.NowPlaying.name) }
+                        )
+                        Spacer(
+                            Modifier.windowInsetsBottomHeight(
+                                WindowInsets.systemBars
+                            )
+                        )
+                    }
                 }
             }
         }
     )
+
+//    Box(modifier = Modifier.background(Color.Red))
 }

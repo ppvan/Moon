@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.beust.klaxon.JsonArray
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
+import com.yausername.youtubedl_android.YoutubeDL
+import com.yausername.youtubedl_android.YoutubeDLRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,18 +25,23 @@ import kotlinx.coroutines.withContext
 import me.ppvan.moon.utils.await
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.time.Duration
 import javax.inject.Inject
 import javax.inject.Singleton
 
 
 const val RECOMMEND_API =
     "https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q="
-const val SEARCH_API = "https://pipedapi.kavin.rocks/"
+const val SEARCH_API = "https://api-piped.mha.fi/"
 
 @Singleton
 class YTViewModel @Inject constructor() : ViewModel() {
 
-    private val okHttpClient = OkHttpClient()
+    private val okHttpClient = OkHttpClient().newBuilder()
+        .connectTimeout(Duration.ofSeconds(30))
+        .readTimeout(Duration.ofSeconds(30))
+        .writeTimeout(Duration.ofSeconds(30))
+        .build()
 
     private val _isRecommending = MutableStateFlow(false)
     val isRecommending = _isRecommending.asStateFlow()
@@ -52,6 +59,10 @@ class YTViewModel @Inject constructor() : ViewModel() {
     val isDataLoaded = _isDataLoaded.asStateFlow()
 
     private val _recommendations = MutableStateFlow(listOf<String>())
+
+    init {
+
+    }
 
     @OptIn(FlowPreview::class)
     val recommendations: StateFlow<List<String>> =
@@ -130,6 +141,7 @@ class YTViewModel @Inject constructor() : ViewModel() {
             val response = okHttpClient.newCall(request).await()
             val content = response.body!!.string()
             Log.e("INFO", content)
+            Log.d("INFO", url)
             val items = (parser.parse(StringBuilder(content)) as JsonObject)
                 .array<JsonObject>("items")!!
 
@@ -146,6 +158,7 @@ class YTViewModel @Inject constructor() : ViewModel() {
                         title = title,
                         uploader = uploader,
                         duration = duration,
+                        playbackUrl = "directUrl",
                         thumbnailUrl = thumb
                     )
                 )
@@ -154,6 +167,19 @@ class YTViewModel @Inject constructor() : ViewModel() {
 
         _isDataLoaded.emit(true)
         return result
+    }
+
+    fun getPlayableUrl(id: String): String {
+        val request = YoutubeDLRequest("https://www.youtube.com/watch?v=${id}")
+        val streamInfo = YoutubeDL.getInstance().getInfo(request)
+
+        val directUrl = streamInfo.formats!!.filter { format ->
+            format.vcodec == "none" && format.acodec != "none"
+        }.map { it.url.orEmpty() }.onEach {
+            Log.d("INFO", it)
+        }.first()
+
+        return directUrl
     }
 
     private fun getIdFromURL(url: String): String {
@@ -197,6 +223,7 @@ data class ResultItem(
     val uploader: String,
     val duration: Long,
     val thumbnailUrl: String,
+    val playbackUrl: String,
     val isLoading: Boolean = true,
 
     val state: ResultItemState = ResultItemState.NONE
