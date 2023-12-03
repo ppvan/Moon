@@ -6,8 +6,6 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.remember
 import me.ppvan.moon.data.model.Artist
 import me.ppvan.moon.ui.activity.ViewContext
 
@@ -15,7 +13,6 @@ import me.ppvan.moon.ui.activity.ViewContext
 fun ArtistGrid(
     context: ViewContext,
     artistList: List<Artist>,
-    artistsCount: Int? = null,
 ) {
     when {
         artistList.isEmpty() -> IconTextBody(

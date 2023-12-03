@@ -20,9 +20,6 @@ fun PlaylistTile(context: ViewContext, playlist: Playlist, onClick: () -> Unit) 
             .error(R.drawable.thumbnail)
             .crossfade(true)
             .build(),
-        options = { _, _ ->
-            {}
-        },
         content = {
             Text(
                 playlist.name,

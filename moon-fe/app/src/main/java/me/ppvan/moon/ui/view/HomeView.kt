@@ -38,9 +38,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import me.ppvan.moon.R
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
+import me.ppvan.moon.ui.component.AvatarIcon
 import me.ppvan.moon.ui.component.CenterTopAppBar
 import me.ppvan.moon.ui.component.CenterTopAppBarAction
 import me.ppvan.moon.ui.view.home.AlbumsPage
@@ -119,7 +121,9 @@ fun HomeView(
                         CenterTopAppBar(
                             title = page.label,
                             navigationIcon = {
-
+                                AvatarIcon(imageResource = R.drawable.bocchi) {
+                                    context.navigator.navigate(Routes.Profile.name)
+                                }
                             },
                             menuItems = {
                                 DropdownMenuItem(
@@ -199,7 +203,6 @@ fun HomeView(
                 MoonPages.Search -> SearchPage(context)
                 MoonPages.Artist -> ArtistsPage(context)
                 MoonPages.Playlist -> PlaylistPage(context)
-
                 else -> {
                     Text(text = "Not implemented")
                 }

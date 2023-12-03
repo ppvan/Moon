@@ -67,7 +67,7 @@ android {
 dependencies {
 
     val media3Version = "1.2.0"
-    val materialVersion = "1.2.0-alpha10"
+    val materialVersion = "1.2.0-alpha09"
     val room_version = "2.6.0"
 
     // Room database
