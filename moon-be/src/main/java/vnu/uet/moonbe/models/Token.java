@@ -20,6 +20,7 @@ public class Token {
   @Column(unique = true)
   public String token;
 
+  @Builder.Default
   @Enumerated(EnumType.STRING)
   public TokenType tokenType = TokenType.BEARER;
 

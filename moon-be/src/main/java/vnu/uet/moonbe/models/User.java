@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,6 +35,22 @@ public class User implements UserDetails {
 
   @OneToMany(mappedBy = "user")
   private List<Token> tokens;
+
+//  @Builder.Default
+//  @OneToMany(mappedBy = "user")
+//  private List<UserSongMapping> userSongMappings = new ArrayList<>();
+
+//  @Builder.Default
+//  @ManyToMany
+//  @JoinTable(
+//      name = "user_songs",
+//      joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+//      inverseJoinColumns = {
+//          @JoinColumn(name = "song_id", referencedColumnName = "id"),
+//          @JoinColumn(name = "type_service", referencedColumnName = "type_service")
+//      }
+//  )
+//  private List<Song> songs = new ArrayList<>();
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -69,4 +86,16 @@ public class User implements UserDetails {
   public boolean isEnabled() {
     return true;
   }
+
+//  public void addSong(Song song, String typeService) {
+//    UserSongMapping userSongMapping = new UserSongMapping();
+//    userSongMapping.setSong(song);
+//    userSongMapping.setTypeService(typeService);
+//
+//    song.getUserSongMappings().add(userSongMapping);
+//    userSongMapping.setUser(this);
+//
+////    songs.add(song);
+////    song.getUsers().add(this);
+//  }
 }
