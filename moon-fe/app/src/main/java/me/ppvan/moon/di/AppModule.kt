@@ -36,6 +36,6 @@ object AppModule {
             context.applicationContext,
             MoonDatabase::class.java,
             "moon_db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 }

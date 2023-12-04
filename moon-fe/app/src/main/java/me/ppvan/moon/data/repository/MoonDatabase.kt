@@ -6,7 +6,8 @@ import me.ppvan.moon.data.model.Playlist
 import me.ppvan.moon.data.model.PlaylistSongRef
 import me.ppvan.moon.data.model.Song
 
-@Database(entities = [Playlist::class, Song::class, PlaylistSongRef::class], version = 1, exportSchema = false)
+@Database(entities = [Playlist::class, Song::class, PlaylistSongRef::class], version = 2, exportSchema = false)
 abstract class MoonDatabase : RoomDatabase() {
     abstract fun playlistDao(): PlaylistDao
+    abstract fun songDao(): SongDao
 }

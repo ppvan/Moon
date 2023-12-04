@@ -54,15 +54,13 @@ fun AlbumTile(album: Album , context: ViewContext, onClick: () -> Unit) {
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
             )
-            album.artist?.let { artistName ->
-                Text(
-                    artistName,
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
+            Text(
+                album.artist,
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
         },
         onPlay = {
 //            context.symphony.radio.shorty.playQueue(
