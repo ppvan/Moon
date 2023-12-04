@@ -1,6 +1,7 @@
 package me.ppvan.moon.di
 
 import android.app.Application
+import android.content.ContentResolver
 import android.content.Context
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
@@ -10,7 +11,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import me.ppvan.moon.data.repository.MoonDatabase
+import me.ppvan.moon.data.dao.MoonDatabase
 import javax.inject.Singleton
 
 @Module
@@ -37,5 +38,11 @@ object AppModule {
             MoonDatabase::class.java,
             "moon_db"
         ).fallbackToDestructiveMigration().build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideContentResolver(@ApplicationContext context: Context): ContentResolver {
+        return context.contentResolver
     }
 }

@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Song(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     val songId: Long = 0,
     val albumId: Long = 0,
     val artistId: Long = 0,
@@ -18,6 +18,23 @@ data class Song(
     val discNumber: Int,
     val comment: String
 ) {
+
+    fun toTrack(): Track {
+
+        return run {
+            Track(
+                id = songId,
+                title = title,
+                artist = artist,
+                album = album,
+                thumbnailUri = thumbnail,
+                contentUri = content,
+                trackNumber = trackNumber,
+                discNumber = discNumber
+            )
+        }
+    }
+
     companion object {
         fun default(): Song {
             return Song(

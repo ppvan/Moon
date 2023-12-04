@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.data.repository.TrackRepository
+import me.ppvan.moon.services.MediaStoreSync
 import me.ppvan.moon.services.PermissionEvents
 import me.ppvan.moon.services.PermissionsManager
 import javax.inject.Inject
@@ -15,6 +16,7 @@ import javax.inject.Singleton
 @Singleton
 class TrackViewModel @Inject constructor(
     private val repository: TrackRepository,
+    private val mediaStoreSync: MediaStoreSync,
     val player: MoonPlayer,
     permissionsManager: PermissionsManager,
 ) : ViewModel() {
@@ -40,6 +42,7 @@ class TrackViewModel @Inject constructor(
             val tracks = repository.findAll()
             allTracks.clear()
             allTracks.addAll(tracks)
+            mediaStoreSync.syncWithMediaStore()
         }
     }
 }
