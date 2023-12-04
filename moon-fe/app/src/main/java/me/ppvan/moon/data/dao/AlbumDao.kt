@@ -11,11 +11,11 @@ import me.ppvan.moon.data.model.Album
 interface AlbumDao {
 
     @Query("SELECT * FROM album")
-    fun findAll(): List<Album>
+    suspend fun findAll(): List<Album>
 
     @Query("SELECT * FROM album WHERE id = :id")
-    fun findById(id: Long): Album
+    suspend fun findById(id: Long): Album
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(albums: List<Album>)
+    suspend fun insertAll(albums: List<Album>)
 }
