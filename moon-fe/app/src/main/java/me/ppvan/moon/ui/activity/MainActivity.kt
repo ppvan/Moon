@@ -140,7 +140,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             tagEditViewModel.pendingTrackWriteRequest
-                .filter { it != Track.DEFAULT }
+                .filter { it != Track.default() }
                 .onEach { track ->
 
                     val mediaFile = MediaStoreCompat.fromMediaId(this@MainActivity, MediaType.AUDIO, track.id)

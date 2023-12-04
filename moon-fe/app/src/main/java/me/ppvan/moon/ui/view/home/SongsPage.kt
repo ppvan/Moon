@@ -78,7 +78,7 @@ fun SongsPage(context: ViewContext) {
 @Composable
 fun SongList(
     context: ViewContext,
-    songs: List<Track> = List(10) { Track.DEFAULT },
+    songs: List<Track> = List(10) { Track.default() },
     onItemClick: (item: Track) -> Unit = {},
 ) {
     Column {
@@ -100,7 +100,7 @@ fun SongList(
 @Composable
 fun SongListItem(
     modifier: Modifier = Modifier,
-    track: Track = Track.DEFAULT,
+    track: Track = Track.default(),
     onClick: () -> Unit = {},
     context: ViewContext
 ) {

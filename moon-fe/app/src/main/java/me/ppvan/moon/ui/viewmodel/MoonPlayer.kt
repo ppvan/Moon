@@ -46,7 +46,7 @@ MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listene
     private var _playbackState = MutableStateFlow(PlaybackState.DEFAULT)
     val playbackState = _playbackState.asStateFlow()
 
-    private var _currentTrack = MutableStateFlow(Track.DEFAULT)
+    private var _currentTrack = MutableStateFlow(Track.default())
     val currentTrack = playbackState.map { it.track }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _currentTrack.value)
 
@@ -377,7 +377,7 @@ data class PlaybackState(
         else 0.0f
     companion object {
         val DEFAULT = PlaybackState(
-            track = Track.DEFAULT,
+            track = Track.default(),
             position = 0,
             duration = 0,
             state = PlayerState.STATE_IDLE

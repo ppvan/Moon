@@ -44,7 +44,7 @@ fun AlbumView(context: ViewContext, albumId: Long) {
     val album = albumViewModel.getAlbumById(albumId)
     val player = context.trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
-    val bottomPlayerVisible = playbackState.track != Track.DEFAULT
+    val bottomPlayerVisible = playbackState.track != Track.default()
 
 
     Scaffold(

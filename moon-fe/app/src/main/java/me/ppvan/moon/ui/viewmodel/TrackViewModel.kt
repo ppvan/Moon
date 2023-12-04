@@ -19,7 +19,7 @@ class TrackViewModel @Inject constructor(
     permissionsManager: PermissionsManager,
 ) : ViewModel() {
 
-    val allTracks = mutableStateListOf(Track.DEFAULT)
+    val allTracks = mutableStateListOf(Track.default())
 //    var size = 10
 
     init {

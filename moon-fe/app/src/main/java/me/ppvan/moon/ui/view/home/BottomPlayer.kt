@@ -139,7 +139,7 @@ fun GreetingPreview() {
     MoonTheme {
         BottomPlayer(
             PlaybackState(
-                track = Track.DEFAULT,
+                track = Track.default(),
                 position = 0L,
                 duration = 0L,
                 state = PlayerState.STATE_IDLE

@@ -20,13 +20,13 @@ class PlaylistViewModel @Inject constructor(
 ) : ViewModel() {
 
     val currentPlaylist = MutableStateFlow(Playlist.default())
-    val playListSongs = mutableStateListOf(Track.DEFAULT)
+    val playListSongs = mutableStateListOf(Track.default())
     val playlists = mutableStateListOf<Playlist>()
 
 
     init {
         playListSongs.clear()
-        playListSongs.addAll(List(10) { Track.DEFAULT })
+        playListSongs.addAll(List(10) { Track.default() })
         updatePlaylists()
     }
 
