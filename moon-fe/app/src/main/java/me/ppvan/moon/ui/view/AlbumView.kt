@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -40,12 +41,16 @@ import me.ppvan.moon.utils.SlideTransition
 fun AlbumView(context: ViewContext, albumId: Long) {
 
     val albumViewModel: AlbumViewModel = context.albumViewModel
-    val allTracks = albumViewModel.getSongsByAlbumId(albumId)
-    val album = albumViewModel.getAlbumById(albumId)
+    val allTracks by albumViewModel.currentSongs.collectAsState(initial = emptyList())
+    val album by albumViewModel.currentAlbum.collectAsState()
+
     val player = context.trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
-    val bottomPlayerVisible = playbackState.track != Track.DEFAULT
+    val bottomPlayerVisible = playbackState.track != Track.default()
 
+    LaunchedEffect(key1 = albumId) {
+        albumViewModel.onCurrentAlbumChanged(albumId)
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -61,7 +66,7 @@ fun AlbumView(context: ViewContext, albumId: Long) {
                 title = {
                     TopAppBarMinimalTitle {
                         Text(
-                            "Album" + (album?.let { " - ${it.name}" } ?: ""),
+                            "Album" + (album.let { " - ${it.name}" } ?: ""),
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                         )

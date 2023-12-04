@@ -98,7 +98,7 @@ fun SearchPage(context: ViewContext) {
                 onItemClick = {id ->
                     val url = ytViewModel.getPlayableUrl(id)
                     Log.d("INFO", url)
-                    val track = Track.DEFAULT.copy(contentUri = url)
+                    val track = Track.default().copy(contentUri = url)
                     player.load(listOf(track))
                     context.navigator.navigate(Routes.NowPlaying.name)
                 }

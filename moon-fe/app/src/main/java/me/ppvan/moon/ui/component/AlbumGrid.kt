@@ -7,14 +7,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import me.ppvan.moon.data.model.Album
-import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.ViewContext
 
 
 @Composable
 fun AlbumGrid(
     context: ViewContext,
-    albumList: List<Album> = List(10) { Album.DEFAULT },
+    albumList: List<Album> = List(10) { Album.default() },
 ){
     when {
         albumList.isEmpty() -> IconTextBody(

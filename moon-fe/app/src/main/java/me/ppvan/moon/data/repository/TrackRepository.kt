@@ -74,7 +74,7 @@ class TrackRepository @Inject constructor(@ApplicationContext val context: Conte
             }
         }
 
-        return Track.DEFAULT
+        return Track.default()
     }
 
 

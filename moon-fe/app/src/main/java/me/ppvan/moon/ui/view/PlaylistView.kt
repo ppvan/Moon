@@ -43,7 +43,7 @@ fun PlaylistView(context: ViewContext, playlistId: Long) {
     val playlist by playlistViewModel.currentPlaylist.collectAsState()
     val player = context.trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
-    val bottomPlayerVisible = playbackState.track != Track.DEFAULT
+    val bottomPlayerVisible = playbackState.track != Track.default()
 
 //    LaunchedEffect(key1 = playlistId) {
 //        playlistViewModel.updatePlaylist()

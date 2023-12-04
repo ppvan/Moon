@@ -104,8 +104,8 @@ fun NowPlayingQueue(
 
 @Composable
 fun NowPlayingQueueBody(
-    tracks: List<Track> = List(10) { Track.DEFAULT },
-    currentTrack: Track = Track.DEFAULT
+    tracks: List<Track> = List(10) { Track.default() },
+    currentTrack: Track = Track.default()
 ) {
 
     LazyColumn() {

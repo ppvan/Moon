@@ -2,17 +2,13 @@ package me.ppvan.moon.ui.activity
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -24,7 +20,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.anggrayudi.storage.SimpleStorageHelper
 import com.anggrayudi.storage.media.MediaStoreCompat
 import com.anggrayudi.storage.media.MediaType
 import dagger.hilt.android.AndroidEntryPoint
@@ -93,7 +88,6 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var profileViewModel: ProfileViewModel
 
-    private val storageHelper = SimpleStorageHelper(this)
 
     /*
         This code force to be here, to update mp3 tag
@@ -146,7 +140,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             tagEditViewModel.pendingTrackWriteRequest
-                .filter { it != Track.DEFAULT }
+                .filter { it != Track.default() }
                 .onEach { track ->
 
                     val mediaFile = MediaStoreCompat.fromMediaId(this@MainActivity, MediaType.AUDIO, track.id)
@@ -158,26 +152,11 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
-    private fun askManageMediaPermission() {
-        if (!MediaStore.canManageMedia(this)) {
-            launchMediaManagementIntent { }
-        }
-    }
-
     private fun startPlayerService() {
         lifecycleScope.launch(Dispatchers.Main) {
             val serviceIntent = Intent(this@MainActivity, MoonMediaService::class.java)
             startService(serviceIntent)
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.S)
-    private fun launchMediaManagementIntent(callback: () -> Unit) {
-        val intent = Intent(Settings.ACTION_REQUEST_MANAGE_MEDIA).apply {
-            data = Uri.parse("package:$packageName")
-        }
-        startActivity(intent)
     }
 
 }

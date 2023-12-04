@@ -43,7 +43,7 @@ fun ArtistView(context: ViewContext, artistId: Long) {
     val allAlbums = artistViewModel.getAlbumById(artistId)
     val player: MoonPlayer = trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
-    val bottomPlayerVisible = playbackState.track != Track.DEFAULT
+    val bottomPlayerVisible = playbackState.track != Track.default()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

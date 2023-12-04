@@ -67,7 +67,7 @@ fun HomeView(
     val ytViewModel = context.ytViewModel
     val player = trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
-    val bottomPlayerVisible = playbackState.track != Track.DEFAULT
+    val bottomPlayerVisible = playbackState.track != Track.default()
     val query by  ytViewModel.searchQuery.collectAsState()
     val recommendations by  ytViewModel.recommendations.collectAsState()
     val active by  ytViewModel.active.collectAsState()

@@ -10,7 +10,7 @@ import me.ppvan.moon.ui.component.AlbumGrid
 
 @Composable
 fun AlbumsPage(context: ViewContext) {
-    val allAlbums = context.albumViewModel.allAlbums
+    val allAlbums = context.albumViewModel.albums
     Surface(
         modifier = Modifier
             .fillMaxSize(), color = MaterialTheme.colorScheme.surface

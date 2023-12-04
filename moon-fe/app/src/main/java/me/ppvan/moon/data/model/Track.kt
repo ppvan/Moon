@@ -9,19 +9,33 @@ import androidx.media3.common.MediaItem
  * This is for consistency
  */
 data class Track(
-    val id: Long = 123,
-    val title: String = "Faded",
-    val artist: String = "Alan Walker",
-    val album: String = "Faded Song",
-    val thumbnailUri: String = "",
-    val contentUri: String = "",
+    val id: Long = 0,
+    val title: String,
+    val artist: String,
+    val album: String,
+    val thumbnailUri: String,
+    val contentUri: String,
     val songUri: Uri = Uri.EMPTY,
-    val trackNumber: Int = 124,
-    val discNumber: Int = 125,
-    val comment: String = "WW is the best"
+    val trackNumber: Int = 0,
+    val discNumber: Int = 0,
+    val comment: String = ""
 ) {
     companion object {
-        val DEFAULT = Track()
+
+        fun default(): Track {
+            return Track(
+                id = 0,
+                title = "Default Track",
+                artist = "Default Artist",
+                album = "Default Album",
+                thumbnailUri = "Default thumb",
+                contentUri = "Default content",
+                songUri = Uri.EMPTY,
+                trackNumber = 0,
+                discNumber = 0,
+                comment = "Default comment"
+            )
+        }
 
         fun fromMediaItem(mediaItem: MediaItem): Track {
             val metadata = mediaItem.mediaMetadata

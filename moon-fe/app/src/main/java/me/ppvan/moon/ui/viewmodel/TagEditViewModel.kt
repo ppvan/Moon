@@ -32,10 +32,10 @@ class TagEditViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    val pendingTrackWriteRequest: MutableStateFlow<Track> = MutableStateFlow(Track.DEFAULT)
+    val pendingTrackWriteRequest: MutableStateFlow<Track> = MutableStateFlow(Track.default())
 
 
-    private val _track = MutableStateFlow(Track.DEFAULT)
+    private val _track = MutableStateFlow(Track.default())
     val currentTrack = _track.asStateFlow()
 
     val cover = MutableStateFlow("")
