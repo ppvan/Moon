@@ -1,7 +1,9 @@
 package me.ppvan.moon.data.model
 
+import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+@Entity
 data class Album(
     @PrimaryKey
     val id: Long,
