@@ -32,7 +32,6 @@ fun ArtistGrid(
                 key = { i, x -> "$i-$x" },
             ) { _, artist ->
                     ArtistTile(context, artist){ context.navigator.navigate("artist_page/${artist.id}") }
-
             }
         }
     }

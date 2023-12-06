@@ -1,6 +1,8 @@
 package me.ppvan.moon.ui.view.home
 
 import android.content.Intent
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,27 +10,38 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.EditNote
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,9 +49,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -48,9 +63,96 @@ import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.AddToPlaylistDialog
+import me.ppvan.moon.ui.component.CenterTopAppBar
+import me.ppvan.moon.ui.component.TopAppBarMinimalTitle
 import me.ppvan.moon.ui.viewmodel.MoonPlayer
+import me.ppvan.moon.utils.SlideTransition
 
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SongScreen(context: ViewContext){
+    val player = context.trackViewModel.player
+    val playbackState by player.playbackState.collectAsState()
+    val bottomPlayerVisible = playbackState.track != Track.default()
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            CenterTopAppBar(
+                title = "Song",
+                navigationIcon = {
+                    IconButton(
+                        onClick = { context.navigator.popBackStack()  }
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
+                    }
+                },
+                menuItems = {
+                    DropdownMenuItem(
+                        text = { Text("ReScan") },
+                        onClick = { context.trackViewModel.reloadTracks() },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Outlined.Refresh,
+                                contentDescription = "ReScan"
+                            )
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text("Setting") },
+                        onClick = { context.navigator.navigate(route = Routes.Settings.name) },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Outlined.Settings,
+                                contentDescription = "Settings"
+                            )
+                        }
+                    )
+                }
+            )
+        },
+        content = { contentPadding ->
+            Box(
+                modifier = Modifier
+                    .padding(contentPadding)
+                    .fillMaxSize()
+            ) {
+                SongsPage(context = context)
+            }
+        },
+        bottomBar = {
+            Column {
+                AnimatedContent(
+                    targetState = bottomPlayerVisible,
+                    label = "player",
+//               modifier = Modifier.navigationBarsPadding(),
+                    transitionSpec = {
+                        SlideTransition.slideUp.enterTransition()
+                            .togetherWith(SlideTransition.slideDown.exitTransition())
+                    }
+                ) { visible ->
+                    if (visible) {
+                        Column {
+                            BottomPlayer(
+                                playbackState = playbackState,
+                                onPausePlayClick = { player.playPause() },
+                                onNextClick = { player.next() },
+                                onClick = { context.navigator.navigate(Routes.NowPlaying.name) }
+                            )
+                        }
+                    }
+                }
+                Spacer(
+                    Modifier.windowInsetsBottomHeight(
+                        WindowInsets.systemBars
+                    )
+                )
+            }
+
+        }
+    )
+}
 @Composable
 fun SongsPage(context: ViewContext) {
 
@@ -60,13 +162,9 @@ fun SongsPage(context: ViewContext) {
 
     Surface(
         modifier = Modifier
-            .fillMaxSize(), color = MaterialTheme.colorScheme.surface
+            .fillMaxSize()
+            .padding(start = 8.dp), color = MaterialTheme.colorScheme.surface
     ) {
-//        Column {
-//            for (track in allTracks) {
-//                Text(text = track.title)
-//            }
-//        }
         SongList(songs = allTracks, context = context) {
             player.load(allTracks)
             player.preparePlay(it)
