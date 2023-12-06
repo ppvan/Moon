@@ -9,11 +9,17 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SongDTO {
+public class DetailSongDto {
 
   private int  id;
   private String title;
   private String artist;
   private String genre;
   private String filePath;
+
+	public DetailSongDto(String title, String artist, String genre) {
+		this.title = title;
+		this.artist = artist;
+		this.genre = genre;
+	}
 }

@@ -1,7 +1,7 @@
 package vnu.uet.moonbe.models;
 
-//import com.alibou.security.token.Token;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,8 +23,8 @@ import java.util.List;
 public class User implements UserDetails {
 
   @Id
-  @GeneratedValue
-  private Integer id;
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private int id;
   private String firstname;
   private String lastname;
   private String email;
@@ -36,21 +36,17 @@ public class User implements UserDetails {
   @OneToMany(mappedBy = "user")
   private List<Token> tokens;
 
-//  @Builder.Default
-//  @OneToMany(mappedBy = "user")
-//  private List<UserSongMapping> userSongMappings = new ArrayList<>();
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private List<UserSongMapping> userSongMappings = new ArrayList<>();
 
-//  @Builder.Default
-//  @ManyToMany
-//  @JoinTable(
-//      name = "user_songs",
-//      joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-//      inverseJoinColumns = {
-//          @JoinColumn(name = "song_id", referencedColumnName = "id"),
-//          @JoinColumn(name = "type_service", referencedColumnName = "type_service")
-//      }
-//  )
-//  private List<Song> songs = new ArrayList<>();
+  @Transactional
+  public void addSong(Song song, ActionType actionType) {
+    UserSongMapping userSongMapping = new UserSongMapping(this, song, actionType);
+    userSongMapping.setActionType(actionType);
+    this.userSongMappings.add(userSongMapping);
+    song.getUserSongMappings().add(userSongMapping);
+  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -86,16 +82,4 @@ public class User implements UserDetails {
   public boolean isEnabled() {
     return true;
   }
-
-//  public void addSong(Song song, String typeService) {
-//    UserSongMapping userSongMapping = new UserSongMapping();
-//    userSongMapping.setSong(song);
-//    userSongMapping.setTypeService(typeService);
-//
-//    song.getUserSongMappings().add(userSongMapping);
-//    userSongMapping.setUser(this);
-//
-////    songs.add(song);
-////    song.getUsers().add(this);
-//  }
 }

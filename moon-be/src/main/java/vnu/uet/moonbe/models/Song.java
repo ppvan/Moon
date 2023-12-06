@@ -1,7 +1,10 @@
 package vnu.uet.moonbe.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,62 +16,32 @@ import java.util.List;
 @NoArgsConstructor
 public class Song {
 
-  public static final String PLAYLIST_DELIM = ";";
-
-    /*
-        This is metadata on the song, we don't store on the server database, it's in the metadata of the file.
-        var title string
-        var artist string
-        var album string
-        var genre string
-        var year string
-        var comment string
-        var thubnail string
-    */
+//  public static final String PLAYLIST_DELIM = ";";
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private int id;
-
-  //    title is the name of the file on local side.
   private String title;
-
   private String artist;
   private String genre;
 
-  //    Hashed is the hash of the file, in this system we consider same hash = same file.
-  //private String hashed;
-//    The song file has to be on somewhere on server, this is the path.
+	@Column(length = 255)
   private String filePath;
 
-  //    @ManyToMany(mappedBy = "songs")
-//    private List<User> users = new ArrayList<>();
+  @OneToMany(mappedBy = "song")
+  private List<UserSongMapping> userSongMappings = new ArrayList<>();
 
-//  @OneToMany(mappedBy = "song")
-//  private List<UserSongMapping> userSongMappings = new ArrayList<>();
+  public Song(int id, String title, String artist, String genre, String filePath) {
+    this.id = id;
+    this.title = title;
+    this.artist = artist;
+    this.genre = genre;
+    this.filePath = filePath;
+  }
+}
 
 //    A semi-colon separate list of playlist: Default;Favourite;....
-  //private String playlists;
-
-//  public Song(int id, String title, String artist, String genre, String filePath) {
-//    this.id = id;
-//    this.title = title;
-//    this.artist = artist;
-//    this.genre = genre;
-//    this.filePath = filePath;
-//  }
-
-//  public void addUser(User user, String typeService) {
-//    UserSongMapping userSongMapping = new UserSongMapping();
-//    userSongMapping.setUser(user);
-//    userSongMapping.setTypeService(typeService);
-//
-//    user.getUserSongMappings().add(userSongMapping);
-//    userSongMapping.setSong(this);
-//
-////        users.add(user);
-////        user.getSongs().add(this);
-//  }
+//private String playlists;
 
 //    public Song() {
 //        this("", "", "");
@@ -96,4 +69,3 @@ public class Song {
 //
 //        this.playlists = String.join(PLAYLIST_DELIM, newPlaylist);
 //    }
-}
