@@ -28,7 +28,7 @@ fun PlaylistAlbumTabRow(context: ViewContext) {
     var selectedTabIndex by remember { mutableStateOf(0) }
 
     val tabs = listOf("Album", "Playlist")
-
+    val allAlbums = context.albumViewModel.albums
 
     Column(
         modifier = Modifier
@@ -66,7 +66,7 @@ fun PlaylistAlbumTabRow(context: ViewContext) {
         }
 
         when (selectedTabIndex) {
-            0 -> AlbumList(context = context)
+            0 -> AlbumList(context = context,allAlbums)
             1 -> PlayList(context = context)
         }
     }

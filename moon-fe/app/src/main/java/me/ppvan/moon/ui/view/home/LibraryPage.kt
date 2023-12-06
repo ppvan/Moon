@@ -31,6 +31,7 @@ fun LibraryPage(context: ViewContext) {
     val trackViewModel = context.trackViewModel
     val allTracks = trackViewModel.allTracks.toList()
     val player: MoonPlayer = trackViewModel.player
+
     Surface(
         modifier = Modifier
             .fillMaxSize(), color = MaterialTheme.colorScheme.surface
