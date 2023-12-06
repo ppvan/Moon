@@ -38,10 +38,13 @@ import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.DownloadView
 import me.ppvan.moon.ui.view.HomeView
 import me.ppvan.moon.ui.view.LoginScreen
-import me.ppvan.moon.ui.view.ProfileView
 import me.ppvan.moon.ui.view.RegisterScreen
 import me.ppvan.moon.ui.view.SettingView
 import me.ppvan.moon.ui.view.TagEditView
+import me.ppvan.moon.ui.view.home.AlbumScreen
+import me.ppvan.moon.ui.view.home.ArtistScreen
+import me.ppvan.moon.ui.view.home.SongScreen
+import me.ppvan.moon.ui.view.home.SongsPage
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingQueue
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
@@ -247,11 +250,11 @@ fun MoonApp(
             DownloadView(context)
         }
         composable(
-            Routes.Profile.name,
+            Routes.Song.name,
             enterTransition = { ScaleTransition.scaleDown.enterTransition() },
             exitTransition = { ScaleTransition.scaleUp.exitTransition() },
         ) {
-            ProfileView(context)
+            SongScreen(context)
         }
         composable(
             "${Routes.TagEdit.name}/{mediaId}",
@@ -278,10 +281,24 @@ fun MoonApp(
         ) {
             LoginScreen()
         }
+        composable(
+            Routes.Album.name,
+            enterTransition = { ScaleTransition.scaleDown.enterTransition() },
+            exitTransition = { ScaleTransition.scaleUp.exitTransition() },
+        ) {
+            AlbumScreen(context = context)
+        }
+        composable(
+            Routes.Artist.name,
+            enterTransition = { ScaleTransition.scaleDown.enterTransition() },
+            exitTransition = { ScaleTransition.scaleUp.exitTransition() },
+        ) {
+            ArtistScreen(context = context)
+        }
     }
 }
 
 
 enum class Routes() {
-    Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download, TagEdit, Register, Login, Profile
+    Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download, TagEdit, Register, Login, Profile, Song,
 }
