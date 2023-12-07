@@ -10,7 +10,6 @@ import me.ppvan.moon.data.model.Artist
 import me.ppvan.moon.data.model.Track
 import javax.inject.Inject
 
-@Suppress("DEPRECATION")
 class ArtistRepository @Inject constructor(@ApplicationContext val context: Context) {
     private var _allArtists = emptyList<Artist>()
 
@@ -56,18 +55,14 @@ class ArtistRepository @Inject constructor(@ApplicationContext val context: Cont
                 val artistName = it.getString(artistNameColumn)
                 val numberOfAlbums = it.getInt(numberOfAlbumsColumn)
                 val numberOfTracks = it.getInt(numberOfTracksColumn)
-
-                val artistArt = ContentUris.withAppendedId(
-                    MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI,
-                    artistId
-                )
-
+                val songList = getSongsByArtistId(artistId)
+                val firstTrack: Track = songList[0]
                 val artist = Artist(
                     id = artistId,
                     name = artistName,
                     numberOfAlbums = numberOfAlbums,
                     numberOfTracks = numberOfTracks,
-                    thumbnailUri = artistArt.toString()
+                    thumbnailUri = firstTrack.thumbnailUri
                 )
 
                 artistList.add(artist)

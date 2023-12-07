@@ -6,14 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -24,25 +20,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.TopAppBarMinimalTitle
 import me.ppvan.moon.ui.view.home.BottomPlayer
 import me.ppvan.moon.ui.view.home.SongList
-import me.ppvan.moon.ui.view.nowplaying.NowPlayingBottomBar
-import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import me.ppvan.moon.R
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.utils.SlideTransition
 
@@ -52,12 +41,16 @@ import me.ppvan.moon.utils.SlideTransition
 fun AlbumView(context: ViewContext, albumId: Long) {
 
     val albumViewModel: AlbumViewModel = context.albumViewModel
-    val allTracks = albumViewModel.getSongsByAlbumId(albumId)
-    val album = albumViewModel.getAlbumById(albumId)
+    val allTracks by albumViewModel.currentSongs.collectAsState(initial = emptyList())
+    val album by albumViewModel.currentAlbum.collectAsState()
+
     val player = context.trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
-    val bottomPlayerVisible = playbackState.track != Track.DEFAULT
+    val bottomPlayerVisible = playbackState.track != Track.default()
 
+    LaunchedEffect(key1 = albumId) {
+        albumViewModel.onCurrentAlbumChanged(albumId)
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -73,7 +66,7 @@ fun AlbumView(context: ViewContext, albumId: Long) {
                 title = {
                     TopAppBarMinimalTitle {
                         Text(
-                            "Album" + (album?.let { " - ${it.name}" } ?: ""),
+                            "Album" + (album.let { " - ${it.name}" } ?: ""),
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -92,7 +85,7 @@ fun AlbumView(context: ViewContext, albumId: Long) {
             ) {
 
                     SongList(
-                        context.navigator,
+                        context,
                         allTracks,
                         onItemClick = {
                             player.load(allTracks)

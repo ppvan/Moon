@@ -1,13 +1,26 @@
 package me.ppvan.moon.data.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 data class Album(
-    val id: Long = 123,
-    val name: String = "Alicization",
-    val artist: String?="Kirito",
-    var numberOfTracks: Int = 10,
-    val thumbnailUri: String = "",
+    @PrimaryKey
+    val id: Long,
+    val name: String,
+    val artist: String,
+    val numberOfTracks: Int,
+    val thumbnailUri: String,
 ) {
     companion object {
-        val DEFAULT = Album()
+        fun default(): Album {
+            return Album(
+                id = 0,
+                name = "Default album",
+                artist = "Default artist",
+                numberOfTracks = 0,
+                thumbnailUri = ""
+            )
+        }
     }
 }

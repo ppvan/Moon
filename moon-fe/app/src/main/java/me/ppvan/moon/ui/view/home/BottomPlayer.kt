@@ -59,7 +59,7 @@ fun BottomPlayer(
     Column(
     ) {
         LinearProgressIndicator(
-            progress = { progress },
+            progress = progress,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(2.dp),
@@ -139,7 +139,7 @@ fun GreetingPreview() {
     MoonTheme {
         BottomPlayer(
             PlaybackState(
-                track = Track.DEFAULT,
+                track = Track.default(),
                 position = 0L,
                 duration = 0L,
                 state = PlayerState.STATE_IDLE
@@ -147,3 +147,4 @@ fun GreetingPreview() {
         )
     }
 }
+

@@ -11,8 +11,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.filled.Album
 import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
@@ -38,6 +40,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import me.ppvan.moon.R
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
@@ -46,7 +49,9 @@ import me.ppvan.moon.ui.component.CenterTopAppBarAction
 import me.ppvan.moon.ui.view.home.AlbumsPage
 import me.ppvan.moon.ui.view.home.ArtistsPage
 import me.ppvan.moon.ui.view.home.BottomPlayer
+import me.ppvan.moon.ui.view.home.LibraryPage
 import me.ppvan.moon.ui.view.home.PlaylistPage
+import me.ppvan.moon.ui.view.home.ProfilePage
 import me.ppvan.moon.ui.view.home.SearchBar
 import me.ppvan.moon.ui.view.home.SearchPage
 import me.ppvan.moon.ui.view.home.SongsPage
@@ -60,12 +65,12 @@ import me.ppvan.moon.utils.SlideTransition
 fun HomeView(
     context: ViewContext,
 ) {
-    var selectedTab by rememberSaveable { mutableStateOf(MoonPages.Song) }
+    var selectedTab by rememberSaveable { mutableStateOf(MoonPages.Library) }
     val trackViewModel = context.trackViewModel
     val ytViewModel = context.ytViewModel
     val player = trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
-    val bottomPlayerVisible = playbackState.track != Track.DEFAULT
+    val bottomPlayerVisible = playbackState.track != Track.default()
     val query by  ytViewModel.searchQuery.collectAsState()
     val recommendations by  ytViewModel.recommendations.collectAsState()
     val active by  ytViewModel.active.collectAsState()
@@ -118,9 +123,6 @@ fun HomeView(
                     else -> {
                         CenterTopAppBar(
                             title = page.label,
-                            navigationIcon = {
-
-                            },
                             menuItems = {
                                 DropdownMenuItem(
                                     text = { Text("ReScan") },
@@ -194,12 +196,9 @@ fun HomeView(
             }
         ) { page ->
             when (page) {
-                MoonPages.Song -> SongsPage(context)
-                MoonPages.Album -> AlbumsPage(context)
+                MoonPages.Library -> LibraryPage(context)
                 MoonPages.Search -> SearchPage(context)
-                MoonPages.Artist -> ArtistsPage(context)
-                MoonPages.Playlist -> PlaylistPage()
-
+                MoonPages.Profile -> ProfilePage(context)
                 else -> {
                     Text(text = "Not implemented")
                 }
@@ -210,12 +209,11 @@ fun HomeView(
 
 
 
-enum class MoonPages constructor(val label: String, val icon: ImageVector) {
-    Song("Song", Icons.Filled.MusicNote),
-    Album("Album", Icons.Filled.Album),
+enum class MoonPages(val label: String, val icon: ImageVector) {
+    Library("Library", Icons.Filled.LibraryMusic),
     Search("Search", Icons.Filled.Search),
-    Artist("Artist", Icons.Filled.People),
-    Playlist("Playlist", Icons.AutoMirrored.Filled.QueueMusic)
-    ;
+    Profile("Profile", Icons.Filled.Person)
 }
+
+
 

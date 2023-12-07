@@ -32,10 +32,10 @@ class TagEditViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    val pendingTrackWriteRequest: MutableStateFlow<Track> = MutableStateFlow(Track.DEFAULT)
+    val pendingTrackWriteRequest: MutableStateFlow<Track> = MutableStateFlow(Track.default())
 
 
-    private val _track = MutableStateFlow(Track.DEFAULT)
+    private val _track = MutableStateFlow(Track.default())
     val currentTrack = _track.asStateFlow()
 
     val cover = MutableStateFlow("")
@@ -103,7 +103,7 @@ class TagEditViewModel @Inject constructor(
             val audioFile = AudioFileIO.read(file)
             audioFile.run {
                 tag.setField(FieldKey.TITLE, title.value)
-                tag.setField(FieldKey.ARTIST, title.value)
+                tag.setField(FieldKey.ARTIST, artist.value)
                 tag.setField(FieldKey.ALBUM, album.value)
                 tag.setField(FieldKey.TRACK, trackNumber.value)
                 tag.setField(FieldKey.DISC_NO, discNumber.value)

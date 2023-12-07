@@ -74,7 +74,7 @@ class TrackRepository @Inject constructor(@ApplicationContext val context: Conte
             }
         }
 
-        return Track.DEFAULT
+        return Track.default()
     }
 
 
@@ -163,6 +163,8 @@ class TrackRepository @Inject constructor(@ApplicationContext val context: Conte
                 cursor.moveToNext()
             }
         }
+
+        trackList.forEach { Log.d("INFO", it.title) }
 
         return trackList
     }

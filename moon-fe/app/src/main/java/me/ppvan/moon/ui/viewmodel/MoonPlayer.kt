@@ -46,7 +46,7 @@ MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listene
     private var _playbackState = MutableStateFlow(PlaybackState.DEFAULT)
     val playbackState = _playbackState.asStateFlow()
 
-    private var _currentTrack = MutableStateFlow(Track.DEFAULT)
+    private var _currentTrack = MutableStateFlow(Track.default())
     val currentTrack = playbackState.map { it.track }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), _currentTrack.value)
 
@@ -119,14 +119,16 @@ MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listene
                 .build()
         })
     }
+
+    fun addUrlItem(url: String) {
+        player.addMediaItem(0, MediaItem.fromUri(url))
+    }
+
     fun isPlaying(): Boolean {
         return _playerState.value == PlayerState.STATE_PLAYING
     }
-    fun preparePlay(track: Track, playWhenReady: Boolean = true) {
-        if (player.playbackState == Player.STATE_IDLE) player.prepare()
-        val tracks = getShuffleQueue(playbackState.value)
 
-        val index = tracks.indexOf(track)
+    fun preparePlayAtIndex(index: Int, playWhenReady: Boolean) {
         if (index != -1) {
             player.seekTo(index, 0)
         } else {
@@ -135,6 +137,14 @@ MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listene
 
 
         player.playWhenReady = playWhenReady
+    }
+
+    fun preparePlay(track: Track, playWhenReady: Boolean = true) {
+        if (player.playbackState == Player.STATE_IDLE) player.prepare()
+        val tracks = getShuffleQueue(playbackState.value)
+
+        val index = tracks.indexOf(track)
+        preparePlayAtIndex(index, playWhenReady)
     }
 
     fun next() {
@@ -367,7 +377,7 @@ data class PlaybackState(
         else 0.0f
     companion object {
         val DEFAULT = PlaybackState(
-            track = Track.DEFAULT,
+            track = Track.default(),
             position = 0,
             duration = 0,
             state = PlayerState.STATE_IDLE

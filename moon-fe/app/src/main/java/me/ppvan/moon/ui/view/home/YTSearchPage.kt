@@ -1,5 +1,6 @@
 package me.ppvan.moon.ui.view.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.SaveAlt
@@ -50,10 +52,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import me.ppvan.moon.R
+import me.ppvan.moon.data.model.Track
+import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
+import me.ppvan.moon.ui.component.IconTextBody
 import me.ppvan.moon.ui.component.LoadingShimmerEffect
 import me.ppvan.moon.ui.component.SpeechToTextButton
-import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.viewmodel.ResultItem
 import me.ppvan.moon.ui.viewmodel.ResultItemState
 import me.ppvan.moon.ui.viewmodel.YTViewModel
@@ -66,18 +70,43 @@ fun SearchPage(context: ViewContext) {
 
     val ytViewModel = context.ytViewModel
     val downloadViewModel = context.downloadViewModel
+    val player = context.trackViewModel.player
 
     val resultItems by ytViewModel.searchResult.collectAsState()
     val isLoading by ytViewModel.isDataLoaded.collectAsState()
+    when {
+        resultItems.isEmpty() -> IconTextBody(
+            icon = { modifier ->
+                Icon(
+                    Icons.Filled.Search,
+                    null,
+                    modifier = modifier,
+                )
+            },
+            content = { Text("Search your favourite music") }
+        )
 
-    Column {
+        else -> Column {
 
-        Spacer(modifier = Modifier.height(16.dp))
-        ResultList(resultItems = resultItems, onDownloadClick = {
-            val url = "https://www.youtube.com/watch?v=${it.id}"
-            downloadViewModel.downloadAudio(url)
-        }, isLoading)
-    }
+            Spacer(modifier = Modifier.height(16.dp))
+            ResultList(
+                resultItems = resultItems,
+                isLoading = isLoading,
+                onDownloadClick = {
+                    downloadViewModel.downloadFromId(it.id)
+                },
+                onItemClick = {id ->
+                    val url = ytViewModel.getPlayableUrl(id)
+                    Log.d("INFO", url)
+                    val track = Track.default().copy(contentUri = url)
+                    player.load(listOf(track))
+                    context.navigator.navigate(Routes.NowPlaying.name)
+                }
+            )
+        }
+}
+
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,52 +117,52 @@ fun SearchBar(
     active: Boolean,
     recommendations: List<String>,
     closeClick: () -> Unit,
-    ) {
-        DockedSearchBar(
-           modifier = Modifier
-               .fillMaxWidth()
-               .statusBarsPadding()
-               .padding(7.dp),
-           query = query,
-           onQueryChange = viewModel::onQueryChange,
-           onSearch = { viewModel.onSearch(query) },
-           active = active,
-           onActiveChange = viewModel::onActiveChange,
-           placeholder = {
-               Text(text = "Search music on Youtube")
-           },
-           leadingIcon = {
-               IconButton(onClick = closeClick) {
-                   Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "BackButton")
-               }
+) {
+    DockedSearchBar(
+        modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+            .padding(7.dp),
+        query = query,
+        onQueryChange = viewModel::onQueryChange,
+        onSearch = { viewModel.onSearch(query) },
+        active = active,
+        onActiveChange = viewModel::onActiveChange,
+        placeholder = {
+            Text(text = "Search music on Youtube")
+        },
+        leadingIcon = {
+            IconButton(onClick = closeClick) {
+                Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "BackButton")
+            }
 
-           },
-           trailingIcon = {
-               if (!active) {
-                   IconButton(onClick = viewModel::onClose) {
-                       Icon(imageVector = Icons.Outlined.Close, contentDescription = "Close Icon")
-                   }
-               }
-               else {
-                   SpeechToTextButton { spokenText ->
-                       viewModel.onQueryChange(spokenText)
-                       viewModel.onSearch(spokenText)
-                   }
-               }
-           }
-       ) {
-           RecommendationList(recommendations, viewModel::onSearch)
-       }
+        },
+        trailingIcon = {
+            if (!active) {
+                IconButton(onClick = viewModel::onClose) {
+                    Icon(imageVector = Icons.Outlined.Close, contentDescription = "Close Icon")
+                }
+            } else {
+                SpeechToTextButton { spokenText ->
+                    viewModel.onQueryChange(spokenText)
+                    viewModel.onSearch(spokenText)
+                }
+            }
+        }
+    ) {
+        RecommendationList(recommendations, viewModel::onSearch)
+    }
 
 }
 
 @Composable
 fun ResultList(
     resultItems: List<ResultItem>,
+    isLoading: Boolean,
     onDownloadClick: (ResultItem) -> Unit = {},
-    isLoading: Boolean
+    onItemClick: (String) -> Unit = {}
 ) {
-    if(!isLoading){
+    if (!isLoading) {
         LoadingShimmerEffect()
     } else {
         LazyColumn() {
@@ -141,7 +170,8 @@ fun ResultList(
                 ResultItem(
                     resultItem = item,
                     onDownloadClick = onDownloadClick,
-                    isLoading = isLoading
+                    isLoading = isLoading,
+                    onClick = { onItemClick(item.id) }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
@@ -151,7 +181,7 @@ fun ResultList(
 
 @Composable
 fun RecommendationList(recommendations: List<String>, onItemClick: (String) -> Unit) {
-    LazyColumn (modifier = Modifier.imePadding()) {
+    LazyColumn(modifier = Modifier.imePadding()) {
         items(recommendations) { item ->
             ListItem(
                 modifier = Modifier.clickable { onItemClick(item) },
