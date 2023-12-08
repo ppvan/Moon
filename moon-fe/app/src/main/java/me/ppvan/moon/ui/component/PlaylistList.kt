@@ -1,14 +1,20 @@
 package me.ppvan.moon.ui.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
@@ -47,20 +53,27 @@ fun PlayList(
             }
         }
     }
-    Text(
-        "Xem thêm...",
-        modifier =  Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .height(50.dp)
-            .background(
-                Color.LightGray.copy(0.7f),
-                shape = RoundedCornerShape(8.dp)
+    Box(
+        modifier = Modifier.fillMaxSize()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ){
+        Box(
+            modifier = Modifier
+                .border(1.dp, Color.LightGray.copy(0.7f), RoundedCornerShape(30.dp))
+                .clickable {
+                    context.navigator.navigate(Routes.Playlist.name)
+                }
+                .width(120.dp)
+        ) {
+            Text(
+                "Xem thêm",
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(bottom = 2.dp)
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
             )
-            .clickable {
-                context.navigator.navigate(Routes.Playlist.name)
-            }
-            .wrapContentHeight(Alignment.CenterVertically),
-        textAlign = TextAlign.Center
-    )
+        }
+    }
 }

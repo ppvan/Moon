@@ -65,7 +65,7 @@ import me.ppvan.moon.utils.SlideTransition
 fun HomeView(
     context: ViewContext,
 ) {
-    var selectedTab by rememberSaveable { mutableStateOf(MoonPages.Library) }
+    var selectedTab = context.selectedTab
     val trackViewModel = context.trackViewModel
     val ytViewModel = context.ytViewModel
     val player = trackViewModel.player
@@ -80,12 +80,12 @@ fun HomeView(
     Scaffold(
         topBar = {
             Crossfade(targetState = selectedTab, label = "top-bar-page") { page ->
-                when (page) {
+                when (page.value) {
                     MoonPages.Search -> {
                         var isOpenSearchBar by remember { mutableStateOf(false) }
                         if (!isOpenSearchBar) {
                             CenterTopAppBarAction(
-                                title = page.label,
+                                title = page.value.label,
                                 navigationIcon = {
                                     IconButton(onClick = {isOpenSearchBar = true }) {
                                         Icon(imageVector = Icons.Default.Search, contentDescription = "OpenSearchBar")
@@ -122,7 +122,7 @@ fun HomeView(
 
                     else -> {
                         CenterTopAppBar(
-                            title = page.label,
+                            title = page.value.label,
                             menuItems = {
                                 DropdownMenuItem(
                                     text = { Text("ReScan") },
@@ -178,8 +178,8 @@ fun HomeView(
                         NavigationBarItem(
                             icon = { Icon(tab.icon, contentDescription = tab.label) },
                             label = { Text(tab.label) },
-                            selected = selectedTab == tab,
-                            onClick = { selectedTab = tab }
+                            selected = selectedTab.value == tab,
+                            onClick = { context.updateSelectedTab(tab) }
                         )
                     }
                 }
@@ -195,7 +195,7 @@ fun HomeView(
                     .togetherWith(ScaleTransition.scaleDown.exitTransition())
             }
         ) { page ->
-            when (page) {
+            when (page.value) {
                 MoonPages.Library -> LibraryPage(context)
                 MoonPages.Search -> SearchPage(context)
                 MoonPages.Profile -> ProfilePage(context)
@@ -212,8 +212,7 @@ fun HomeView(
 enum class MoonPages(val label: String, val icon: ImageVector) {
     Library("Library", Icons.Filled.LibraryMusic),
     Search("Search", Icons.Filled.Search),
-    Profile("Profile", Icons.Filled.Person)
+    Profile("Profile", Icons.Filled.Person),
 }
-
 
 

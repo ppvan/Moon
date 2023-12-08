@@ -63,7 +63,7 @@ fun LibraryRow(
                         defaultElevation = 1.5.dp
                     ),
 
-                ) {
+                    ) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
@@ -112,7 +112,7 @@ fun handleTabClick(tab: MusicTab, context: ViewContext) {
             context.navigator.navigate(Routes.Artist.name)
         }
         MusicTab.Upload -> {
-            // Xử lý khi nhấn vào tab Upload
+            context.navigator.navigate(Routes.Upload.name)
         }
     }
 }

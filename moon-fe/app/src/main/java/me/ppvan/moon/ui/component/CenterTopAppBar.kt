@@ -31,6 +31,7 @@ fun CenterTopAppBar(
     var expanded by remember { mutableStateOf(false) }
 
     CenterAlignedTopAppBar(
+
         title = {
             Text(
                 text = title,
