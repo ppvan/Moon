@@ -18,6 +18,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,10 +32,12 @@ import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.ArtistGrid
 import me.ppvan.moon.ui.component.CenterTopAppBar
+import me.ppvan.moon.ui.view.MoonPages
 import me.ppvan.moon.utils.SlideTransition
 
 @Composable
 fun ArtistScreen(context: ViewContext){
+    var selectedTab = context.selectedTab
     val player = context.trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
     val bottomPlayerVisible = playbackState.track != Track.default()
@@ -85,31 +89,37 @@ fun ArtistScreen(context: ViewContext){
         },
         bottomBar = {
             Column {
+
                 AnimatedContent(
                     targetState = bottomPlayerVisible,
                     label = "player",
-//               modifier = Modifier.navigationBarsPadding(),
                     transitionSpec = {
                         SlideTransition.slideUp.enterTransition()
                             .togetherWith(SlideTransition.slideDown.exitTransition())
                     }
                 ) { visible ->
                     if (visible) {
-                        Column {
-                            BottomPlayer(
-                                playbackState = playbackState,
-                                onPausePlayClick = { player.playPause() },
-                                onNextClick = { player.next() },
-                                onClick = { context.navigator.navigate(Routes.NowPlaying.name) }
-                            )
-                        }
+                        BottomPlayer(
+                            playbackState = playbackState,
+                            onPausePlayClick = { player.playPause() },
+                            onNextClick = { player.next() },
+                            onClick = { context.navigator.navigate(Routes.NowPlaying.name) }
+                        )
                     }
                 }
-                Spacer(
-                    Modifier.windowInsetsBottomHeight(
-                        WindowInsets.systemBars
-                    )
-                )
+                NavigationBar {
+                    for (tab in MoonPages.values()) {
+                        NavigationBarItem(
+                            icon = { Icon(tab.icon, contentDescription = tab.label) },
+                            label = { Text(tab.label) },
+                            selected = selectedTab.value == tab,
+                            onClick = {
+                                context.updateSelectedTab(tab)
+                                context.navigator.navigate(Routes.Home.name)
+                            }
+                        )
+                    }
+                }
             }
 
         }

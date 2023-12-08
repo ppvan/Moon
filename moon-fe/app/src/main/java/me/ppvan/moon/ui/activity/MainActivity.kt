@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
@@ -38,13 +41,14 @@ import me.ppvan.moon.ui.theme.MoonTheme
 import me.ppvan.moon.ui.view.DownloadView
 import me.ppvan.moon.ui.view.HomeView
 import me.ppvan.moon.ui.view.LoginScreen
+import me.ppvan.moon.ui.view.MoonPages
 import me.ppvan.moon.ui.view.RegisterScreen
 import me.ppvan.moon.ui.view.SettingView
 import me.ppvan.moon.ui.view.TagEditView
+import me.ppvan.moon.ui.view.UploadView
 import me.ppvan.moon.ui.view.home.AlbumScreen
 import me.ppvan.moon.ui.view.home.ArtistScreen
 import me.ppvan.moon.ui.view.home.SongScreen
-import me.ppvan.moon.ui.view.home.SongsPage
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingQueue
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
@@ -90,6 +94,7 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var profileViewModel: ProfileViewModel
+
 
 
     /*
@@ -174,8 +179,12 @@ data class ViewContext(
     val downloadViewModel: DownloadViewModel,
     val tagEditViewModel: TagEditViewModel,
     val playlistViewModel: PlaylistViewModel,
-    val profileViewModel: ProfileViewModel
-)
+    val profileViewModel: ProfileViewModel,
+    val selectedTab: MutableState<MoonPages>
+) { fun updateSelectedTab(newTab: MoonPages) {
+        selectedTab.value = newTab
+    }
+}
 
 @Composable
 fun MoonApp(
@@ -188,7 +197,8 @@ fun MoonApp(
     tagEditViewModel: TagEditViewModel,
     playlistViewModel: PlaylistViewModel,
     profileViewModel: ProfileViewModel,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    selectedTab: MutableState<MoonPages> = rememberSaveable { mutableStateOf(MoonPages.Library) },
 ) {
 
     val context = ViewContext(
@@ -201,7 +211,8 @@ fun MoonApp(
         downloadViewModel = downloadViewModel,
         tagEditViewModel = tagEditViewModel,
         playlistViewModel = playlistViewModel,
-        profileViewModel =  profileViewModel
+        profileViewModel =  profileViewModel,
+        selectedTab = selectedTab,
     )
 
     NavHost(navController = navController, startDestination = Routes.Home.name) {
@@ -212,6 +223,7 @@ fun MoonApp(
         ) {
             HomeView(context = context)
         }
+
         composable(
             Routes.NowPlaying.name,
             enterTransition = { SlideTransition.slideUp.enterTransition() },
@@ -295,10 +307,19 @@ fun MoonApp(
         ) {
             ArtistScreen(context = context)
         }
+        composable(
+            Routes.Upload.name,
+            enterTransition = { ScaleTransition.scaleDown.enterTransition() },
+            exitTransition = { ScaleTransition.scaleUp.exitTransition() },
+        ) {
+            UploadView(context = context)
+        }
     }
 }
 
 
 enum class Routes() {
-    Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download, TagEdit, Register, Login, Profile, Song,
+    Home, NowPlaying, NowPlayingQueue, Album, Artist, Playlist, Settings, Download, TagEdit, Register, Login, Profile, Song, Upload
 }
+
+
