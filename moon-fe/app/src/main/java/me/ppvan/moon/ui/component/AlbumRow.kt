@@ -64,7 +64,7 @@ fun AlbumRow(
     ) {
         items(albums.subList(0, minOf(maxVisibleItems, albums.size)),) { album ->
            AlbumRowTile(context = context, album = album) {
-
+               context.navigator.navigate("album_page/${album.id}")
            }
         }
         if(showSeeMore) {
