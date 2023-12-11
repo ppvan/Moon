@@ -25,5 +25,10 @@ class SongRepository @Inject constructor(
         }
     }
 
+    suspend fun findRecentSongs(): List<Song> {
+        val songIds = songDao.findRecentIds()
+
+        return songDao.findAllByIds(songIds)
+    }
 
 }

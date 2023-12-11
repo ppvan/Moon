@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import me.ppvan.moon.data.dao.MoonDatabase
 import me.ppvan.moon.data.model.Track
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,11 +30,11 @@ import javax.inject.Singleton
 @Singleton
 class
 
-MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listener {
+MoonPlayer @Inject constructor(var player: Player, database: MoonDatabase) : ViewModel(), Player.Listener {
 
 
     private val scope = CoroutineScope(Dispatchers.Main + Job())
-
+    private val songDao = database.songDao()
     /**
      * A state flow that emits the current playback state of the player.
      */
@@ -105,6 +106,7 @@ MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listene
         player.setMediaItems(tracks.map {
             MediaItem.fromUri(it.contentUri)
 
+
             val metadata = MediaMetadata.Builder()
                 .setTitle(it.title)
                 .setAlbumTitle(it.album)
@@ -128,7 +130,7 @@ MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listene
         return _playerState.value == PlayerState.STATE_PLAYING
     }
 
-    fun preparePlayAtIndex(index: Int, playWhenReady: Boolean) {
+    private fun preparePlayAtIndex(index: Int, playWhenReady: Boolean) {
         if (index != -1) {
             player.seekTo(index, 0)
         } else {
@@ -139,9 +141,19 @@ MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listene
         player.playWhenReady = playWhenReady
     }
 
+    private fun addToRecentTrack(track: Track) {
+        // Save recent to db
+        viewModelScope.launch(Dispatchers.IO) {
+            val song = songDao.findByContentUri(track.contentUri)
+            songDao.insertRecentAutoNow(song.songId)
+        }
+    }
+
     fun preparePlay(track: Track, playWhenReady: Boolean = true) {
         if (player.playbackState == Player.STATE_IDLE) player.prepare()
         val tracks = getShuffleQueue(playbackState.value)
+
+        addToRecentTrack(track)
 
         val index = tracks.indexOf(track)
         preparePlayAtIndex(index, playWhenReady)
@@ -284,6 +296,7 @@ MoonPlayer @Inject constructor(var player: Player) : ViewModel(), Player.Listene
             return
         }
 
+        // Emit new track value to UI
         val track = Track.fromMediaItem(mediaItem)
         val oldPlayback = _playbackState.value
         _playbackState.tryEmit(oldPlayback.copy(track = track))
