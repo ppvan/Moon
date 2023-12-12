@@ -53,6 +53,7 @@ import me.ppvan.moon.ui.view.nowplaying.NowPlayingQueue
 import me.ppvan.moon.ui.view.nowplaying.NowPlayingView
 import me.ppvan.moon.ui.viewmodel.AlbumViewModel
 import me.ppvan.moon.ui.viewmodel.ArtistViewModel
+import me.ppvan.moon.ui.viewmodel.NotificationViewModel
 import me.ppvan.moon.ui.viewmodel.PlaylistViewModel
 import me.ppvan.moon.ui.viewmodel.ProfileViewModel
 import me.ppvan.moon.ui.viewmodel.TagEditViewModel
@@ -95,6 +96,8 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var profileViewModel: ProfileViewModel
 
+    @Inject
+    lateinit var notificationViewModel: NotificationViewModel
 
 
     /*
@@ -135,7 +138,8 @@ class MainActivity : ComponentActivity() {
                         downloadViewModel = downloadViewModel,
                         tagEditViewModel = tagEditViewModel,
                         playlistViewModel = playlistViewModel,
-                        profileViewModel = profileViewModel
+                        profileViewModel = profileViewModel,
+                        notificationViewModel = notificationViewModel,
                     )
 
                 }
@@ -180,7 +184,8 @@ data class ViewContext(
     val tagEditViewModel: TagEditViewModel,
     val playlistViewModel: PlaylistViewModel,
     val profileViewModel: ProfileViewModel,
-    val selectedTab: MutableState<MoonPages>
+    val selectedTab: MutableState<MoonPages>,
+    val notificationViewModel: NotificationViewModel
 ) { fun updateSelectedTab(newTab: MoonPages) {
         selectedTab.value = newTab
     }
@@ -199,6 +204,7 @@ fun MoonApp(
     profileViewModel: ProfileViewModel,
     navController: NavHostController = rememberNavController(),
     selectedTab: MutableState<MoonPages> = rememberSaveable { mutableStateOf(MoonPages.Library) },
+    notificationViewModel: NotificationViewModel
 ) {
 
     val context = ViewContext(
@@ -213,6 +219,7 @@ fun MoonApp(
         playlistViewModel = playlistViewModel,
         profileViewModel =  profileViewModel,
         selectedTab = selectedTab,
+        notificationViewModel = notificationViewModel
     )
 
     NavHost(navController = navController, startDestination = Routes.Home.name) {
