@@ -163,7 +163,7 @@ fun SongUploadList(
     context: ViewContext,
     songs: List<Track> = List(15) { Track.default() },
     onItemClick: (item: Track) -> Unit = {},
-    onButtonClick: () -> Unit = {}
+
 ) {
     var selectedSongsCount by remember { mutableStateOf(0) }
     LazyColumn(
@@ -193,8 +193,7 @@ fun SongUploadList(
                 ) {
                     Button(
                         onClick = {
-                            onButtonClick()
-                            // Handle the button click action
+                            context.notificationViewModel.showProgress(selectedSongsCount)
                         }
                     ) {
                         Text(text = "Tải lên $selectedSongsCount bài hát ")
@@ -202,8 +201,6 @@ fun SongUploadList(
                 }
             }
         }
-
-        // Button with the width of the screen and the count of selected items
 
     }
 

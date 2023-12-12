@@ -45,7 +45,8 @@ class PermissionsManager @Inject constructor() {
     private fun getRequiredPermissions(): List<String> {
         val required = mutableListOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.FOREGROUND_SERVICE
+            Manifest.permission.FOREGROUND_SERVICE,
+            Manifest.permission.POST_NOTIFICATIONS
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             required.add(Manifest.permission.READ_MEDIA_AUDIO)
