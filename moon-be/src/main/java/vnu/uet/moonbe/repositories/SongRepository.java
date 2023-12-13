@@ -18,7 +18,7 @@ public interface SongRepository extends JpaRepository<Song, Integer> {
 
   List<Song> findByArtistContainingIgnoreCase(String keyword);
 
-  List<Song> findByGenreContainingIgnoreCase(String keyword);
+  List<Song> findByAlbumContainingIgnoreCase(String keyword);
 
 	@Query("SELECT DISTINCT s.title FROM Song s WHERE LOWER(s.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
 	List<String> findSuggestionsTitle(@Param("keyword") String keyword);
@@ -26,6 +26,6 @@ public interface SongRepository extends JpaRepository<Song, Integer> {
 	@Query("SELECT DISTINCT s.artist FROM Song s WHERE LOWER(s.artist) LIKE LOWER(CONCAT('%', :keyword, '%'))")
 	List<String> findSuggestionsArtist(@Param("keyword") String keyword);
 
-	@Query("SELECT DISTINCT s.genre FROM Song s WHERE LOWER(s.genre) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-	List<String> findSuggestionsGenre(@Param("keyword") String keyword);
+	@Query("SELECT DISTINCT s.album FROM Song s WHERE LOWER(s.album) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+	List<String> findSuggestionsAlbum(@Param("keyword") String keyword);
 }

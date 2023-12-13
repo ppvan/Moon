@@ -4,10 +4,7 @@ import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,8 +34,14 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SongService {
 
+	@Value("${url.base.path}")
+	private String urlBasePath;
+
 	@Value("${file.upload.path}")
-	private String uploadPath;
+	private String fileUploadPath;
+
+	@Value("${json.upload.path}")
+	private String jsonUploadPath;
 
 	private final UserRepository userRepository;
 	private final SongRepository songRepository;
@@ -65,8 +68,8 @@ public class SongService {
 				.collect(Collectors.toList());
 	}
 
-	public List<DetailSongDto> getSongsByGenre(String keyword) {
-		List<Song> songs = songRepository.findByGenreContainingIgnoreCase(keyword);
+	public List<DetailSongDto> getSongsByAlbum(String keyword) {
+		List<Song> songs = songRepository.findByAlbumContainingIgnoreCase(keyword);
 		return songs.stream()
 				.map(this::mapToDto)
 				.collect(Collectors.toList());
@@ -92,15 +95,14 @@ public class SongService {
 			throw new SongNotFoundException("No song details found");
 		}
 
-		if (StringUtils.isBlank(detailSongDTO.getTitle()) ||
-				StringUtils.isBlank(detailSongDTO.getArtist()) ||
-				StringUtils.isBlank(detailSongDTO.getGenre())
-		) {
-			throw new SongNotFoundException("No song details found");
-		}
+//		if (StringUtils.isBlank(detailSongDTO.getTitle()) ||
+//				StringUtils.isBlank(detailSongDTO.getArtist())
+//		) {
+//			throw new SongNotFoundException("No song details found");
+//		}
 
 		String fileName = org.springframework.util.StringUtils.cleanPath(file.getOriginalFilename());
-		String filePath = uploadPath + File.separator + fileName;
+		String filePath = fileUploadPath + File.separator + fileName;
 		try {
 			Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
@@ -111,7 +113,7 @@ public class SongService {
 		Song newSong = new Song();
 		newSong.setTitle(detailSongDTO.getTitle());
 		newSong.setArtist(detailSongDTO.getArtist());
-		newSong.setGenre(detailSongDTO.getGenre());
+		newSong.setAlbum(detailSongDTO.getAlbum());
 		newSong.setFilePath(filePath);
 
 		songRepository.save(newSong);
@@ -127,23 +129,14 @@ public class SongService {
 		return ResponseEntity.ok(responseDto);
 	}
 
-	public ResponseEntity<FileSystemResource> downloadSong(int id) {
+	public ResponseEntity<DetailSongDto> downloadSong(int id) {
 		Song song = songRepository.findById(id)
 				.orElseThrow(() -> new SongNotFoundException("Song could not be found"));
 
-		File songFile = new File(song.getFilePath());
-		FileSystemResource fileSystemResource = new FileSystemResource(songFile);
+		DetailSongDto songDto = mapToDto(song);
+		songDto.setFilePath(urlBasePath + songDto.getFilePath());
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + songFile.getName());
-		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE);
-		headers.add(HttpHeaders.CONTENT_LENGTH, String.valueOf(songFile.length()));
-
-		return ResponseEntity.ok()
-				.headers(headers)
-				.contentLength(songFile.length())
-				.contentType(MediaType.APPLICATION_OCTET_STREAM)
-				.body(fileSystemResource);
+		return ResponseEntity.ok(songDto);
 	}
 
 	public ResponseEntity<?> updateSong(int id, DetailSongDto detailSongDTO) {
@@ -152,8 +145,7 @@ public class SongService {
 
 		song.setTitle(detailSongDTO.getTitle());
 		song.setArtist(detailSongDTO.getArtist());
-		song.setGenre(detailSongDTO.getArtist());
-		song.setFilePath(detailSongDTO.getFilePath());
+		song.setAlbum(detailSongDTO.getAlbum());
 
 		songRepository.save(song);
 
@@ -188,7 +180,7 @@ public class SongService {
 		detailSongDTO.setId(song.getId());
 		detailSongDTO.setTitle(song.getTitle());
 		detailSongDTO.setArtist(song.getArtist());
-		detailSongDTO.setGenre(song.getGenre());
+		detailSongDTO.setAlbum(song.getAlbum());
 		detailSongDTO.setFilePath(song.getFilePath());
 
 		return detailSongDTO;
@@ -200,7 +192,7 @@ public class SongService {
 		song.setId(detailSongDTO.getId());
 		song.setTitle(detailSongDTO.getTitle());
 		song.setArtist(detailSongDTO.getArtist());
-		song.setGenre(detailSongDTO.getGenre());
+		song.setAlbum(detailSongDTO.getAlbum());
 		song.setFilePath(detailSongDTO.getFilePath());
 
 		return song;

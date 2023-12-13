@@ -14,12 +14,12 @@ public class DetailSongDto {
   private int  id;
   private String title;
   private String artist;
-  private String genre;
+  private String album;
   private String filePath;
 
-	public DetailSongDto(String title, String artist, String genre) {
+	public DetailSongDto(String title, String artist, String album) {
 		this.title = title;
 		this.artist = artist;
-		this.genre = genre;
+		this.album = album;
 	}
 }

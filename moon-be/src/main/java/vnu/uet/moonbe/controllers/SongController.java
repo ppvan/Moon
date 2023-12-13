@@ -46,9 +46,9 @@ public class SongController {
 		return new ResponseEntity<>(songs, HttpStatus.OK);
 	}
 
-	@GetMapping("/search/genre")
-	public ResponseEntity<List<DetailSongDto>> getSongsByGenre(@RequestParam String genre) {
-		List<DetailSongDto> songs = songService.getSongsByGenre(genre);
+	@GetMapping("/search/album")
+	public ResponseEntity<List<DetailSongDto>> getSongsByGenre(@RequestParam String album) {
+		List<DetailSongDto> songs = songService.getSongsByAlbum(album);
 		return new ResponseEntity<>(songs, HttpStatus.OK);
 	}
 
@@ -56,15 +56,15 @@ public class SongController {
 	public ResponseEntity<?> uploadSong(
 			@RequestPart(name = "title") String title,
 			@RequestPart(name = "artist") String artist,
-			@RequestPart(name = "genre") String genre,
+			@RequestPart(name = "album") String album,
 			@RequestPart("file")MultipartFile file
 			) {
-		DetailSongDto detailSongDto = new DetailSongDto(title, artist, genre);
+		DetailSongDto detailSongDto = new DetailSongDto(title, artist, album);
 		return songService.uploadSong(detailSongDto, file);
 	}
 
 	@GetMapping("/{id}/download")
-	public ResponseEntity<FileSystemResource> downloadSong(
+	public ResponseEntity<DetailSongDto> downloadSong(
 			@PathVariable int id
 	) {
 		return songService.downloadSong(id);
@@ -89,13 +89,13 @@ public class SongController {
 	) {
 		List<String> suggestionsTitle = songRepository.findSuggestionsTitle(keyword);
 		List<String> suggestionsArtist = songRepository.findSuggestionsArtist(keyword);
-		List<String> suggestionsGenre = songRepository.findSuggestionsGenre(keyword);
+		List<String> suggestionsAlbum = songRepository.findSuggestionsAlbum(keyword);
 
 		List<String> allSuggestions = new ArrayList<>();
 
 		allSuggestions.addAll(suggestionsTitle);
 		allSuggestions.addAll(suggestionsArtist);
-		allSuggestions.addAll(suggestionsGenre);
+		allSuggestions.addAll(suggestionsAlbum);
 
 		return ResponseEntity.ok(allSuggestions);
 	}
