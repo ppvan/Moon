@@ -22,6 +22,20 @@ repositories {
 }
 
 dependencies {
+    // https://mvnrepository.com/artifact/org.python/jython
+    implementation("org.python:jython:2.7.2")
+
+    // https://mvnrepository.com/artifact/commons-net/commons-net
+    implementation("commons-net:commons-net:3.9.0")
+
+    // https://mvnrepository.com/artifact/com.jcraft/jsch
+    implementation("com.jcraft:jsch:0.1.55")
+
+    implementation("org:jaudiotagger:2.0.3")
+
+    // https://mvnrepository.com/artifact/com.mpatric/mp3agic
+    implementation("com.mpatric:mp3agic:0.9.1")
+
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
