@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vnu.uet.moonbe.dto.AuthenticationDto;
 import vnu.uet.moonbe.dto.RegisterDto;
+import vnu.uet.moonbe.dto.ResponseDto;
 import vnu.uet.moonbe.dto.TokenResponseDto;
 import vnu.uet.moonbe.exceptions.EmailAlreadyExistsException;
 import vnu.uet.moonbe.models.Role;
@@ -34,7 +35,7 @@ public class AuthenticationService {
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
 
-  public TokenResponseDto register(RegisterDto request) {
+  public ResponseEntity<?> register(RegisterDto request) {
     if (repository.existsByEmail(request.getEmail())) {
       throw new EmailAlreadyExistsException("Email already exists");
     }
@@ -46,18 +47,15 @@ public class AuthenticationService {
         .role(Role.USER)
         .build();
     repository.save(user);
-    var savedUser = repository.save(user);
-    var jwtToken = jwtService.generateToken(user);
-    var refreshToken = jwtService.generateRefreshToken(user);
-    saveUserToken(savedUser, jwtToken);
-    return TokenResponseDto.builder()
-        .accessToken(jwtToken)
-        .refreshToken(refreshToken)
-        .build();
+
+    ResponseDto responseDto = new ResponseDto();
+    responseDto.setStatusCode(HttpStatus.OK.value());
+    responseDto.setMessage("User registered success");
+
+    return ResponseEntity.ok(responseDto);
   }
 
-  public TokenResponseDto authenticate(AuthenticationDto request) {
-
+  public ResponseEntity<?> authenticate(AuthenticationDto request) {
     authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
             request.getEmail(),
@@ -70,10 +68,14 @@ public class AuthenticationService {
     var refreshToken = jwtService.generateRefreshToken(user);
     revokeAllUserTokens(user);
     saveUserToken(user, jwtToken);
-    return TokenResponseDto.builder()
+
+    TokenResponseDto tokenResponseDto = new TokenResponseDto();
+    tokenResponseDto = tokenResponseDto.builder()
         .accessToken(jwtToken)
         .refreshToken(refreshToken)
         .build();
+
+    return ResponseEntity.ok(tokenResponseDto);
   }
 
   private void saveUserToken(User user, String jwtToken) {

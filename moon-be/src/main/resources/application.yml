@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/moon_android_app
     username: postgres
-    password: 237lenhatquang
+    password: postgres
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -13,11 +13,29 @@ spring:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 application:
   security:
     jwt:
       secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
-      expiration: 60000 # 86400000 # a day # 60000 # a minute
+      expiration: 86400000 # 86400000 # a day # 60000 # a minute
       refresh-token:
         expiration: 604800000 # 7 days
+
+url:
+  base:
+#    path: http://localhost:8080 # local
+    path: http://139.59.227.169:8080 # server
+
+file:
+  upload:
+    path: D:/Quang/java/moon/moon-be/testUploadFile # local
+#    path: /home/moonbe_quang/MoonApplication/Repo/file # server
+
+json:
+  upload:
+    path: /home/moonbe_quang/MoonApplication/Repo/json # server

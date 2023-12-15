@@ -1,7 +1,7 @@
 package vnu.uet.moonbe.models;
 
-//import com.alibou.security.token.Token;
 import jakarta.persistence.*;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -22,8 +23,8 @@ import java.util.List;
 public class User implements UserDetails {
 
   @Id
-  @GeneratedValue
-  private Integer id;
+  @GeneratedValue(strategy = GenerationType.AUTO)
+  private int id;
   private String firstname;
   private String lastname;
   private String email;
@@ -34,6 +35,18 @@ public class User implements UserDetails {
 
   @OneToMany(mappedBy = "user")
   private List<Token> tokens;
+
+  @Builder.Default
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private List<UserSongMapping> userSongMappings = new ArrayList<>();
+
+  @Transactional
+  public void addSong(Song song, ActionType actionType) {
+    UserSongMapping userSongMapping = new UserSongMapping(this, song, actionType);
+    userSongMapping.setActionType(actionType);
+    this.userSongMappings.add(userSongMapping);
+    song.getUserSongMappings().add(userSongMapping);
+  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

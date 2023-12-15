@@ -29,6 +29,10 @@ public class SecurityConfiguration {
       .authorizeHttpRequests(request ->
           request.requestMatchers("/api/v1/auth/**")
               .permitAll()
+//              .requestMatchers("/api/v1/songs/**")
+//              .permitAll()
+							.requestMatchers("/api/repo/upload")
+							.permitAll()
               .anyRequest()
               .authenticated()
       )
