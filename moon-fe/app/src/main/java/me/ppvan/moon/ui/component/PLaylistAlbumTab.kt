@@ -8,10 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -25,7 +26,7 @@ import me.ppvan.moon.ui.activity.ViewContext
 
 @Composable
 fun PlaylistAlbumTabRow(context: ViewContext) {
-    var selectedTabIndex by remember { mutableStateOf(0) }
+    var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     val tabs = listOf("Album", "Playlist")
     val allAlbums = context.albumViewModel.albums
@@ -40,9 +41,15 @@ fun PlaylistAlbumTabRow(context: ViewContext) {
                 .fillMaxWidth()
         ) {
             tabs.forEachIndexed { index, title ->
-                val textColor = if (selectedTabIndex == index) Color.Black else Color.Gray.copy(0.7f)
+
+                val textColor = if (selectedTabIndex == index) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    Color.Unspecified
+                }
+
                 Text(
-                    color= textColor,
+                    color = textColor,
                     text = title,
                     modifier = Modifier
                         .clickable {
@@ -53,7 +60,7 @@ fun PlaylistAlbumTabRow(context: ViewContext) {
                         .drawBehind {
                             if (selectedTabIndex == index) {
                                 drawLine(
-                                    color = Color(0xFFFFB3B5),
+                                    color = textColor,
                                     start = Offset(3f, size.height),
                                     end = Offset(size.width, size.height),
                                     strokeWidth = 6f
@@ -66,7 +73,7 @@ fun PlaylistAlbumTabRow(context: ViewContext) {
         }
 
         when (selectedTabIndex) {
-            0 -> AlbumList(context = context,allAlbums)
+            0 -> AlbumList(context = context, allAlbums)
             1 -> PlayList(context = context)
         }
     }

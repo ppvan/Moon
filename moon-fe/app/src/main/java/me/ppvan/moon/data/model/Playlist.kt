@@ -22,12 +22,5 @@ data class Playlist(
 
     val thumbnail: String
         get() = ""
-//        get() {
-//            return if (songs.isEmpty()) {
-//                ""
-//            } else {
-//                songs.first().thumbnailUri
-//            }
-//        }
 }
 

@@ -183,7 +183,7 @@ class ArtistRepository @Inject constructor(@ApplicationContext val context: Cont
 
         return albumList
     }
-    fun getArtistById(artistId: Long): Artist? {
+    fun getArtistById(artistId: Long): Artist {
         val artistProjection = arrayOf(
             MediaStore.Audio.Artists._ID,
             MediaStore.Audio.Artists.ARTIST,
@@ -202,13 +202,13 @@ class ArtistRepository @Inject constructor(@ApplicationContext val context: Cont
             null
         )
 
-        return artistCursor?.use {
+        return artistCursor?.let {
             val artistIdColumn = it.getColumnIndex(MediaStore.Audio.Artists._ID)
             val artistNameColumn = it.getColumnIndex(MediaStore.Audio.Artists.ARTIST)
             val numberOfAlbumsColumn = it.getColumnIndex(MediaStore.Audio.Artists.NUMBER_OF_ALBUMS)
             val numberOfTracksColumn = it.getColumnIndex(MediaStore.Audio.Artists.NUMBER_OF_TRACKS)
 
-            if (it.moveToFirst()) {
+            return if (it.moveToFirst()) {
                 val fetchedArtistId = it.getLong(artistIdColumn)
                 val artistName = it.getString(artistNameColumn)
                 val numberOfAlbums = it.getInt(numberOfAlbumsColumn)
@@ -227,10 +227,11 @@ class ArtistRepository @Inject constructor(@ApplicationContext val context: Cont
                     thumbnailUri = artistArt.toString()
                 )
             } else {
-                null
+                Artist.default()
             }
-        }
+        } ?: Artist.default()
     }
+
     private fun getSongUri(songId: Long): Uri {
         return ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, songId)
     }
