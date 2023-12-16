@@ -6,12 +6,16 @@ import android.content.Context
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.room.Room
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import me.ppvan.moon.data.dao.MoonDatabase
+import me.ppvan.moon.data.retrofit.ApiService
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -44,5 +48,16 @@ object AppModule {
     @Singleton
     fun provideContentResolver(@ApplicationContext context: Context): ContentResolver {
         return context.contentResolver
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(): ApiService {
+
+        return Retrofit.Builder()
+            .baseUrl("http://139.59.227.169:8080")
+            .addConverterFactory(GsonConverterFactory.create(Gson()))
+            .build().create(ApiService::class.java)
     }
 }

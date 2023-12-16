@@ -21,8 +21,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.SaveAlt
 import androidx.compose.material.icons.outlined.Search
@@ -129,11 +129,11 @@ fun SearchBar(
         active = active,
         onActiveChange = viewModel::onActiveChange,
         placeholder = {
-            Text(text = "Search music on Youtube")
+            Text(text = "Search online music")
         },
         leadingIcon = {
             IconButton(onClick = closeClick) {
-                Icon(imageVector = Icons.Outlined.ArrowBack, contentDescription = "BackButton")
+                Icon(imageVector = Icons.AutoMirrored.Outlined.ArrowBack, contentDescription = "BackButton")
             }
 
         },

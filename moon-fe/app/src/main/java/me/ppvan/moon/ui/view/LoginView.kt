@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,24 +33,19 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import me.ppvan.moon.data.dto.AuthenticationDto
-import me.ppvan.moon.data.dto.TokenResponseDto
-import me.ppvan.moon.data.retrofit.ApiService
-import me.ppvan.moon.data.retrofit.RetrofitService
+import androidx.hilt.navigation.compose.hiltViewModel
 import me.ppvan.moon.ui.component.CommonLoginButton
 import me.ppvan.moon.ui.component.CommonText
 import me.ppvan.moon.ui.component.CommonTextField
 import me.ppvan.moon.ui.component.TopAppBarMinimalTitle
 import me.ppvan.moon.ui.theme.PinkColor
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import me.ppvan.moon.ui.viewmodel.LoginViewModel
 
 @Composable
-//navController: NavController
-fun LoginScreen() {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun LoginScreen(loginViewModel: LoginViewModel = hiltViewModel()) {
+    val email by loginViewModel.email.collectAsState()
+    val password by loginViewModel.password.collectAsState()
+
 
     var isAuthenticationSuccessful by remember {
         mutableStateOf<Boolean?>(null)
@@ -84,14 +80,14 @@ fun LoginScreen() {
                 CommonTextField(
                     text = email,
                     placeholder = "Email",
-                    onValueChange = { email = it },
+                    onValueChange = loginViewModel::onEmailChange,
                     isPasswordTextField = false
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 CommonTextField(
                     text = password,
                     placeholder = "Password",
-                    onValueChange = { password = it },
+                    onValueChange = loginViewModel::onPasswordChange,
                     isPasswordTextField = true
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -104,35 +100,7 @@ fun LoginScreen() {
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 CommonLoginButton(text = "Login", modifier = Modifier.fillMaxWidth()) {
-                    val authenticationDto = AuthenticationDto(email, password)
-
-                    val retrofitService = RetrofitService()
-                    val apiService = retrofitService.retrofit.create(ApiService::class.java)
-
-                    apiService.authenticate(authenticationDto)
-                        .enqueue(object : Callback<TokenResponseDto> {
-                            override fun onResponse(
-                                call: Call<TokenResponseDto>,
-                                response: Response<TokenResponseDto>
-                            ) {
-                                if (response.isSuccessful) {
-                                    val tokenResponse = response.body()
-                                    val accessToken = tokenResponse?.accessToken
-                                    val refreshToken = tokenResponse?.refreshToken
-                                    isAuthenticationSuccessful = true
-                                    message = "Login successful"
-                                } else {
-                                    isAuthenticationSuccessful = false
-                                    message = "Login failed"
-                                }
-                            }
-
-                            override fun onFailure(call: Call<TokenResponseDto>, t: Throwable) {
-                                isAuthenticationSuccessful = false
-                                message = "Error: ${t.message}"
-                            }
-
-                        })
+                    loginViewModel.login()
                 }
                 Spacer(modifier = Modifier.weight(0.4f))
                 Row(
