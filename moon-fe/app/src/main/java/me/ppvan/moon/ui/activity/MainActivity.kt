@@ -222,7 +222,7 @@ fun MoonApp(
         notificationViewModel = notificationViewModel
     )
 
-    NavHost(navController = navController, startDestination = Routes.Home.name) {
+    NavHost(navController = navController, startDestination = Routes.Login.name) {
         AlbumGraph(context)
         composable(
             Routes.Home.name,

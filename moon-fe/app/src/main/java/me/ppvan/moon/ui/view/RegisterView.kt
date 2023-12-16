@@ -31,18 +31,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import me.ppvan.moon.data.dto.RegisterDto
-import me.ppvan.moon.data.dto.TokenResponseDto
-import me.ppvan.moon.data.retrofit.ApiService
-import me.ppvan.moon.data.retrofit.RetrofitService
 import me.ppvan.moon.ui.component.CommonLoginButton
 import me.ppvan.moon.ui.component.CommonText
 import me.ppvan.moon.ui.component.CommonTextField
 import me.ppvan.moon.ui.component.TopAppBarMinimalTitle
 import me.ppvan.moon.ui.theme.PinkColor
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 @Composable
 //navController: NavController
@@ -120,35 +113,7 @@ fun RegisterScreen() {
     //            )
                 Spacer(modifier = Modifier.weight(0.2f))
                 CommonLoginButton(text = "Register", modifier = Modifier.fillMaxWidth()) {
-                    val registerDto = RegisterDto(firstName, lastName, email, password)
 
-                    val retrofitService = RetrofitService()
-                    val apiService = retrofitService.retrofit.create(ApiService::class.java)
-
-                    apiService.register(registerDto)
-                        .enqueue(object : Callback<TokenResponseDto> {
-                            override fun onResponse(
-                                call: Call<TokenResponseDto>,
-                                response: Response<TokenResponseDto>
-                            ) {
-                                if (response.isSuccessful) {
-                                    val tokenResponse = response.body()
-                                    val accessToken = tokenResponse?.accessToken
-                                    val refreshToken = tokenResponse?.refreshToken
-                                    isRegistrationSuccessful = true
-                                    message = "Registration successful"
-                                } else {
-                                    isRegistrationSuccessful = false
-                                    message = "Registration failed"
-                                }
-                            }
-
-                            override fun onFailure(call: Call<TokenResponseDto>, t: Throwable) {
-                                isRegistrationSuccessful = false
-                                message = "Error: ${t.message}"
-                            }
-
-                        })
                 }
                 Spacer(modifier = Modifier.height(20.dp))
                 Row(

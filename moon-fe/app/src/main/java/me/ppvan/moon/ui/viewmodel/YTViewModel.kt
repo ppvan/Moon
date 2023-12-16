@@ -3,7 +3,6 @@ package me.ppvan.moon.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.beust.klaxon.JsonArray
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
 import com.yausername.youtubedl_android.YoutubeDL
@@ -30,8 +29,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 
-const val RECOMMEND_API =
-    "https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q="
+const val RECOMMEND_API = "http://139.59.227.169:8080"
 const val SEARCH_API = "https://api-piped.mha.fi/"
 
 @Singleton
@@ -200,20 +198,20 @@ class YTViewModel @Inject constructor() : ViewModel() {
     }
 
     private suspend fun getSearchRecommendation(query: String): List<String> {
-        val url = RECOMMEND_API + query
+        val url = "${RECOMMEND_API}/suggestions?keyword=$query" // TODO percent encoding?
         val request = Request.Builder().url(url).build()
         val parser: Parser = Parser.default()
 
-        val recommends = withContext(Dispatchers.IO) {
-            val response = okHttpClient.newCall(request).await()
-            val jsonStr = response.body!!.string()
-            val array = parser.parse(StringBuilder(jsonStr)) as JsonArray<*>
-            // If out of index or something, api changed and should be fix quickly
+//        val recommends = withContext(Dispatchers.IO) {
+//            val response = okHttpClient.newCall(request).await()
+//            val jsonStr = response.body!!.string()
+//            val array = parser.parse(StringBuilder(jsonStr)) as JsonArray<*>
+//            // If out of index or something, api changed and should be fix quickly
+//
+//            return@withContext array[1] as JsonArray<String>
+//        }
 
-            return@withContext array[1] as JsonArray<String>
-        }
-
-        return recommends.value.toList()
+        return emptyList()
     }
 }
 
