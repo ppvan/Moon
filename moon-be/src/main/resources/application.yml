@@ -28,14 +28,15 @@ application:
 
 url:
   base:
-#    path: http://localhost:8080 # local
     path: http://139.59.227.169:8080 # server
+#    path: http://localhost:8080 # local
 
 file:
   upload:
-    path: D:/Quang/java/moon/moon-be/testUploadFile # local
-#    path: /home/moonbe_quang/MoonApplication/Repo/file # server
+    path: /home/moonbe_quang/MoonApplication/Repo/file # server
+#    path: D:/Quang/java/moon/moon-be/testUploadFile # local
 
-json:
+image:
   upload:
-    path: /home/moonbe_quang/MoonApplication/Repo/json # server
+    path: /home/moonbe_quang/MoonApplication/Repo/image # server
+#    path: D:/Quang/java/moon/moon-be/testUploadFile # local
