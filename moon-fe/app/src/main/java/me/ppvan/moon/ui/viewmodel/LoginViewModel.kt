@@ -57,7 +57,7 @@ class LoginViewModel @Inject constructor(
                     _state.update { LoginState.FAILURE }
                 } else {
                     val token = response.body()!!
-                    userStore.saveToken(token.refreshToken)
+                    userStore.saveToken(token.accessToken)
 
                     _state.update { LoginState.SUCCESS }
                 }

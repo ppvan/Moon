@@ -222,7 +222,7 @@ fun MoonApp(
         notificationViewModel = notificationViewModel
     )
 
-    NavHost(navController = navController, startDestination = Routes.Home.name) {
+    NavHost(navController = navController, startDestination = Routes.Login.name) {
         AlbumGraph(context)
         composable(
             Routes.Home.name,
@@ -290,7 +290,7 @@ fun MoonApp(
             enterTransition = { ScaleTransition.scaleDown.enterTransition() },
             exitTransition = { ScaleTransition.scaleUp.exitTransition() },
         ) {
-            RegisterScreen()
+            RegisterScreen(context)
         }
 
         composable(
@@ -298,7 +298,7 @@ fun MoonApp(
             enterTransition = { ScaleTransition.scaleDown.enterTransition() },
             exitTransition = { ScaleTransition.scaleUp.exitTransition() },
         ) {
-            LoginScreen()
+            LoginScreen(context)
         }
         composable(
             Routes.Album.name,
