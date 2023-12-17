@@ -31,7 +31,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.jcraft/jsch
     implementation("com.jcraft:jsch:0.1.55")
 
-    implementation("org:jaudiotagger:2.0.3")
+    // https://mvnrepository.com/artifact/net.jthink/jaudiotagger
+    implementation("net.jthink:jaudiotagger:3.0.1")
 
     // https://mvnrepository.com/artifact/com.mpatric/mp3agic
     implementation("com.mpatric:mp3agic:0.9.1")
