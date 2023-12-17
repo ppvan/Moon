@@ -3,15 +3,22 @@ package me.ppvan.moon.ui.viewmodel
 //import me.ppvan.moon.data.repository.AuthService
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.ppvan.moon.data.model.User
+import me.ppvan.moon.data.retrofit.ApiService
+import me.ppvan.moon.data.retrofit.UserStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ProfileViewModel @Inject constructor() : ViewModel() {
+class ProfileViewModel @Inject constructor(userStore: UserStore, moonService: ApiService) :
+    ViewModel() {
     private val _currentUser = MutableStateFlow(User.default())
     val currentUser = _currentUser.asStateFlow()
 
@@ -30,6 +37,36 @@ class ProfileViewModel @Inject constructor() : ViewModel() {
 
     private val _editLastName = MutableStateFlow(false)
     val editLastName = _editLastName.asStateFlow()
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            userStore.getAccessToken.collect { token ->
+                Log.d("ProfileVM", token)
+                if (token.isNotEmpty()) {
+                    val response = moonService.profile("Bearer $token")
+                    Log.d("ProfileVM", response.body().toString())
+
+                    withContext(Dispatchers.Main) {
+                        val profile = response.body()!!
+                        if (response.isSuccessful && response.body() != null) {
+
+                            val user = User(
+                                avatarUrl = profile.avatar.toString(),
+                                firstName = profile.firstname,
+                                lastName = profile.lastname,
+                                email = profile.email
+                            )
+
+                            _currentUser.update { user }
+                            _firstName.update { user.firstName }
+                            _lastName.update { user.lastName }
+                            _avatarUrl.update { user.avatarUrl }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     fun toggleEditFirstName(edit: Boolean) {
         _editFirstName.update { edit }
@@ -56,6 +93,12 @@ class ProfileViewModel @Inject constructor() : ViewModel() {
         Log.d("ProfileVM", "Saving profile")
         Log.d("ProfileVM", firstName.value)
         Log.d("ProfileVM", lastName.value)
-        _currentUser.update { it.copy(firstName = firstName.value, lastName = lastName.value, avatarUrl = avatarUrl.value) }
+        _currentUser.update {
+            it.copy(
+                firstName = firstName.value,
+                lastName = lastName.value,
+                avatarUrl = avatarUrl.value
+            )
+        }
     }
 }

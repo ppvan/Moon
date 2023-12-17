@@ -2,6 +2,7 @@ package me.ppvan.moon.data.retrofit
 
 import me.ppvan.moon.data.remote.AuthenticationRequest
 import me.ppvan.moon.data.remote.LogoutDto
+import me.ppvan.moon.data.remote.ProfileResponse
 import me.ppvan.moon.data.remote.RegisterRequest
 import me.ppvan.moon.data.remote.RegisterResponse
 import me.ppvan.moon.data.remote.SongResponse
@@ -9,6 +10,7 @@ import me.ppvan.moon.data.remote.TokenResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.POST
 import retrofit2.http.Query
 
@@ -28,4 +30,7 @@ interface ApiService {
 
     @GET("/api/v1/songs/search/title")
     suspend fun search(@Query("title") query: String): Response<List<SongResponse>>
+
+    @GET("/api/v1/profile/get")
+    suspend fun profile(@Header("Authorization") token: String): Response<ProfileResponse>
 }
