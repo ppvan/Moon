@@ -31,4 +31,8 @@ class SongRepository @Inject constructor(
         return songDao.findAllByIds(songIds)
     }
 
+    suspend fun findByUri(contentUri: String): Song {
+        return songDao.findByContentUri(contentUri)
+    }
+
 }

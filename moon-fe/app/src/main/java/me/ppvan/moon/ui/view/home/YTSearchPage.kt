@@ -93,10 +93,10 @@ fun SearchPage(context: ViewContext) {
                 resultItems = resultItems,
                 isLoading = isLoading,
                 onDownloadClick = {
-                    downloadViewModel.downloadFromId(it.id)
+                    Log.d("YTSearch", it.playbackUrl)
                 },
-                onItemClick = {id ->
-                    val url = ytViewModel.getPlayableUrl(id)
+                onItemClick = { item ->
+                    val url = item.playbackUrl
                     Log.d("INFO", url)
                     val track = Track.default().copy(contentUri = url)
                     player.load(listOf(track))
@@ -160,7 +160,7 @@ fun ResultList(
     resultItems: List<ResultItem>,
     isLoading: Boolean,
     onDownloadClick: (ResultItem) -> Unit = {},
-    onItemClick: (String) -> Unit = {}
+    onItemClick: (ResultItem) -> Unit = {}
 ) {
     if (!isLoading) {
         LoadingShimmerEffect()
@@ -171,7 +171,7 @@ fun ResultList(
                     resultItem = item,
                     onDownloadClick = onDownloadClick,
                     isLoading = isLoading,
-                    onClick = { onItemClick(item.id) }
+                    onClick = { onItemClick(item) }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
