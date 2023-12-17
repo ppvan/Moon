@@ -44,7 +44,7 @@ class ArtistViewModel @Inject constructor(
     fun getAlbumById(artistId: Long): List<Album> {
         return repository.getAlbumsByArtistId(artistId);
     }
-    fun getArtistById(artistId: Long): Artist? {
+    fun getArtistById(artistId: Long): Artist {
         return repository.getArtistById(artistId)
     }
 
