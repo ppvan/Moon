@@ -31,7 +31,6 @@ import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -64,9 +63,8 @@ import me.ppvan.moon.ui.viewmodel.MoonPlayer
 import me.ppvan.moon.utils.SlideTransition
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SongScreen(context: ViewContext){
+fun SongScreen(context: ViewContext) {
     val player = context.trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
     val bottomPlayerVisible = playbackState.track != Track.default()
@@ -77,7 +75,7 @@ fun SongScreen(context: ViewContext){
                 title = "Song",
                 navigationIcon = {
                     IconButton(
-                        onClick = { context.navigator.popBackStack()  }
+                        onClick = { context.navigator.popBackStack() }
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
                     }
@@ -148,6 +146,7 @@ fun SongScreen(context: ViewContext){
         }
     )
 }
+
 @Composable
 fun SongsPage(context: ViewContext) {
 

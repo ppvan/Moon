@@ -24,7 +24,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.SaveAlt
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DockedSearchBar
@@ -38,9 +37,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import me.ppvan.moon.R
-import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.IconTextBody
@@ -69,9 +64,7 @@ fun SearchPage(context: ViewContext) {
 
 
     val ytViewModel = context.ytViewModel
-    val downloadViewModel = context.downloadViewModel
     val player = context.trackViewModel.player
-
     val resultItems by ytViewModel.searchResult.collectAsState()
     val isLoading by ytViewModel.isDataLoaded.collectAsState()
     when {
@@ -92,14 +85,12 @@ fun SearchPage(context: ViewContext) {
             ResultList(
                 resultItems = resultItems,
                 isLoading = isLoading,
-                onDownloadClick = {
-                    Log.d("YTSearch", it.playbackUrl)
-                },
                 onItemClick = { item ->
                     val url = item.playbackUrl
                     Log.d("INFO", url)
-                    val track = Track.default().copy(contentUri = url)
+                    val track = item.toTrack()
                     player.load(listOf(track))
+                    player.preparePlay(track)
                     context.navigator.navigate(Routes.NowPlaying.name)
                 }
             )
@@ -122,6 +113,7 @@ fun SearchBar(
         modifier = Modifier
             .fillMaxWidth()
             .statusBarsPadding()
+            .imePadding()
             .padding(7.dp),
         query = query,
         onQueryChange = viewModel::onQueryChange,
@@ -159,18 +151,15 @@ fun SearchBar(
 fun ResultList(
     resultItems: List<ResultItem>,
     isLoading: Boolean,
-    onDownloadClick: (ResultItem) -> Unit = {},
     onItemClick: (ResultItem) -> Unit = {}
 ) {
     if (!isLoading) {
         LoadingShimmerEffect()
     } else {
-        LazyColumn() {
+        LazyColumn {
             items(resultItems) { item ->
                 ResultItem(
                     resultItem = item,
-                    onDownloadClick = onDownloadClick,
-                    isLoading = isLoading,
                     onClick = { onItemClick(item) }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -200,14 +189,8 @@ fun RecommendationList(recommendations: List<String>, onItemClick: (String) -> U
 @Composable
 fun ResultItem(
     resultItem: ResultItem,
-    onDownloadClick: (ResultItem) -> Unit = {},
-    onClick: () -> Unit = {},
-    isLoading: Boolean
+    onClick: () -> Unit = {}
 ) {
-
-    var openDialog by remember {
-        mutableStateOf(false)
-    }
 
     Column(
         modifier = Modifier
@@ -258,24 +241,7 @@ fun ResultItem(
                         }
                     }
                 }
-
-                IconButton(onClick = { openDialog = true }) {
-                    Icon(imageVector = Icons.Outlined.SaveAlt, contentDescription = "SaveAlt")
-                }
-
-                if (openDialog) {
-                    ConfirmDialog(
-                        title = "",
-                        content = "Download ${resultItem.title} ?",
-                        onDismissRequest = { openDialog =  false }) {
-
-                        onDownloadClick(resultItem)
-                        openDialog = false
-                    }
-                }
             }
-
-
     }
 }
 
