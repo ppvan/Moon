@@ -4,8 +4,9 @@ import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -24,10 +25,12 @@ import vnu.uet.moonbe.repositories.UserSongMappingRepository;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,8 +43,12 @@ public class SongService {
 	@Value("${file.upload.path}")
 	private String fileUploadPath;
 
-	@Value("${json.upload.path}")
-	private String jsonUploadPath;
+	@Value("${image.upload.path}")
+	private String imageUploadPath;
+
+	private String urlApiFile = "http://139.59.227.169:8080/api/v1/songs/file/";
+
+	private String urlApiImage = "http://139.59.227.169:8080/api/v1/songs/image/";
 
 	private final UserRepository userRepository;
 	private final SongRepository songRepository;
@@ -82,14 +89,14 @@ public class SongService {
 		return mapToDto(song);
 	}
 
-	public ResponseEntity<?> uploadSong(DetailSongDto detailSongDTO, MultipartFile file) {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		String email = authentication.getName();
-
-		Optional<User> optionalUser = userRepository.findByEmail(email);
-		if (optionalUser.isEmpty()) {
-			throw new UsernameNotFoundException("User not found");
-		}
+	public ResponseEntity<?> uploadSong(DetailSongDto detailSongDTO, MultipartFile thumbnail, MultipartFile file) throws IOException {
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		String email = authentication.getName();
+//
+//		Optional<User> optionalUser = userRepository.findByEmail(email);
+//		if (optionalUser.isEmpty()) {
+//			throw new UsernameNotFoundException("User not found");
+//		}
 
 		if (detailSongDTO == null) {
 			throw new SongNotFoundException("No song details found");
@@ -101,10 +108,25 @@ public class SongService {
 //			throw new SongNotFoundException("No song details found");
 //		}
 
-		String fileName = org.springframework.util.StringUtils.cleanPath(file.getOriginalFilename());
-		String filePath = fileUploadPath + File.separator + fileName;
+		String uuid = UUID.randomUUID().toString();
+
+		String newFileName = uuid + ".mp3";
+		Path newFilePath = Paths.get(fileUploadPath, newFileName);
+//		String fileName = org.springframework.util.StringUtils.cleanPath(file.getOriginalFilename());
+//		String filePath = fileUploadPath + File.separator + fileName;
 		try {
-			Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
+			Files.copy(file.getInputStream(), newFilePath, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			e.printStackTrace();
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file");
+		}
+
+		String newImageName = uuid + ".png";
+		Path newImagePath = Paths.get(imageUploadPath, newImageName);
+//		String imageName = org.springframework.util.StringUtils.cleanPath(thumbnail.getOriginalFilename());
+//		String imagePath = imageUploadPath + File.separator + imageName;
+		try {
+			Files.copy(thumbnail.getInputStream(), newImagePath, StandardCopyOption.REPLACE_EXISTING);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file");
@@ -114,19 +136,59 @@ public class SongService {
 		newSong.setTitle(detailSongDTO.getTitle());
 		newSong.setArtist(detailSongDTO.getArtist());
 		newSong.setAlbum(detailSongDTO.getAlbum());
-		newSong.setFilePath(filePath);
+		newSong.setThumbnail(urlApiImage + newImageName);
+		newSong.setFilePath(urlApiFile + newFileName);
 
 		songRepository.save(newSong);
 
-		User user = optionalUser.get();
-		user.addSong(newSong, ActionType.UPLOAD);
-		userRepository.save(user);
+//		User user = optionalUser.get();
+//		user.addSong(newSong, ActionType.UPLOAD);
+//		userRepository.save(user);
 
 		ResponseDto responseDto = new ResponseDto();
 		responseDto.setStatusCode(HttpStatus.CREATED.value());
 		responseDto.setMessage("Song added success");
 
 		return ResponseEntity.ok(responseDto);
+	}
+
+	public ResponseEntity<Resource> downloadFile(String name) {
+		String filePath = fileUploadPath + File.separator + name;
+
+		File file = new File(filePath);
+		if (!file.exists()) {
+			return ResponseEntity.notFound().build();
+		}
+
+		Resource resource = new FileSystemResource(file);
+
+		HttpHeaders headers = new HttpHeaders();
+//		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		headers.setContentType(MediaType.parseMediaType("audio/mpeg")); // Đặt kiểu MIME của file mp3
+		headers.setContentDisposition(ContentDisposition.builder("inline").filename(name).build()); // Thiết lập để mở file trực tiếp
+
+		return ResponseEntity.ok()
+				.headers(headers)
+				.body(resource);
+	}
+
+	public ResponseEntity<Resource> downloadImage(String name) {
+		String filePath = imageUploadPath + File.separator + name;
+
+		File file = new File(filePath);
+		if (!file.exists()) {
+			return ResponseEntity.notFound().build();
+		}
+
+		Resource resource = new FileSystemResource(file);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.IMAGE_JPEG);
+		headers.setContentDisposition(ContentDisposition.builder("inline").filename(name).build());
+
+		return ResponseEntity.ok()
+				.headers(headers)
+				.body(resource);
 	}
 
 	public ResponseEntity<DetailSongDto> downloadSong(int id) {
@@ -181,6 +243,7 @@ public class SongService {
 		detailSongDTO.setTitle(song.getTitle());
 		detailSongDTO.setArtist(song.getArtist());
 		detailSongDTO.setAlbum(song.getAlbum());
+		detailSongDTO.setThumbnail(song.getThumbnail());
 		detailSongDTO.setFilePath(song.getFilePath());
 
 		return detailSongDTO;
@@ -193,6 +256,7 @@ public class SongService {
 		song.setTitle(detailSongDTO.getTitle());
 		song.setArtist(detailSongDTO.getArtist());
 		song.setAlbum(detailSongDTO.getAlbum());
+		song.setThumbnail(detailSongDTO.getThumbnail());
 		song.setFilePath(detailSongDTO.getFilePath());
 
 		return song;
