@@ -25,7 +25,8 @@ public class FileUploader {
 
 	public static void main(String[] args) {
 //		String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MDI1MDczNTAsImV4cCI6MTcwMjU5Mzc1MH0.eSmDIUjWEqNE45uCFTYaJ2tiJ31d7mldF7Cy02rTJNw";
-		String mp3FolderPath = "D:\\Repo\\file";
+		String mp3FolderPath = "D:\\Downloads\\seed-data\\music";
+		String imageFolderPath = "D:\\Downloads\\seed-data\\thumbnail";
 
 		List<File> mp3Files = getFiles(mp3FolderPath, ".mp3");
 
@@ -38,18 +39,16 @@ public class FileUploader {
 			try {
 				DetailSongDto detailSongDto = extractMp3Info(mp3File);
 
-				String uuid = UUID.randomUUID().toString();
-				String newFileName = uuid + ".mp3";
-				File renamedMp3File = new File(mp3File.getParent(), newFileName);
+				String imageFileName = mp3File.getName().replace(".mp3", ".png");
 
-				Files.copy(mp3File.toPath(), renamedMp3File.toPath());
+				File imageFile = new File(imageFolderPath, imageFileName);
 
 				MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
 				formData.add("title", detailSongDto.getTitle());
 				formData.add("artist", detailSongDto.getArtist());
 				formData.add("album", detailSongDto.getAlbum());
-				formData.add("thumbnail", detailSongDto.getThumbnail());
-				formData.add("file", new FileSystemResource(renamedMp3File));
+				formData.add("thumbnail", new FileSystemResource(imageFile));
+				formData.add("file", new FileSystemResource(mp3File));
 
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -64,8 +63,6 @@ public class FileUploader {
 						requestEntity,
 						String.class
 				);
-
-				Files.delete(renamedMp3File.toPath());
 
 				if (responseEntity.getStatusCode().is2xxSuccessful()) {
 					System.out.println("Uploaded successfully: " + mp3File.getName());
