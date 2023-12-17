@@ -1,5 +1,6 @@
 package me.ppvan.moon.ui.view
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -45,10 +47,10 @@ fun PlaylistView(context: ViewContext, playlistId: Long) {
     val playbackState by player.playbackState.collectAsState()
     val bottomPlayerVisible = playbackState.track != Track.default()
 
-//    LaunchedEffect(key1 = playlistId) {
-//        playlistViewModel.updatePlaylist()
-//        Log.d("INFO", "Load playlist with id $playlistId}")
-//    }
+    LaunchedEffect(key1 = playlistId) {
+        playlistViewModel.updatePlaylist(playlistId)
+        Log.d("INFO", "Load playlist with id $playlistId}")
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),

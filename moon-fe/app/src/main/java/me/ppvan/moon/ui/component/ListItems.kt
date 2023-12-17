@@ -123,6 +123,49 @@ fun PlaylistItem(
 }
 
 @Composable
+fun PlaylistDialogItem(
+    playlist: Playlist = Playlist.default(),
+    onClick: () -> Unit = {},
+) {
+    Column(
+        modifier = Modifier.clickable {
+            onClick()
+        },
+        verticalArrangement = Arrangement.Top
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(4.dp)
+                .background(color = MaterialTheme.colorScheme.surface),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                Modifier
+                    .size(48.dp, 48.dp)
+                    .clip(shape = RoundedCornerShape(4.dp))
+            ) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+//                        .data(playlist.thumbnailUri)
+                        .error(R.drawable.thumbnail)
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(R.drawable.thumbnail),
+                    contentDescription = "Music thumbnail",
+                    contentScale = ContentScale.Crop
+                )
+            }
+
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = playlist.name)
+            }
+        }
+    }
+}
+
+@Composable
 fun AddPlaylistItem(
     context: ViewContext,
     onClick: () -> Unit = {},
@@ -156,7 +199,7 @@ fun AddPlaylistItem(
 
             // Text
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = "Thêm playlist mới")
+                Text(text = "Add Playlist")
             }
         }
     }
