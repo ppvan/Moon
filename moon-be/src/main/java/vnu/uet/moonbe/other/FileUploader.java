@@ -1,7 +1,9 @@
 package vnu.uet.moonbe.other;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.jaudiotagger.audio.AudioFile;
+import org.jaudiotagger.audio.AudioFileIO;
+import org.jaudiotagger.tag.FieldKey;
+import org.jaudiotagger.tag.Tag;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,20 +16,19 @@ import org.springframework.web.util.UriComponentsBuilder;
 import vnu.uet.moonbe.dto.DetailSongDto;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class FileUploader {
 
 	public static void main(String[] args) {
-		String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MDI1MDczNTAsImV4cCI6MTcwMjU5Mzc1MH0.eSmDIUjWEqNE45uCFTYaJ2tiJ31d7mldF7Cy02rTJNw";
-		String mp3FolderPath = "D:\\Repo\\file";
-		String jsonFolderPath = "D:\\Repo\\json";
+//		String token = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJpYXQiOjE3MDI1MDczNTAsImV4cCI6MTcwMjU5Mzc1MH0.eSmDIUjWEqNE45uCFTYaJ2tiJ31d7mldF7Cy02rTJNw";
+		String mp3FolderPath = "D:\\Downloads\\seed-data\\music";
+		String imageFolderPath = "D:\\Downloads\\seed-data\\thumbnail";
 
 		List<File> mp3Files = getFiles(mp3FolderPath, ".mp3");
-		List<File> jsonFiles = getFiles(jsonFolderPath, ".info.json");
 
 		RestTemplate restTemplate = new RestTemplate();
 
@@ -35,28 +36,23 @@ public class FileUploader {
 //		String apiEndpoint = "http://localhost:8080/api/v1/songs/upload";
 
 		for (File mp3File : mp3Files) {
-			File jsonFile = findJsonFile(mp3File, jsonFiles);
-
-			if (jsonFile == null) {
-				System.out.println("No corresponding json file found");
-				continue;
-			}
-
 			try {
-				String jsonContent = new String(Files.readAllBytes(jsonFile.toPath()));
+				DetailSongDto detailSongDto = extractMp3Info(mp3File);
 
-				DetailSongDto detailSongDto = extractInfoFromJson(jsonContent);
+				String imageFileName = mp3File.getName().replace(".mp3", ".png");
+
+				File imageFile = new File(imageFolderPath, imageFileName);
 
 				MultiValueMap<String, Object> formData = new LinkedMultiValueMap<>();
-
 				formData.add("title", detailSongDto.getTitle());
 				formData.add("artist", detailSongDto.getArtist());
 				formData.add("album", detailSongDto.getAlbum());
+				formData.add("thumbnail", new FileSystemResource(imageFile));
 				formData.add("file", new FileSystemResource(mp3File));
 
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-				headers.set("Authorization", "Bearer " + token);
+//				headers.set("Authorization", "Bearer " + token);
 
 				HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(formData, headers);
 
@@ -74,7 +70,7 @@ public class FileUploader {
 					System.out.println("Upload failed: " + mp3File.getName());
 				}
 
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -94,45 +90,21 @@ public class FileUploader {
 		return files;
 	}
 
-	private static File findJsonFile(File mp3File, List<File> jsonFiles) {
-		String mp3FileName = mp3File.getName();
-		String jsonFileName = mp3FileName.replace(".mp3", ".info.json");
+	private static DetailSongDto extractMp3Info(File mp3File) throws Exception {
+		AudioFile audioFile = AudioFileIO.read(mp3File);
+		Tag tag = audioFile.getTag();
 
-		return jsonFiles.stream()
-				.filter(file -> file.getName().equalsIgnoreCase(jsonFileName))
-				.findFirst()
-				.orElse(null);
-	}
+		String title = "", artist = "", album = "";
 
-	private static DetailSongDto extractInfoFromJson(String jsonContent) throws IOException {
-		ObjectMapper objectMapper = new ObjectMapper();
-		JsonNode jsonNode = objectMapper.readTree(jsonContent);
-
-		String title, artist, album;
-
-		if (jsonNode.has("title")) {
-			title = jsonNode.path("title").asText();
-		} else {
-			title = "empty";
-		}
-
-		if (jsonNode.has("artist")) {
-			artist = jsonNode.path("artist").asText();
-		} else if (jsonNode.has("channel")) {
-			artist = jsonNode.path("channel").asText();
-		} else {
-			artist = "empty";
-		}
-
-		if (jsonNode.has("album")) {
-			album = jsonNode.path("album").asText();
-		} else {
-			album = "empty";
-		}
+		title = tag.getFirst(FieldKey.TITLE);
+		artist = tag.getFirst(FieldKey.ARTIST);
+		album = tag.getFirst(FieldKey.ALBUM);
 
 		System.out.println("Title: " + title);
 		System.out.println("Artist: " + artist);
 		System.out.println("Album: " + album);
+
+		if (album == "") album = "none";
 
 		return new DetailSongDto(title, artist, album);
 	}

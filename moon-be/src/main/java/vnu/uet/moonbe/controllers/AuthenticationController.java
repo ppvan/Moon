@@ -2,13 +2,17 @@ package vnu.uet.moonbe.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.*;
 import vnu.uet.moonbe.dto.AuthenticationDto;
+import vnu.uet.moonbe.dto.ProfileDto;
 import vnu.uet.moonbe.dto.RegisterDto;
+import vnu.uet.moonbe.models.User;
 import vnu.uet.moonbe.services.AuthenticationService;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/auth")

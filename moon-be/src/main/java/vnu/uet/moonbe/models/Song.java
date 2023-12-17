@@ -23,19 +23,29 @@ public class Song {
   private int id;
   private String title;
   private String artist;
+
+	@Column(nullable = true)
   private String album;
 
-	@Column(length = 255)
+	private String thumbnail;
   private String filePath;
 
   @OneToMany(mappedBy = "song")
   private List<UserSongMapping> userSongMappings = new ArrayList<>();
 
-  public Song(int id, String title, String artist, String album, String filePath) {
+  public Song(
+			int id,
+			String title,
+			String artist,
+			String album,
+			String thumbnail,
+			String filePath
+	) {
     this.id = id;
     this.title = title;
     this.artist = artist;
     this.album = album;
+		this.thumbnail = thumbnail;
     this.filePath = filePath;
   }
 }

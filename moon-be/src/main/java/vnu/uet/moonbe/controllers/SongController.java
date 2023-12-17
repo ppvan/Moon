@@ -2,6 +2,7 @@ package vnu.uet.moonbe.controllers;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import vnu.uet.moonbe.dto.DetailSongDto;
 import vnu.uet.moonbe.repositories.SongRepository;
 import vnu.uet.moonbe.services.SongService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,10 +59,21 @@ public class SongController {
 			@RequestPart(name = "title") String title,
 			@RequestPart(name = "artist") String artist,
 			@RequestPart(name = "album") String album,
-			@RequestPart("file")MultipartFile file
-			) {
+			@RequestPart("thumbnail") MultipartFile thumbnail,
+			@RequestPart("file") MultipartFile file
+			) throws IOException {
 		DetailSongDto detailSongDto = new DetailSongDto(title, artist, album);
-		return songService.uploadSong(detailSongDto, file);
+		return songService.uploadSong(detailSongDto, thumbnail, file);
+	}
+
+	@GetMapping("/file/{name}")
+	public  ResponseEntity<Resource> downloadFile(@PathVariable String name) {
+		return songService.downloadFile(name);
+	}
+
+	@GetMapping("/image/{name}")
+	public  ResponseEntity<Resource> downloadImage(@PathVariable String name) {
+		return songService.downloadImage(name);
 	}
 
 	@GetMapping("/{id}/download")
