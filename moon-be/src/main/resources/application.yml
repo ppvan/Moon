@@ -15,8 +15,8 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
+      max-file-size: 20MB
+      max-request-size: 20MB
 
 application:
   security:
@@ -39,4 +39,9 @@ file:
 image:
   upload:
     path: /home/moonbe_quang/MoonApplication/Repo/image # server
+#    path: D:/Quang/java/moon/moon-be/testUploadFile # local
+
+avatar:
+  upload:
+    path: /home/moonbe_quang/MoonApplication/Repo/avatar # server
 #    path: D:/Quang/java/moon/moon-be/testUploadFile # local

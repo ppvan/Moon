@@ -71,6 +71,11 @@ public class SongController {
 		return songService.downloadFile(name);
 	}
 
+	@GetMapping("/image/{name}")
+	public  ResponseEntity<Resource> downloadImage(@PathVariable String name) {
+		return songService.downloadImage(name);
+	}
+
 	@GetMapping("/{id}/download")
 	public ResponseEntity<DetailSongDto> downloadSong(
 			@PathVariable int id
