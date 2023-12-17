@@ -5,21 +5,13 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.QueueMusic
-import androidx.compose.material.icons.filled.Album
-import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.LibraryMusic
-import androidx.compose.material.icons.filled.MusicNote
-import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Badge
-import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,28 +25,19 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.unit.dp
-import me.ppvan.moon.R
 import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.CenterTopAppBar
 import me.ppvan.moon.ui.component.CenterTopAppBarAction
-import me.ppvan.moon.ui.view.home.AlbumsPage
-import me.ppvan.moon.ui.view.home.ArtistsPage
 import me.ppvan.moon.ui.view.home.BottomPlayer
 import me.ppvan.moon.ui.view.home.LibraryPage
-import me.ppvan.moon.ui.view.home.PlaylistPage
 import me.ppvan.moon.ui.view.home.ProfilePage
 import me.ppvan.moon.ui.view.home.SearchBar
 import me.ppvan.moon.ui.view.home.SearchPage
-import me.ppvan.moon.ui.view.home.SongsPage
 import me.ppvan.moon.utils.ScaleTransition
 import me.ppvan.moon.utils.SlideTransition
 
@@ -91,27 +74,7 @@ fun HomeView(
                                         Icon(imageVector = Icons.Default.Search, contentDescription = "OpenSearchBar")
                                     }
                                 },
-                                actions = {
-                                    BadgedBox(
-                                        badge = {
-                                            Badge(
-                                                modifier = Modifier.offset(y=10.dp, x= (-8).dp),
-                                            ){
-                                                val badgeNumber = "8"
-                                                Text(
-                                                    badgeNumber,
-                                                    modifier = Modifier.semantics {
-                                                        contentDescription = "$badgeNumber new notifications"
-                                                    }
-                                                )
-                                            }
-                                        }
-                                    ) {
-                                        IconButton(onClick = { context.navigator.navigate(route = Routes.Download.name) }) {
-                                            Icon(imageVector = Icons.Default.FileDownload, contentDescription = "FileDownload")
-                                        }
-                                    }
-                                }
+                                actions = {}
                             )
                         } else {
                             SearchBar(query = query, viewModel = ytViewModel, active = active, recommendations) {

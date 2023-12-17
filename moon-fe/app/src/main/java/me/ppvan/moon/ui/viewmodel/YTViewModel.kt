@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
+import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.data.retrofit.ApiService
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,7 +29,7 @@ const val RECOMMEND_API = "http://139.59.227.169:8080"
 const val SEARCH_API = "https://api-piped.mha.fi/"
 
 @Singleton
-class YTViewModel @Inject constructor(val moonService: ApiService) : ViewModel() {
+class YTViewModel @Inject constructor(private val moonService: ApiService) : ViewModel() {
 
     private val _isRecommending = MutableStateFlow(false)
     val isRecommending = _isRecommending.asStateFlow()
@@ -187,7 +188,18 @@ data class ResultItem(
     val isLoading: Boolean = true,
 
     val state: ResultItemState = ResultItemState.NONE
-)
+) {
+    fun toTrack(): Track {
+        return Track(
+            id = id.toLong(),
+            title = title,
+            artist = uploader,
+            album = "",
+            thumbnailUri = thumbnailUrl,
+            contentUri = playbackUrl
+        )
+    }
+}
 
 enum class ResultItemState(var message: String) {
     NONE("Not downloaded"),

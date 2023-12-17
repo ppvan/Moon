@@ -7,7 +7,8 @@ data class SongResponse (
     val id: Long,
     val title: String,
     val artist: String,
-    val genre: String,
+    val thumbnail: String,
+    val filePath: String,
     val album: String
 ) {
     companion object {
@@ -19,9 +20,9 @@ data class SongResponse (
             id = id,
             title = title,
             artist = artist,
-            album = "album",
-            thumbnailUri = "",
-            contentUri = "",
+            album = album,
+            thumbnailUri = thumbnail,
+            contentUri = filePath,
         )
     }
 
@@ -31,8 +32,8 @@ data class SongResponse (
             title = title,
             uploader = artist,
             duration = 0,
-            thumbnailUrl = "",
-            playbackUrl = "http://139.59.227.169:8080/api/v1/songs/$id",
+            thumbnailUrl = thumbnail,
+            playbackUrl = filePath,
         )
     }
 }
