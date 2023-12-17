@@ -1,6 +1,7 @@
 package me.ppvan.moon.ui.component
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,21 +29,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import me.ppvan.moon.data.model.Playlist
+import me.ppvan.moon.data.model.Track
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.theme.MoonTheme
 
 @Composable
 fun AddToPlaylistDialog(
     context: ViewContext,
-    songIds: List<Long>,
+    track: Track,
     onDismissRequest: () -> Unit,
 ) {
 
     val playlists = context.playlistViewModel.playlists.toList()
 
     PlayListDialogContent(
+        context = context,
         playlists = playlists,
-        onDismissRequest = onDismissRequest
+        onDismissRequest = onDismissRequest,
+        onPlaylistSelected = {playlist ->
+            context.playlistViewModel.addSongToPlaylist(playlist, track)
+        }
     ) {
         context.playlistViewModel.createNewPlaylist(it)
     }
@@ -50,13 +56,17 @@ fun AddToPlaylistDialog(
 
 @Composable
 fun PlayListDialogContent(
+    context: ViewContext,
     playlists: List<Playlist>,
     onDismissRequest: () -> Unit,
+    onPlaylistSelected: (Playlist) -> Unit,
     onNewPlaylist: (String) -> Unit
 ) {
     var showNewPlaylistDialog by remember {
         mutableStateOf(false)
     }
+
+    val currentContext = LocalContext.current
 
     ScaffoldDialog(
         onDismissRequest = onDismissRequest,
@@ -71,9 +81,13 @@ fun PlayListDialogContent(
                     }
                 }
                 else -> {
-                    Column {
+                    Column(modifier = Modifier.padding(horizontal = 4.dp)) {
                         for (playlist in playlists) {
-                            Text(text = playlist.name)
+                            PlaylistDialogItem(playlist = playlist) {
+                                onPlaylistSelected(playlist)
+                                onDismissRequest()
+                                Toast.makeText(currentContext, "Song has been added to \"${playlist.name}\"", Toast.LENGTH_SHORT).show()
+                            }
                         }
                     }
                 }
@@ -164,7 +178,8 @@ fun NewPlaylistDialog(
 @Composable
 fun PlaylistDialogPreview() {
     MoonTheme {
-        PlayListDialogContent(playlists = emptyList(), onDismissRequest = {}, onNewPlaylist = {})
-        NewPlaylistDialog(onDismissRequest = {}, onDone = {})
+//        PlayListDialogContent(playlists = emptyList(), onDismissRequest = {}, onNewPlaylist = {})
+//        NewPlaylistDialog(onDismissRequest = {}, onDone = {})
+        PlaylistDialogItem(Playlist.default()) {}
     }
 }

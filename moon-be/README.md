@@ -219,7 +219,7 @@ Hiện tại, Backend cung cấp những API sau:
     - Phục vụ cho chức năng thanh tìm kiếm, đề xuất.
 11. Get - Download file: http://139.59.227.169:8080/api/v1/songs/file/ + "file.mp3"
     - Yêu cầu một tên file bài hát, lấy từ filepath.
-    - Trả về một tệp nhị phân là nội dung file.
+   - Trả về một tệp nhị phân là nội dung file.
 12. Get - Get Profile: http://139.59.227.169:8080/api/v1/profile/get
     - Yêu cầu token của người dùng.
     - Trả về một file json thông tin người dùng.

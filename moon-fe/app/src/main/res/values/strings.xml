@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Moon</string>
     <string name="permission_error">Access Media Permission denied</string>
+    <string name="server_ip">139.59.227.169</string>
+    <string name="server_port">8080</string>
 </resources>
