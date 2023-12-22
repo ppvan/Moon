@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/songs")
+@RequestMapping("/api/songs")
 @RequiredArgsConstructor
 public class SongController {
 
@@ -24,7 +24,7 @@ public class SongController {
 
 	private final SongRepository songRepository;
 
-	@GetMapping("/all")
+	@GetMapping("/")
 	public ResponseEntity<List<DetailSongDto>> getAllSongs() {
 		List<DetailSongDto> songs = songService.getAllSongs();
 		return new ResponseEntity<>(songs, HttpStatus.OK);
@@ -36,25 +36,25 @@ public class SongController {
 		return new ResponseEntity<>(detailSongDTO, HttpStatus.OK);
 	}
 
-	@GetMapping("/search/title")
-	public ResponseEntity<List<DetailSongDto>> getSongsByTitle(@RequestParam String title) {
+	@GetMapping("/title/{title}")
+	public ResponseEntity<List<DetailSongDto>> getSongsByTitle(@PathVariable String title) {
 		List<DetailSongDto> songs = songService.getSongsByTitle(title);
 		return new ResponseEntity<>(songs, HttpStatus.OK);
 	}
 
-	@GetMapping("/search/artist")
-	public ResponseEntity<List<DetailSongDto>> getSongsByArtist(@RequestParam String artist) {
+	@GetMapping("/artist/{artist}")
+	public ResponseEntity<List<DetailSongDto>> getSongsByArtist(@PathVariable String artist) {
 		List<DetailSongDto> songs = songService.getSongsByArtist(artist);
 		return new ResponseEntity<>(songs, HttpStatus.OK);
 	}
 
-	@GetMapping("/search/album")
-	public ResponseEntity<List<DetailSongDto>> getSongsByGenre(@RequestParam String album) {
+	@GetMapping("/album/{album}")
+	public ResponseEntity<List<DetailSongDto>> getSongsByGenre(@PathVariable String album) {
 		List<DetailSongDto> songs = songService.getSongsByAlbum(album);
 		return new ResponseEntity<>(songs, HttpStatus.OK);
 	}
 
-	@PostMapping("/upload")
+	@PostMapping("/")
 	public ResponseEntity<?> uploadSong(
 			@RequestPart(name = "title") String title,
 			@RequestPart(name = "artist") String artist,
@@ -66,24 +66,7 @@ public class SongController {
 		return songService.uploadSong(detailSongDto, thumbnail, file);
 	}
 
-	@GetMapping("/file/{name}")
-	public  ResponseEntity<Resource> downloadFile(@PathVariable String name) {
-		return songService.downloadFile(name);
-	}
-
-	@GetMapping("/image/{name}")
-	public  ResponseEntity<Resource> downloadImage(@PathVariable String name) {
-		return songService.downloadImage(name);
-	}
-
-	@GetMapping("/{id}/download")
-	public ResponseEntity<DetailSongDto> downloadSong(
-			@PathVariable int id
-	) {
-		return songService.downloadSong(id);
-	}
-
-	@PutMapping("/{id}/update")
+	@PatchMapping("/{id}")
 	public ResponseEntity<?> updateSong(
 			@PathVariable int id,
 			@RequestBody DetailSongDto detailSongDTO
@@ -91,14 +74,14 @@ public class SongController {
 		return songService.updateSong(id, detailSongDTO);
 	}
 
-	@DeleteMapping("/{id}/delete")
+	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteSong(@PathVariable int id) {
 		return songService.deleteSong(id);
 	}
 
-	@GetMapping("/suggestions")
+	@GetMapping("/suggestions/{keyword}")
 	public ResponseEntity<List<String>> getSearchSuggestions(
-			@RequestParam String keyword
+			@PathVariable String keyword
 	) {
 		List<String> suggestionsTitle = songRepository.findSuggestionsTitle(keyword);
 		List<String> suggestionsArtist = songRepository.findSuggestionsArtist(keyword);
@@ -111,5 +94,22 @@ public class SongController {
 		allSuggestions.addAll(suggestionsAlbum);
 
 		return ResponseEntity.ok(allSuggestions);
+	}
+
+	@GetMapping("/{id}/download")
+	public ResponseEntity<DetailSongDto> downloadSong(
+			@PathVariable int id
+	) {
+		return songService.downloadSong(id);
+	}
+
+	@GetMapping("/{name}/file")
+	public  ResponseEntity<Resource> downloadFile(@PathVariable String name) {
+		return songService.downloadFile(name);
+	}
+
+	@GetMapping("/{name}/image")
+	public  ResponseEntity<Resource> downloadImage(@PathVariable String name) {
+		return songService.downloadImage(name);
 	}
 }

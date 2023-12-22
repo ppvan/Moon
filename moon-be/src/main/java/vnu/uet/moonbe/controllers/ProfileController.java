@@ -9,29 +9,29 @@ import vnu.uet.moonbe.dto.ProfileDto;
 import vnu.uet.moonbe.services.ProfileService;
 
 @RestController
-@RequestMapping("/api/v1/profile")
+@RequestMapping("/api/profile")
 @RequiredArgsConstructor
 public class ProfileController {
 
 	private final ProfileService profileService;
 
-	@GetMapping("/get")
+	@GetMapping("/")
 	public ResponseEntity<ProfileDto> profile() {
 		return profileService.getUserProfile();
 	}
 
-	@PutMapping("/update")
+	@PatchMapping("/")
 	public ResponseEntity<?> updateUserProfile(
 			@RequestBody ProfileDto profileDto
 	) {
 		return profileService.updateUserProfile(profileDto);
 	}
 
-	@PostMapping("/upload/avatar")
-	public ResponseEntity<?> uploadAvatar(
+	@PatchMapping("/avatar")
+	public ResponseEntity<?> updateAvatar(
 			@RequestPart("avatar") MultipartFile file
 			) {
-		return profileService.uploadAvatar(file);
+		return profileService.updateAvatar(file);
 	}
 
 	@GetMapping("/avatar/{name}")

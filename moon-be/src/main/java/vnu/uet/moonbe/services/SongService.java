@@ -1,23 +1,17 @@
 package vnu.uet.moonbe.services;
 
-import io.micrometer.common.util.StringUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import vnu.uet.moonbe.dto.DetailSongDto;
 import vnu.uet.moonbe.dto.ResponseDto;
 import vnu.uet.moonbe.exceptions.SongNotFoundException;
-import vnu.uet.moonbe.models.ActionType;
 import vnu.uet.moonbe.models.Song;
-import vnu.uet.moonbe.models.User;
 import vnu.uet.moonbe.repositories.SongRepository;
 import vnu.uet.moonbe.repositories.UserRepository;
 import vnu.uet.moonbe.repositories.UserSongMappingRepository;
@@ -29,7 +23,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -46,9 +39,7 @@ public class SongService {
 	@Value("${image.upload.path}")
 	private String imageUploadPath;
 
-	private String urlApiFile = "http://139.59.227.169:8080/api/v1/songs/file/";
-
-	private String urlApiImage = "http://139.59.227.169:8080/api/v1/songs/image/";
+	private String urlApiSong = "http://139.59.227.169:8080/api/songs/";
 
 	private final UserRepository userRepository;
 	private final SongRepository songRepository;
@@ -136,8 +127,8 @@ public class SongService {
 		newSong.setTitle(detailSongDTO.getTitle());
 		newSong.setArtist(detailSongDTO.getArtist());
 		newSong.setAlbum(detailSongDTO.getAlbum());
-		newSong.setThumbnail(urlApiImage + newImageName);
-		newSong.setFilePath(urlApiFile + newFileName);
+		newSong.setThumbnail(urlApiSong + newImageName + "/image");
+		newSong.setFilePath(urlApiSong + newFileName + "/file");
 
 		songRepository.save(newSong);
 

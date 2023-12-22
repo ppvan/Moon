@@ -33,7 +33,7 @@ public class ProfileService {
 
 	private final UserRepository userRepository;
 
-	private String urlAvatar = "http://139.59.227.169:8080/api/v1/profile/avatar/";
+	private String urlApiAvatar = "http://139.59.227.169:8080/api/profile/avatar/";
 
 	public ResponseEntity<ProfileDto> getUserProfile() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -70,14 +70,13 @@ public class ProfileService {
 
 		user.setFirstname(profileDto.getFirstname());
 		user.setLastname(profileDto.getLastname());
-		user.setAvatar(profileDto.getAvatar());
 
 		userRepository.save(user);
 
 		return ResponseEntity.ok("Profile updated successfully");
 	}
 
-	public ResponseEntity<?> uploadAvatar(MultipartFile file) {
+	public ResponseEntity<?> updateAvatar(MultipartFile file) {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		String email = authentication.getName();
 
@@ -98,12 +97,12 @@ public class ProfileService {
 		}
 
 		User user = optionalUser.get();
-		user.setAvatar(urlAvatar + newFileName);
+		user.setAvatar(urlApiAvatar + newFileName);
 		userRepository.save(user);
 
 		ResponseDto responseDto = new ResponseDto();
 		responseDto.setStatusCode(HttpStatus.CREATED.value());
-		responseDto.setMessage("Song added success");
+		responseDto.setMessage("Avatar updated success");
 
 		return ResponseEntity.ok(responseDto);
 	}
