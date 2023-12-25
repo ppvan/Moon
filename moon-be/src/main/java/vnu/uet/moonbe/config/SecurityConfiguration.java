@@ -33,6 +33,8 @@ public class SecurityConfiguration {
               .permitAll()
 							.requestMatchers("/api/repo/upload")
 							.permitAll()
+							.requestMatchers("/api/playlist/**")
+							.permitAll()
               .anyRequest()
               .authenticated()
       )

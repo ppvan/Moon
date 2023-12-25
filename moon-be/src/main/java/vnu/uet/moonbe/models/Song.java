@@ -31,7 +31,7 @@ public class Song {
   private String filePath;
 
   @OneToMany(mappedBy = "song")
-  private List<UserSongMapping> userSongMappings = new ArrayList<>();
+  private List<UserAction> userActions = new ArrayList<>();
 
   public Song(
 			int id,

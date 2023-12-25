@@ -37,6 +37,9 @@ dependencies {
     // https://mvnrepository.com/artifact/com.mpatric/mp3agic
     implementation("com.mpatric:mp3agic:0.9.1")
 
+//    // https://mvnrepository.com/artifact/org.hibernate/hibernate-search-orm
+//    implementation("org.hibernate:hibernate-search-orm:5.11.12.Final")
+
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
 

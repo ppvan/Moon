@@ -13,8 +13,8 @@ import vnu.uet.moonbe.dto.ResponseDto;
 import vnu.uet.moonbe.exceptions.SongNotFoundException;
 import vnu.uet.moonbe.models.Song;
 import vnu.uet.moonbe.repositories.SongRepository;
+import vnu.uet.moonbe.repositories.UserActionRepository;
 import vnu.uet.moonbe.repositories.UserRepository;
-import vnu.uet.moonbe.repositories.UserSongMappingRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class SongService {
 
 	private final UserRepository userRepository;
 	private final SongRepository songRepository;
-	private final UserSongMappingRepository userSongMappingRepository;
+	private final UserActionRepository userActionRepository;
 
 	public List<DetailSongDto> getAllSongs() {
 		List<Song> songs = songRepository.findAll();
@@ -214,8 +214,8 @@ public class SongService {
 		Song song = songRepository.findById(id)
 						.orElseThrow(() -> new SongNotFoundException("Song could not be deleted"));
 
-		if (!song.getUserSongMappings().isEmpty()) {
-			userSongMappingRepository.deleteAll(song.getUserSongMappings());
+		if (!song.getUserActions().isEmpty()) {
+			userActionRepository.deleteAll(song.getUserActions());
 		}
 
 		songRepository.delete(song);
