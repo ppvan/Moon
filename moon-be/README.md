@@ -23,7 +23,7 @@ Hiện tại, Backend cung cấp những API sau:
 
 ### Những API được truy cập trực tiếp:
 
-1. Post - Register: http://139.59.227.169:8080/api/v1/auth/register
+1. Post - Register: http://139.59.227.169:8080/api/auth/register
     - Đăng ký tài khoản, yêu cầu một file JSON có dạng như sau:
 
           {
@@ -50,7 +50,7 @@ Hiện tại, Backend cung cấp những API sau:
                     "message": "Email already exists"
                   }
 
-2. Post - Authenticate: http://139.59.227.169:8080/api/v1/auth/authenticate
+2. Post - Authenticate: http://139.59.227.169:8080/api/auth/authenticate
     - Đăng nhập tài khoản, yêu cầu một file JSON có dạng như sau:
 
           {
@@ -74,10 +74,15 @@ Hiện tại, Backend cung cấp những API sau:
 
 - Tất cả những API được bảo vệ đều cần access_token để có thể truy cập.
 
-1. Post - Logout: http://139.59.227.169:8080/api/v1/auth/logout
+<!-- API Authentication -->
+1. Post - Logout: http://139.59.227.169:8080/api/auth/logout
     - Đăng xuất tài khoản người dùng.
-2. Get - Get all songs: http://139.59.227.169:8080/api/v1/songs/all
+    - Yêu cầu token của người dùng.
+
+<!-- API Song -->
+2. Get - Get all songs: http://139.59.227.169:8080/api/songs/
     - Liệt kê danh sách bài hát trong server.
+    - Yêu cầu token của người dùng.
     - Server phản hồi về một file JSON chứa danh sách thông tin các bài hát được lưu trên server.
  
           [
@@ -99,9 +104,10 @@ Hiện tại, Backend cung cấp những API sau:
             }
           ]
 
-3. Get - Get detail song: http://139.59.227.169:8080/api/v1/songs/ + "id"
-    - Ví dụ: http://139.59.227.169:8080/api/v1/songs/1
+3. Get - Get detail song: http://139.59.227.169:8080/api/songs/ + "id"
+    - Ví dụ: http://139.59.227.169:8080/api/songs/1
     - Tìm kiếm thông tin một bài hát bằng id.
+    - Yêu cầu token của người dùng.
     - Server phản hồi về một file JSON chứa thông tin bài hát cần tìm:
 
           {
@@ -113,9 +119,10 @@ Hiện tại, Backend cung cấp những API sau:
             "filePath": "filePath"
           }
 
-4. Get - Search title: http://139.59.227.169:8080/api/v1/songs/search/title?title= + "title"
-    - Ví dụ: http://139.59.227.169:8080/api/v1/songs/search/title?title=abc
+4. Get - Search title: http://139.59.227.169:8080/api/songs/title/ + "title"
+    - Ví dụ: http://139.59.227.169:8080/api/songs/title/abc
     - Tìm kiếm các bài hát theo title.
+    - Yêu cầu token của người dùng.
     - Server phản hồi về một file JSON chứa danh sách thông tin các bài hát tìm theo tiêu đề:
 
           [
@@ -137,14 +144,19 @@ Hiện tại, Backend cung cấp những API sau:
             }
           ]
 
-5. Get - Search artist: http://139.59.227.169:8080/api/v1/songs/search/artist?artist= + "artist"
-    - Ví dụ: http://139.59.227.169:8080/api/v1/songs/search/artist?artist=abc
+5. Get - Search artist: http://139.59.227.169:8080/api/songs/artist/ + "artist"
+    - Ví dụ: http://139.59.227.169:8080/api/songs/artist/abc
     - Tìm kiếm các bài hát theo artist.
-6. Get - Search album: http://139.59.227.169:8080/api/v1/songs/search/album?album= + "album"
-    - Ví dụ: http://139.59.227.169:8080/api/v1/songs/search/album?album=abc
+    - Yêu cầu token của người dùng.
+
+6. Get - Search album: http://139.59.227.169:8080/api/songs/album/ + "album"
+    - Ví dụ: http://139.59.227.169:8080/api/songs/album/abc
     - Tìm kiếm các bài hát theo album.
-7. Post - Upload song: http://139.59.227.169:8080/api/v1/songs/upload
+    - Yêu cầu token của người dùng.
+
+7. Post - Upload song: http://139.59.227.169:8080/api/songs/
     - Thêm một bài hát lên server.
+    - Yêu cầu token của người dùng.
     - Yêu cầu một file JSON body có dạng:
     - Thumbnail và filePath định dạng file.
   
@@ -171,9 +183,10 @@ Hiện tại, Backend cung cấp những API sau:
                   "message": "No song details found"
                 }   
 
-8. Put - Update song: http://139.59.227.169:8080/api/v1/songs/ + "id" + /update
-    - Ví dụ: http://139.59.227.169:8080/api/v1/songs/1/update
+8. Patch - Update song: http://139.59.227.169:8080/api/songs/ + "id"
+    - Ví dụ: http://139.59.227.169:8080/api/songs/1
     - Chỉnh sửa thông tin một bài hát.
+    - Yêu cầu token của người dùng.
     - Yêu cầu một file JSON body có dạng:
 
           {
@@ -195,9 +208,10 @@ Hiện tại, Backend cung cấp những API sau:
             "message": "Song could not be updated"
           }
 
-9. Delete - Delete song: http://139.59.227.169:8080/api/v1/songs/ + "id" + /delete
-    - Ví dụ: http://139.59.227.169:8080/api/v1/songs/1/delete
+9. Delete - Delete song: http://139.59.227.169:8080/api/songs/ + "id"
+    - Ví dụ: http://139.59.227.169:8080/api/songs/1
     - Xóa một bài hát theo id.
+    - Yêu cầu token của người dùng.
     - Khi xóa thành công:
 
           {
@@ -212,18 +226,30 @@ Hiện tại, Backend cung cấp những API sau:
           "message": "Song could not be deleted"
         }
     
-10. Get - Suggestion song: http://139.59.227.169:8080/api/v1/songs/suggestions?keyword= + "word"
-    - Ví dụ: http://139.59.227.169:8080/api/v1/songs/suggestions?keyword=abc
+10. Get - Suggestion song: http://139.59.227.169:8080/api/songs/suggestions/+ "word"
+    - Ví dụ: http://139.59.227.169:8080/api/songs/suggestions/abc
     - API cải tiến từ 3 API search title / artist / album
     - Trả về một danh sách các cụm từ liên quan với keyword.
     - Phục vụ cho chức năng thanh tìm kiếm, đề xuất.
-11. Get - Download file: http://139.59.227.169:8080/api/v1/songs/file/ + "file.mp3"
+    - Yêu cầu token của người dùng.
+
+11. Get - Download file: http://139.59.227.169:8080/api/songs/ + "file.mp3" + /file
     - Yêu cầu một tên file bài hát, lấy từ filepath.
     - Trả về một tệp nhị phân là nội dung file.
-12. Get - Get Profile: http://139.59.227.169:8080/api/v1/profile/get
+    - Yêu cầu token của người dùng.
+
+12. Get - Download image: http://139.59.227.169:8080/api/songs/ + "image.png" + /image
+    - Yêu cầu token của người dùng.
+    - Yêu cầu một tên file ảnh.
+    - Trả về ảnh.
+    - Đây là thumbnail của bài hát.
+
+<!-- API Profile -->
+13. Get - Get Profile: http://139.59.227.169:8080/api/profile/
     - Yêu cầu token của người dùng.
     - Trả về một file json thông tin người dùng.
-13. Put - Update Profile: http://139.59.227.169:8080/api/v1/profile/update
+
+14. Patch - Update Profile: http://139.59.227.169:8080/api/profile/
     - Yêu cầu token của người dùng.
     - Yêu cầu một file json trong body request.
           
@@ -233,9 +259,126 @@ Hiện tại, Backend cung cấp những API sau:
             "avatar": "avatar"
           }
     
-14. Post - Upload Avatar: http://139.59.227.169:8080/api/v1/profile/upload/avatar
+15. Patch - Upload Avatar: http://139.59.227.169:8080/api/profile/avatar
     - Yêu cầu token của người dùng.
     - Yêu cầu một file
 
-15. Get - Download Avatar: http://139.59.227.169:8080/api/v1/profile/avatar/ + "nameFile"
+16. Get - Download Avatar: http://139.59.227.169:8080/api/profile/avatar/ + "nameFile"
     - Yêu cầu token người dùng
+
+<!-- API Playlist -->
+17. Get - Get All Playlist of user: http://139.59.227.169:8080/api/playlist/
+    - Yêu cầu token người dùng
+    - Trả về một file Json là danh sách các Playlist
+
+          [
+            {
+                "id": 1,
+                "name": "test1",
+                "userName": "user1"
+            },
+            {
+                "id": 2,
+                "name": "test2",
+                "userName": "user1"
+            }
+          ]
+
+18. Post - Create a Playlist: http://139.59.227.169:8080/api/playlist/
+    - Yêu cầu token người dùng
+    - Yêu cầu một file Json
+
+          {
+            "name": "test"
+          }
+    
+    - Tạo thành công một Playlist sẽ có thông báo:
+
+          {
+            "statusCode": 201,
+            "message": "Playlist created success"
+          }
+
+19. Patch - Update Playlist: http://139.59.227.169:8080/api/playlist/ + "id"
+    - Yêu cầu token người dùng
+    - id là PathVariable
+    - Yêu cầu một file Json
+
+          {
+            "name": "newtest"
+          } 
+
+    - Thành công sẽ có thông báo:
+
+          {
+            "statusCode": 200,
+            "message": "Playlist updated success"
+          }
+
+    - Thất bại sẽ có thông báo:
+
+          {
+            "statusCode": 404,
+            "message": "Playlist could not be updated"
+          }
+
+20. Delete - Delete Playlist: http://139.59.227.169:8080/api/playlist/ + "id"
+    - Yêu cầu token người dùng
+    - id là PathVariable
+    - Xóa thành công:
+
+          {
+            "statusCode": 204,
+            "message": "Playlist deleted successfully"
+          }
+
+    - Xóa thất bại:
+
+          {
+            "statusCode": 500,
+            "message": "Error deleting playlist"
+          }
+
+<!-- API Playlist Item -->
+21. Get - Get all playlist item(song): http://139.59.227.169:8080/api/playlist/ + "id"
+    - Yêu cầu token người dùng
+    - Cần id của playlist
+    - id là PathVariable
+
+22. Post - Add song to playlist: http://139.59.227.169:8080/api/playlist/ + "playlistId" + /song/ + "songId"
+    - Yêu cầu token người dùng
+    - Cần id của playlist
+    - Cần id của song
+    - id là PathVariable
+    - Thêm thành công:
+
+          {
+            "statusCode": 200,
+            "message": "Add song to playlist successfully"
+          }
+
+    - Thêm thất bại:
+
+          {
+            "statusCode": 500,
+            "message": "Song could not add to playlist"
+          }
+
+23. Delete - Remove song from playlist: http://139.59.227.169:8080/api/playlist/ + "playlistId" + /song/ + "songId"
+    - Yêu cầu token người dùng
+    - Cần id của playlist
+    - Cần id của song
+    - id là PathVariable
+    - Xóa thành công:
+
+        {
+          "statusCode": 204,
+          "message": "Item deleted successfully"
+        }
+
+    - Xóa thất bại: 
+
+        {
+          "statusCode": 500,
+          "message": "Error deleting playlist"
+        }
