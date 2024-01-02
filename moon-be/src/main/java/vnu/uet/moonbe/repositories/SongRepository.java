@@ -1,6 +1,7 @@
 package vnu.uet.moonbe.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SongRepository extends JpaRepository<Song, Integer> {
+public interface SongRepository extends JpaRepository<Song, Integer>, JpaSpecificationExecutor<Song> {
 
   Optional<Song> findById(int id);
 
@@ -28,4 +29,7 @@ public interface SongRepository extends JpaRepository<Song, Integer> {
 
 	@Query("SELECT DISTINCT s.album FROM Song s WHERE LOWER(s.album) LIKE LOWER(CONCAT('%', :keyword, '%'))")
 	List<String> findSuggestionsAlbum(@Param("keyword") String keyword);
+
+	@Query("SELECT DISTINCT s.album FROM Song s WHERE s.album IS NOT NULL")
+	List<String> findAllAlbums();
 }
