@@ -3,6 +3,7 @@ package vnu.uet.moonbe.controllers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import vnu.uet.moonbe.dto.DetailSongDto;
 import vnu.uet.moonbe.models.Song;
 import vnu.uet.moonbe.repositories.SongRepository;
+import vnu.uet.moonbe.services.FTService;
 import vnu.uet.moonbe.services.SongService;
 
 import java.io.IOException;
@@ -24,6 +26,8 @@ public class SongController {
 	private final SongService songService;
 
 	private final SongRepository songRepository;
+
+	private final FTService searchService;
 
 	@GetMapping("/")
 	public ResponseEntity<List<DetailSongDto>> getAllSongs() {
@@ -95,6 +99,24 @@ public class SongController {
 		allSuggestions.addAll(suggestionsAlbum);
 
 		return ResponseEntity.ok(allSuggestions);
+	}
+
+	@GetMapping("/search")
+	public ResponseEntity<List<Song>> searchSongs(@RequestParam("q") String query) {
+		var matches =  searchService.searchSong(query);
+
+		return ResponseEntity.ok(matches);
+	}
+
+	/**
+	 * This route tell server to reindex songs data
+	 * @return Ok
+	 */
+	@GetMapping("/search/reindex")
+	public ResponseEntity<String> reIndex() {
+		searchService.massIndex();
+
+		return ResponseEntity.ok("OK");
 	}
 
 //	@GetMapping("/suggestionstest/{keyword}")

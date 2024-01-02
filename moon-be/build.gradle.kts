@@ -39,6 +39,9 @@ dependencies {
 
 //    // https://mvnrepository.com/artifact/org.hibernate/hibernate-search-orm
 //    implementation("org.hibernate:hibernate-search-orm:5.11.12.Final")
+    implementation("org.hibernate.search:hibernate-search-mapper-orm:7.0.0.Final")
+    implementation("org.hibernate.search:hibernate-search-backend-lucene:7.0.0.Final")
+
 
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -50,7 +53,8 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
     testImplementation("org.springframework.security:spring-security-test")
 
-    implementation("org.hibernate.orm:hibernate-core:6.3.1.Final")
+//    implementation("org.hibernate.orm:hibernate-core:6.3.1.Final")
+    implementation("org.hibernate.orm:hibernate-core:6.4.1.Final")
     implementation("commons-io:commons-io:2.14.0")
     compileOnly("org.projectlombok:lombok")
     runtimeOnly("com.h2database:h2")
