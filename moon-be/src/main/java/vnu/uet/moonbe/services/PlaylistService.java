@@ -49,7 +49,7 @@ public class PlaylistService {
 	public ResponseEntity<?> createPlaylist(PlaylistDto playlistDto) throws Exception {
 		User user = getAuthenticatedUser();
 
-		if (playlistDto == null) {
+		if (playlistDto == null || playlistDto.getName() == null || playlistDto.getName().trim().isEmpty()) {
 			throw new PlaylistNotFoundException("No playlist details found");
 		}
 

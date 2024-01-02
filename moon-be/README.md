@@ -382,3 +382,12 @@ Hiện tại, Backend cung cấp những API sau:
           "statusCode": 500,
           "message": "Error deleting playlist"
         }
+
+24. Get - Get all albums: http://139.59.227.169:8080/api/songs/albums
+    - Yêu cầu token người dùng
+    - Trả về danh sách album dưới dạng json
+
+25. Get - Get all songs from album: http://139.59.227.169:8080/api/songs/albums/ + "name album" + /songs
+    - Yêu cầu token người dùng
+    - Yêu cầu tên album
+    - Trả về danh sách bài hát thuộc album dưới dạng json

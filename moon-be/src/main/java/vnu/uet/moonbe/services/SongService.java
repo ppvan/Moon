@@ -227,6 +227,17 @@ public class SongService {
 		return ResponseEntity.ok(responseDto);
 	}
 
+	public List<String> getAllAlbums() {
+		return songRepository.findAllAlbums();
+	}
+
+	public List<DetailSongDto> getSongsFromAlbum(String album) {
+		List<Song> songs = songRepository.findByAlbumContainingIgnoreCase(album);
+		return songs.stream()
+				.map(this::mapToDto)
+				.collect(Collectors.toList());
+	}
+
 	private DetailSongDto mapToDto(Song song) {
 		DetailSongDto detailSongDTO = new DetailSongDto();
 

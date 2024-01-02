@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vnu.uet.moonbe.dto.DetailSongDto;
+import vnu.uet.moonbe.models.Song;
 import vnu.uet.moonbe.repositories.SongRepository;
 import vnu.uet.moonbe.services.SongService;
 
@@ -96,6 +97,11 @@ public class SongController {
 		return ResponseEntity.ok(allSuggestions);
 	}
 
+//	@GetMapping("/suggestionstest/{keyword}")
+//	public List<Song> searchSongsByTitle(@PathVariable  String keyword) {
+//		return songRepository.findByTitleFullTextSearch(keyword);
+//	}
+
 	@GetMapping("/{id}/download")
 	public ResponseEntity<DetailSongDto> downloadSong(
 			@PathVariable int id
@@ -104,12 +110,24 @@ public class SongController {
 	}
 
 	@GetMapping("/{name}/file")
-	public  ResponseEntity<Resource> downloadFile(@PathVariable String name) {
+	public ResponseEntity<Resource> downloadFile(@PathVariable String name) {
 		return songService.downloadFile(name);
 	}
 
 	@GetMapping("/{name}/image")
-	public  ResponseEntity<Resource> downloadImage(@PathVariable String name) {
+	public ResponseEntity<Resource> downloadImage(@PathVariable String name) {
 		return songService.downloadImage(name);
+	}
+
+	@GetMapping("/albums")
+	public ResponseEntity<List<String>> getAllAlbums() {
+		List<String> albums = songService.getAllAlbums();
+		return new ResponseEntity<>(albums, HttpStatus.OK);
+	}
+
+	@GetMapping("/albums/{album}/songs")
+	public ResponseEntity<List<DetailSongDto>> getSongsFromAlbum(@PathVariable String album) {
+		List<DetailSongDto> songDtos = songService.getSongsFromAlbum(album);
+		return new ResponseEntity<>(songDtos, HttpStatus.OK);
 	}
 }
