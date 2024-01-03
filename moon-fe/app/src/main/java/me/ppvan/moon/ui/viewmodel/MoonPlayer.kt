@@ -153,7 +153,7 @@ MoonPlayer @Inject constructor(var player: Player, database: MoonDatabase) : Vie
         if (player.playbackState == Player.STATE_IDLE) player.prepare()
         val tracks = getShuffleQueue(playbackState.value)
 
-        addToRecentTrack(track)
+//        addToRecentTrack(track)
 
         val index = tracks.indexOf(track)
         preparePlayAtIndex(index, playWhenReady)

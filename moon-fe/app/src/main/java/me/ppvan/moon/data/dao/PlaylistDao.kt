@@ -15,8 +15,11 @@ interface PlaylistDao {
     @Query("SELECT * FROM playlist")
     suspend fun findAll(): List<Playlist>
 
+    @Query("SELECT * FROM playlist WHERE playlistId = :id")
+    suspend fun findById(id: Long): Playlist
+
     @Transaction
-    @Query("SELECT * FROM playlist")
-    fun getPlaylistsWithSongs(): List<PlaylistWithSongs>
+    @Query("SELECT * FROM playlist WHERE playlistId = :playlistId")
+    suspend fun getPlaylistsWithSongs(playlistId: Long): PlaylistWithSongs
 
 }

@@ -3,9 +3,6 @@ package me.ppvan.moon.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.beust.klaxon.JsonArray
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
 import com.yausername.youtubedl_android.YoutubeDL
 import com.yausername.youtubedl_android.YoutubeDLRequest
 import kotlinx.coroutines.Dispatchers
@@ -22,32 +19,20 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
-import me.ppvan.moon.utils.await
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.time.Duration
+import me.ppvan.moon.data.model.Track
+import me.ppvan.moon.data.retrofit.ApiService
 import javax.inject.Inject
 import javax.inject.Singleton
 
 
-const val RECOMMEND_API =
-    "https://suggestqueries.google.com/complete/search?client=youtube&ds=yt&client=firefox&q="
+const val RECOMMEND_API = "http://139.59.227.169:8080"
 const val SEARCH_API = "https://api-piped.mha.fi/"
 
 @Singleton
-class YTViewModel @Inject constructor() : ViewModel() {
-
-    private val okHttpClient = OkHttpClient().newBuilder()
-        .connectTimeout(Duration.ofSeconds(30))
-        .readTimeout(Duration.ofSeconds(30))
-        .writeTimeout(Duration.ofSeconds(30))
-        .build()
+class YTViewModel @Inject constructor(private val moonService: ApiService) : ViewModel() {
 
     private val _isRecommending = MutableStateFlow(false)
     val isRecommending = _isRecommending.asStateFlow()
-
-    private val _isSearching = MutableStateFlow(false)
-    val isSearching = _isSearching.asStateFlow()
 
     private val _active = MutableStateFlow(false)
     val active = _active.asStateFlow()
@@ -59,10 +44,6 @@ class YTViewModel @Inject constructor() : ViewModel() {
     val isDataLoaded = _isDataLoaded.asStateFlow()
 
     private val _recommendations = MutableStateFlow(listOf<String>())
-
-    init {
-
-    }
 
     @OptIn(FlowPreview::class)
     val recommendations: StateFlow<List<String>> =
@@ -129,39 +110,17 @@ class YTViewModel @Inject constructor() : ViewModel() {
 //        return emptyList()
         _isDataLoaded.emit(false)
         withContext(Dispatchers.IO) {
-            val url = SEARCH_API + "search?q=${query}&filter=videos&region=vi"
-            val parser: Parser = Parser.default()
-            val request = Request.Builder()
-                .header(
-                    "User-Agent",
-                    "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/119.0"
-                )
-                .url(url).build()
+            val response = moonService.search(query)
+            withContext(Dispatchers.Main) {
+                if (!response.isSuccessful || response.body() == null) {
+                    Log.d("SearchVM", "Failed: ${response.code()}")
+                } else {
+                    Log.d("SearchVM", "Success")
 
-            val response = okHttpClient.newCall(request).await()
-            val content = response.body!!.string()
-            Log.e("INFO", content)
-            Log.d("INFO", url)
-            val items = (parser.parse(StringBuilder(content)) as JsonObject)
-                .array<JsonObject>("items")!!
-
-            for (item in items) {
-                val id = getIdFromURL(item.string("url").orEmpty())
-                val title = item.string("title").orEmpty()
-                val uploader = item.string("uploaderName").orEmpty()
-                val duration = item.long("duration") ?: 0
-                val thumb = "https://i.ytimg.com/vi/$id/hqdefault.jpg"
-
-                result.add(
-                    ResultItem(
-                        id = id,
-                        title = title,
-                        uploader = uploader,
-                        duration = duration,
-                        playbackUrl = "directUrl",
-                        thumbnailUrl = thumb
-                    )
-                )
+                    response.body()?.let {songs ->
+                        result.addAll(songs.map { it.toResultItem() })
+                    }
+                }
             }
         }
 
@@ -200,20 +159,22 @@ class YTViewModel @Inject constructor() : ViewModel() {
     }
 
     private suspend fun getSearchRecommendation(query: String): List<String> {
-        val url = RECOMMEND_API + query
-        val request = Request.Builder().url(url).build()
-        val parser: Parser = Parser.default()
+        val suggestions = mutableListOf<String>()
 
-        val recommends = withContext(Dispatchers.IO) {
-            val response = okHttpClient.newCall(request).await()
-            val jsonStr = response.body!!.string()
-            val array = parser.parse(StringBuilder(jsonStr)) as JsonArray<*>
-            // If out of index or something, api changed and should be fix quickly
+        withContext(Dispatchers.IO) {
+            val response = moonService.suggest(query)
 
-            return@withContext array[1] as JsonArray<String>
+            withContext(Dispatchers.Main) {
+                if (!response.isSuccessful || response.body() == null) {
+                    Log.d("SearchVM", "Failed: ${response.code()}")
+                } else {
+                    Log.d("SearchVM", "Success")
+                    suggestions.addAll(response.body()!!)
+                }
+            }
         }
 
-        return recommends.value.toList()
+        return suggestions
     }
 }
 
@@ -227,7 +188,18 @@ data class ResultItem(
     val isLoading: Boolean = true,
 
     val state: ResultItemState = ResultItemState.NONE
-)
+) {
+    fun toTrack(): Track {
+        return Track(
+            id = id.toLong(),
+            title = title,
+            artist = uploader,
+            album = "",
+            thumbnailUri = thumbnailUrl,
+            contentUri = playbackUrl
+        )
+    }
+}
 
 enum class ResultItemState(var message: String) {
     NONE("Not downloaded"),

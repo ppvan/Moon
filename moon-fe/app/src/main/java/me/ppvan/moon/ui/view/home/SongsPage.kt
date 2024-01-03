@@ -29,17 +29,14 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,11 +46,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -64,14 +59,12 @@ import me.ppvan.moon.ui.activity.Routes
 import me.ppvan.moon.ui.activity.ViewContext
 import me.ppvan.moon.ui.component.AddToPlaylistDialog
 import me.ppvan.moon.ui.component.CenterTopAppBar
-import me.ppvan.moon.ui.component.TopAppBarMinimalTitle
 import me.ppvan.moon.ui.viewmodel.MoonPlayer
 import me.ppvan.moon.utils.SlideTransition
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SongScreen(context: ViewContext){
+fun SongScreen(context: ViewContext) {
     val player = context.trackViewModel.player
     val playbackState by player.playbackState.collectAsState()
     val bottomPlayerVisible = playbackState.track != Track.default()
@@ -82,7 +75,7 @@ fun SongScreen(context: ViewContext){
                 title = "Song",
                 navigationIcon = {
                     IconButton(
-                        onClick = { context.navigator.popBackStack()  }
+                        onClick = { context.navigator.popBackStack() }
                     ) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, null)
                     }
@@ -153,6 +146,7 @@ fun SongScreen(context: ViewContext){
         }
     )
 }
+
 @Composable
 fun SongsPage(context: ViewContext) {
 
@@ -311,7 +305,7 @@ fun SongDropdownMenu(
     }
 
     if (showPlaylistDialog) {
-        AddToPlaylistDialog(context = viewContext, songIds = emptyList()) {
+        AddToPlaylistDialog(context = viewContext, track = track) {
             showPlaylistDialog = false
         }
     }

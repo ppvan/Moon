@@ -65,7 +65,6 @@ android {
 }
 
 dependencies {
-
     val media3Version = "1.2.0"
     val materialVersion = "1.2.0-alpha09"
     val room_version = "2.6.0"
@@ -83,16 +82,21 @@ dependencies {
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    runtimeOnly("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
 
     // Converter-gson (for Retrofit)
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // datastore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 
 
     // Simple Storage
     implementation("com.anggrayudi:storage:1.5.5")
 
     // ID3 Tagger
-//    implementation("com.mpatric:mp3agic:0.9.1")
     implementation("net.jthink:jaudiotagger:3.0.1")
 
 

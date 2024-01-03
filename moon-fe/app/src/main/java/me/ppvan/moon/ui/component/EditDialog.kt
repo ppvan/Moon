@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,7 +26,7 @@ fun EditEmailDialog(
 
     AlertDialog(
         onDismissRequest = onCancel,
-        title = { Text("Change your email") },
+        title = { Text("Change last name") },
         text = {
             Column {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -68,7 +69,7 @@ fun EditNameDialog(
     AlertDialog(
         modifier = Modifier,
         onDismissRequest = onCancel,
-        title = { Text("Change your name") },
+        title = { Text("Change first name") },
         text = {
             Column {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -83,14 +84,13 @@ fun EditNameDialog(
             Button(
                 onClick = {
                     onNameChanged(newName)
-
                 }
             ) {
                 Text("OK")
             }
         },
         dismissButton = {
-            Button(
+            ElevatedButton(
                 onClick = onCancel
             ) {
                 Text("Cancel")
