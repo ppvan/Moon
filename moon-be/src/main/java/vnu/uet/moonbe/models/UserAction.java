@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user_songs")
-public class UserSongMapping {
+public class UserAction {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,7 +30,7 @@ public class UserSongMapping {
   @JoinColumn(name = "action_type")
   private ActionType actionType;
 
-  public UserSongMapping(User user, Song song, ActionType actionType) {
+  public UserAction(User user, Song song, ActionType actionType) {
     this.user = user;
     this.song = song;
     this.actionType = actionType;

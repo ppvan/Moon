@@ -39,14 +39,18 @@ public class User implements UserDetails {
 
   @Builder.Default
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-  private List<UserSongMapping> userSongMappings = new ArrayList<>();
+  private List<UserAction> userActions = new ArrayList<>();
+
+	@Builder.Default
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private List<Playlist> playlists = new ArrayList<>();
 
   @Transactional
   public void addSong(Song song, ActionType actionType) {
-    UserSongMapping userSongMapping = new UserSongMapping(this, song, actionType);
-    userSongMapping.setActionType(actionType);
-    this.userSongMappings.add(userSongMapping);
-    song.getUserSongMappings().add(userSongMapping);
+    UserAction userAction = new UserAction(this, song, actionType);
+    userAction.setActionType(actionType);
+    this.userActions.add(userAction);
+    song.getUserActions().add(userAction);
   }
 
   @Override

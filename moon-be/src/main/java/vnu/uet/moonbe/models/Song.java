@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,40 +16,45 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Indexed
 public class Song {
 
 //  public static final String PLAYLIST_DELIM = ";";
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private int id;
-  private String title;
-  private String artist;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
 
-	@Column(nullable = true)
-  private String album;
+    @FullTextField(analyzer = "name")
+    private String title;
 
-	private String thumbnail;
-  private String filePath;
+    @FullTextField(analyzer = "name")
+    private String artist;
 
-  @OneToMany(mappedBy = "song")
-  private List<UserSongMapping> userSongMappings = new ArrayList<>();
+    @Column(nullable = true)
+    private String album;
 
-  public Song(
-			int id,
-			String title,
-			String artist,
-			String album,
-			String thumbnail,
-			String filePath
-	) {
-    this.id = id;
-    this.title = title;
-    this.artist = artist;
-    this.album = album;
-		this.thumbnail = thumbnail;
-    this.filePath = filePath;
-  }
+    private String thumbnail;
+    private String filePath;
+
+    @OneToMany(mappedBy = "song")
+    private List<UserAction> userActions = new ArrayList<>();
+
+    public Song(
+            int id,
+            String title,
+            String artist,
+            String album,
+            String thumbnail,
+            String filePath
+    ) {
+        this.id = id;
+        this.title = title;
+        this.artist = artist;
+        this.album = album;
+        this.thumbnail = thumbnail;
+        this.filePath = filePath;
+    }
 }
 
 //    A semi-colon separate list of playlist: Default;Favourite;....

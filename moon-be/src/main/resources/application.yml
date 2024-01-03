@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/moon_android_app
+    url: jdbc:postgresql://localhost:5432/test_db
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -11,6 +11,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        search:
+          backend:
+#            directory:
+#              root: ~/some-path/ default current dir
+            analysis:
+              configurer: class:vnu.uet.moonbe.config.MyLuceneAnalysisConfigurer
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   servlet:
@@ -28,20 +34,21 @@ application:
 
 url:
   base:
-    path: http://139.59.227.169:8080 # server
-#    path: http://localhost:8080 # local
+#    path: http://139.59.227.169:8080 # server
+    path: http://localhost:8080 # local
 
 file:
   upload:
-    path: /home/moonbe_quang/MoonApplication/Repo/file # server
-#    path: D:/Quang/java/moon/moon-be/testUploadFile # local
+#    path: /home/moonbe_quang/MoonApplication/Repo/file # server
+    path: /home/ppvan/Downloads/temp-data # local
 
 image:
   upload:
-    path: /home/moonbe_quang/MoonApplication/Repo/image # server
-#    path: D:/Quang/java/moon/moon-be/testUploadFile # local
+#    path: /home/moonbe_quang/MoonApplication/Repo/image # server
+    path: /home/ppvan/Downloads/temp-data  # local
 
 avatar:
   upload:
-    path: /home/moonbe_quang/MoonApplication/Repo/avatar # server
-#    path: D:/Quang/java/moon/moon-be/testUploadFile # local
+#    path: /home/moonbe_quang/MoonApplication/Repo/avatar # server
+    path: /home/ppvan/Downloads/temp-data  # local
+

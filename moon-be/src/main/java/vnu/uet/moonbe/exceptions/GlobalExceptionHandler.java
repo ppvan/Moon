@@ -32,4 +32,28 @@ public class GlobalExceptionHandler {
 
     return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);
   }
+
+	@ExceptionHandler(PlaylistNotFoundException.class)
+	public ResponseEntity<ErrorObject> handlePlaylistNotFoundException(
+			PlaylistNotFoundException e,
+			WebRequest request
+	) {
+		ErrorObject errorObject = new ErrorObject();
+		errorObject.setStatusCode(HttpStatus.NOT_FOUND.value());
+		errorObject.setMessage(e.getMessage());
+
+		return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(PlaylistItemNotFoundException.class)
+	public ResponseEntity<ErrorObject> handlePlaylistItemNotFoundException(
+			PlaylistItemNotFoundException e,
+			WebRequest request
+	) {
+		ErrorObject errorObject = new ErrorObject();
+		errorObject.setStatusCode(HttpStatus.NOT_FOUND.value());
+		errorObject.setMessage(e.getMessage());
+
+		return new ResponseEntity<ErrorObject>(errorObject, HttpStatus.NOT_FOUND);
+	}
 }
