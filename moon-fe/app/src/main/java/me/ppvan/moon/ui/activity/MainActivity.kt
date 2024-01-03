@@ -222,8 +222,9 @@ fun MoonApp(
         notificationViewModel = notificationViewModel
     )
 
-    NavHost(navController = navController, startDestination = Routes.Login.name) {
+    NavHost(navController = navController, startDestination = Routes.Register.name) {
         AlbumGraph(context)
+
         composable(
             Routes.Home.name,
             enterTransition = { FadeTransition.enterTransition() }
