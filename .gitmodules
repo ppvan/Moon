@@ -1,0 +1,3 @@
+[submodule "moon-api"]
+	path = moon-api
+	url = https://github.com/ppvan/moon-api
